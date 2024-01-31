@@ -12,14 +12,15 @@ public class skillData
     [SerializeField] protected int _skillID;
     [TextArea(3, 10)]
     [SerializeField] protected string _skillDesc;
-    [SerializeField] protected skillType _skillType;
+    [SerializeField] protected skillTypeEnum _skillType;
+    [SerializeField] protected equipEnum _equipType;
 
     public string getSkillName()
     {
         return _skillName;
     }
 
-    public skillType getType()
+    public skillTypeEnum getType()
     {
         return _skillType;
     }
@@ -63,4 +64,8 @@ public class skillData
         _isUnlocked = value;
     }
 
+    public equipEnum getEquipType()
+    {
+        return _equipType;
+    }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-//[CreateAssetMenu(fileName = "Nueva_habilidad", menuName = "Habilidades/Crear nueva habilidad")]
+
 [System.Serializable]
 public abstract class skill : MonoBehaviour
 {
@@ -16,14 +16,19 @@ public abstract class skill : MonoBehaviour
 
         if (data != null)
         {
-            int currentID = UIConfig.getController().gameObject.GetComponent<abilityTreeUIController>().getCurrentUI().GetComponent<generalItem>().getID();
-            sceneSkillsState currentSkill = data.getUnlockedSkills().Find(skill => skill.getWeaponID() == currentID && skill.getAssociatedSkill().getIsUnlocked() && skill.getAssociatedSkill().getSkillID() == getSkillID());
-
-            if (currentSkill != null)
+            List<GameObject> UIs = UIConfig.getController().getSkillTreesUI().GetComponent<skillTreeUIController>().getAllUIs();
+            for (int i = 0; i < UIs.Count; ++i)
             {
-                setIsUnlocked(true);
-                changeLinksColors();
+                int currentID = UIs[i].GetComponent<generalItem>().getID(); 
+                sceneSkillsState currentSkill = data.getUnlockedSkills().Find(skill => skill.getWeaponID() == currentID && skill.getAssociatedSkill().getIsUnlocked() && skill.getAssociatedSkill().getSkillID() == getSkillID());
+
+                if (currentSkill != null)
+                {
+                    setIsUnlocked(true);
+                    changeLinksColors();
+                }
             }
+            
         }
     }
     public bool isUnlockable()
@@ -51,7 +56,7 @@ public abstract class skill : MonoBehaviour
             setIsUnlocked(true);
             config.getPlayer().GetComponent<combatController>().useSouls(getSkillPoints());
             changeLinksColors();
-            UIConfig.getController().gameObject.GetComponent<abilityTreeUIController>().unlockSkill(this);
+            UIConfig.getController().getSkillTreesUI().GetComponent<skillTreeUIController>().unlockSkill(this);
 
         }
     }
@@ -64,7 +69,7 @@ public abstract class skill : MonoBehaviour
         }
     }
 
-    public skillType getType()
+    public skillTypeEnum getType()
     {
         return getData().getType();
     }
