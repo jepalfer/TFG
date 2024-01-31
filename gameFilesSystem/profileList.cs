@@ -6,26 +6,53 @@ using System.IO;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// profileList es una clase que se encarga de crear la lista de perfiles en la pantalla de carga de partida.
+/// </summary>
 public class profileList : MonoBehaviour
 {
+    /// <summary>
+    /// La parte de la UI que contiene los perfiles.
+    /// </summary>
     [SerializeField] private Transform _profileHolder;
+
+    /// <summary>
+    /// Un perfil sin instanciar.
+    /// </summary>
     [SerializeField] private GameObject _profilePrefab;
-    [SerializeField] private EventSystem _eventSystem;
+
+    /// <summary>
+    /// Referencia al botón de cancelar.
+    /// </summary>
     [SerializeField] private Button _cancelButton;
-    private List<profile> profiles = new List<profile>();
+
+    /// <summary>
+    /// Lista que contiene los perfiles instanciados.
+    /// </summary>
+    private List<profile> _profiles = new List<profile>();
+
+    /// <summary>
+    /// Método que se ejecuta al iniciar el script.
+    /// Recorre los nombres, instancia cada perfil con ellos y asigna distintas variables.
+    /// Ver <see cref="profile"/>, <see cref="profileSystem"/>, <see cref="profileIndex"/>, <see cref="saveSystem"/> y <see cref="statSystem"/> para más información.
+    /// </summary>
     private void Start()
     {
-        _eventSystem.firstSelectedGameObject = _cancelButton.gameObject;
+        EventSystem.current.firstSelectedGameObject = _cancelButton.gameObject;
+        //Recorremos los nombres guardados
         foreach (string name in profileIndex.getUserNames())
         {
+            //Instanciamos un perfil
             GameObject _object = Instantiate(_profilePrefab);
             profile UI = _object.GetComponent<profile>();
-            profiles.Add(UI);
+            _profiles.Add(UI);
             
             //Cambiamos de ruta para cargar los atributos de todas las rutas
             profileSystem.setCurrentPath(profileSystem.getPath() + name + "/");
+            //Cargamos los atributos del perfil
             attributesData data = saveSystem.loadAttributes();
 
+            //Si no se ha guardado nada asignamos valores default
             if (data == null)
             {
                 UI.setLevel(6);
@@ -36,7 +63,7 @@ public class profileList : MonoBehaviour
                 UI.setAgility(1);
                 UI.setPrecision(1);
             }
-            else
+            else //Si no, asignamos según corresponda
             {
                 UI.setLevel(data.getLevel());
                 UI.setVitality(data.getVitality());
@@ -48,8 +75,11 @@ public class profileList : MonoBehaviour
             }
 
             UI.setUserName(name);
+
+            //Añadimos el evento de click
             UI.getLoadBtn().onClick.AddListener(() =>
             {
+                //Cambiamos variables que corresponden
                 profileSystem.setProfileName(UI.getName());
                 //Cambiamos de ruta para cargar la partida que toca
                 profileSystem.setCurrentPath(profileSystem.getPath() + UI.getName() + "/");
@@ -66,29 +96,33 @@ public class profileList : MonoBehaviour
                 SceneManager.LoadScene("ToL");
             });
 
+            //Añadimos el evento de click
             UI.getRemoveBtn().onClick.AddListener(() => {
                 profileIndex.removeName(UI.getName());
                 //Cambiamos de ruta para eliminar la partida que toca
                 profileSystem.setCurrentPath(profileSystem.getPath() + UI.getName() + "/");
 
                 string[] files = Directory.GetFiles(profileSystem.getPath() + UI.getName() + "/");
+                //Borramos todos los archivos de guardado del perfil
                 foreach (string file in files)
                 {
                     File.Delete(file);
                 }
 
+                //Borramos el perfil y destruimos el objeto
                 Directory.Delete(profileSystem.getCurrentPath());
                 Destroy(_object);
 
-                Debug.Log(profiles.Count);
+                Debug.Log(_profiles.Count);
 
-                profiles.Remove(UI);
+                //Lo quitamos de la lista de perfiles instaciados
+                _profiles.Remove(UI);
 
                 EventSystem.current.SetSelectedGameObject(_cancelButton.gameObject);
 
-                if (profiles.Count > 0)
+                if (_profiles.Count > 0)
                 {
-                    EventSystem.current.SetSelectedGameObject(profiles[0].getLoadBtn().gameObject);
+                    EventSystem.current.SetSelectedGameObject(_profiles[0].getLoadBtn().gameObject);
                 }
 
                 calculateNavigation();
@@ -100,65 +134,58 @@ public class profileList : MonoBehaviour
         calculateNavigation();
 
     }
-
+    /// <summary>
+    /// Método para asignar la navegación a cada uno de los botones de los perfiles.
+    /// </summary>
     public void calculateNavigation()
     {
         Navigation cancel_navigation = _cancelButton.navigation;
 
-        for (int i = 0; i < profiles.Count; i++)
+        //Recorremos los perfiles
+        for (int i = 0; i < _profiles.Count; i++)
         {
-            Navigation current_UI_load = profiles[i].getLoadBtn().navigation;
-            Navigation current_UI_remove = profiles[i].getRemoveBtn().navigation;
+            Navigation current_UI_load = _profiles[i].getLoadBtn().navigation;
+            Navigation current_UI_remove = _profiles[i].getRemoveBtn().navigation;
 
             if (i == 0)                                     //Estamos en el primero
             {
-                _eventSystem.firstSelectedGameObject = profiles[i].getLoadBtn().gameObject;
+                EventSystem.current.firstSelectedGameObject = _profiles[i].getLoadBtn().gameObject;
 
-                if (profiles.Count > 1)
+                if (_profiles.Count > 1)
                 {
-                    current_UI_load.selectOnDown = profiles[i + 1].getLoadBtn();
-                    current_UI_remove.selectOnDown = profiles[i + 1].getRemoveBtn();
+                    current_UI_load.selectOnDown = _profiles[i + 1].getLoadBtn();
+                    current_UI_remove.selectOnDown = _profiles[i + 1].getRemoveBtn();
                 }
                 else
                 {
                     current_UI_load.selectOnDown = _cancelButton;
                     current_UI_remove.selectOnDown = _cancelButton;
-                    cancel_navigation.selectOnUp = profiles[i].getLoadBtn();
+                    cancel_navigation.selectOnUp = _profiles[i].getLoadBtn();
                     _cancelButton.navigation = cancel_navigation;
                 }
             }
-            else if (i > 0 && i < profiles.Count - 1)      //Estamos en los del medio
+            else if (i > 0 && i < _profiles.Count - 1)      //Estamos en los del medio
             {
-                current_UI_load.selectOnDown = profiles[i + 1].getLoadBtn();
-                current_UI_remove.selectOnDown = profiles[i + 1].getRemoveBtn();
+                current_UI_load.selectOnDown = _profiles[i + 1].getLoadBtn();
+                current_UI_remove.selectOnDown = _profiles[i + 1].getRemoveBtn();
 
-                current_UI_load.selectOnUp = profiles[i - 1].getLoadBtn();
-                current_UI_remove.selectOnUp = profiles[i - 1].getRemoveBtn();
+                current_UI_load.selectOnUp = _profiles[i - 1].getLoadBtn();
+                current_UI_remove.selectOnUp = _profiles[i - 1].getRemoveBtn();
             }
             else                                            //Estamos en el ultimo
             {
                 current_UI_load.selectOnDown = _cancelButton;
                 current_UI_remove.selectOnDown = _cancelButton;
 
-                current_UI_load.selectOnUp = profiles[i - 1].getLoadBtn();
-                current_UI_remove.selectOnUp = profiles[i - 1].getRemoveBtn();
+                current_UI_load.selectOnUp = _profiles[i - 1].getLoadBtn();
+                current_UI_remove.selectOnUp = _profiles[i - 1].getRemoveBtn();
 
-                cancel_navigation.selectOnUp = profiles[profiles.Count - 1].getLoadBtn();
+                cancel_navigation.selectOnUp = _profiles[_profiles.Count - 1].getLoadBtn();
                 _cancelButton.navigation = cancel_navigation;
             }
 
-            profiles[i].getLoadBtn().navigation = current_UI_load;
-            profiles[i].getRemoveBtn().navigation = current_UI_remove;
+            _profiles[i].getLoadBtn().navigation = current_UI_load;
+            _profiles[i].getRemoveBtn().navigation = current_UI_remove;
         }
-    }
-
-    public Transform getProfileHolder()
-    {
-        return _profileHolder;
-    }
-
-    public GameObject getProfilePrefab()
-    {
-        return _profilePrefab;
     }
 }

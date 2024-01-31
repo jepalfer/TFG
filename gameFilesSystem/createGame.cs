@@ -8,21 +8,37 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using TMPro;
 
+/// <summary>
+/// createGame es una clase que sirve para crear una nueva partida.
+/// </summary>
 public class createGame : MonoBehaviour
 {
+    /// <summary>
+    /// El input que va a contener el nombre de la partida.
+    /// </summary>
     [SerializeField] private TMP_InputField _nameInput;
 
+    /// <summary>
+    /// Método que se ejecuta al iniciar el script.
+    /// </summary>
     private void Start()
     {
-        _nameInput.onEndEdit.AddListener(HandleEndEdit);
+        _nameInput.onEndEdit.AddListener(handleEndEdit);
     }
-    public void Accept()
+    /// <summary>
+    /// Método que crea el perfil y carga la escena del primer nivel, ver <see cref="statSystem"/> para más información.
+    /// </summary>
+    public void accept()
     {
         string profileName = _nameInput.text;
+
+        //Si se ha podido crear el perfil
         if (profileSystem.createProfile(profileName))
         {
+            //Guardamos el path actual
             saveSystem.savePath(profileSystem.getCurrentPath(), profileName);
 
+            //Ponemos atributos por defecto
             statSystem.setLevel(6);
             statSystem.getVitality().setLevel(1);
             statSystem.getEndurance().setLevel(1);
@@ -31,6 +47,7 @@ public class createGame : MonoBehaviour
             statSystem.getAgility().setLevel(1);
             statSystem.getPrecision().setLevel(1);
 
+            //Guardamos atributos
             saveSystem.saveAttributes();
 
             profileIndex.addName(profileName);
@@ -42,19 +59,28 @@ public class createGame : MonoBehaviour
 
         }
     }
-
-    public void Back()
+    /// <summary>
+    /// Método que vuelve a la escena del menú principal.
+    /// </summary>
+    public void back()
     {
         SceneManager.LoadScene("MainMenu");
     }
 
-    private void HandleEndEdit(string text)
+    /// <summary>
+    /// Método auxiliar para añadir un evento a <see cref="_nameInput"/>.
+    /// </summary>
+    /// <param name="text">El texto del input field.</param>
+    private void handleEndEdit(string text)
     {
-        // Tu lógica aquí cuando se completa la edición del campo de texto
         EventSystem.current.SetSelectedGameObject(_nameInput.navigation.selectOnDown.gameObject);
     }
+    /// <summary>
+    /// Método que se ejecuta cada frame para actualizar la lógica.
+    /// </summary>
     private void Update()
     {
+        //Si tenemos seleccionado el input field
         if (_nameInput.isFocused)
         {
             if (Gamepad.current != null)
@@ -77,12 +103,12 @@ public class createGame : MonoBehaviour
             {
                 if (Gamepad.current.buttonEast.wasPressedThisFrame)
                 {
-                    Back();
+                    back();
                 }
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                Back();
+                back();
             }
         }
 
