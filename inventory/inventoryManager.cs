@@ -7,8 +7,8 @@ using System.Linq;
 [System.Serializable]
 public class inventoryManager : MonoBehaviour
 {
-    [SerializeField] private int _maximumItemsInventory = 99;
-    [SerializeField] private int _maximumItemsBackUp = 999;
+    [SerializeField] private int _maximumItemsInventory;
+    [SerializeField] private int _maximumItemsBackUp;
     [SerializeField] private List<lootItem> _inventory;
     [SerializeField] private List<lootItem> _backup;
 
@@ -29,14 +29,36 @@ public class inventoryManager : MonoBehaviour
                 _inventory.Add(new lootItem(serializedItem, loadedInventory[i].getQuantity()));
             }
 
-            loadedInventory = inventoryData.getBackup();
+            List<serializedItemData> loadedBackup = inventoryData.getBackup();
+            bool addedFromBackup = false;
 
-            for (int i = 0; i < loadedInventory.Count; ++i)
+            for (int i = 0; i < loadedBackup.Count; ++i)
             {
                 serializedItem = ScriptableObject.CreateInstance<item>();
-                serializedItem.setItemData(loadedInventory[i].getData());
-                _backup.Add(new lootItem(serializedItem, loadedInventory[i].getQuantity()));
+                serializedItem.setItemData(loadedBackup[i].getData());
+                _backup.Add(new lootItem(serializedItem, loadedBackup[i].getQuantity()));
             }
+
+            for (int i = 0; i < loadedBackup.Count; i++)
+            {
+                if ((_inventory.Find(item => item.getID() == loadedBackup[i].getData().getID()) == null))//No disponible en el inventario
+                {
+                    serializedItem = ScriptableObject.CreateInstance<item>();
+                    serializedItem.setItemData(loadedBackup[i].getData());
+                    addedFromBackup = true;
+                    int quantityToInventory;
+                    if (loadedBackup[i].getQuantity() > _maximumItemsInventory)
+                    {
+                        quantityToInventory = 15;
+                    }
+                    else
+                    {
+                        quantityToInventory = loadedBackup[i].getQuantity();
+                    }
+                    removeItemFromBackup(new lootItem(serializedItem, loadedBackup[i].getQuantity()), quantityToInventory);
+                }
+            }
+            saveSystem.saveInventory();
         }
         else
         {
@@ -82,7 +104,7 @@ public class inventoryManager : MonoBehaviour
 
                 lootItem itemBackUp = new lootItem(item.getInstance(), toBackUp);
 
-                addItemToBackup(itemBackUp);
+                addItemToBackup(itemBackUp, itemBackUp.getQuantity());
                 
             }
             else
@@ -100,7 +122,7 @@ public class inventoryManager : MonoBehaviour
                 lootItem addedItem = new lootItem(item.getInstance(), toInventory);
                 lootItem backUpItem = new lootItem(item.getInstance(), toBackUp);
                 _inventory.Add(addedItem);
-                addItemToBackup(backUpItem);
+                addItemToBackup(backUpItem, backUpItem.getQuantity());
             }
             else
             {
@@ -112,33 +134,34 @@ public class inventoryManager : MonoBehaviour
         }
     }
 
-    public void removeItemFromInventory(lootItem item)
+    public void removeItemFromInventory(lootItem item, int quantity)
     {
         int index = findInventoryIndex(item.getItem());
         if (index != -1)
         {
-            if (_inventory[index].getQuantity() - item.getQuantity() > 0)
+            if (_inventory[index].getQuantity() - quantity > 0)
             {
-                lootItem removedItem = new lootItem(item.getItem().getInstance(), _inventory[index].getQuantity() - item.getQuantity());
+                lootItem removedItem = new lootItem(item.getItem().getInstance(), _inventory[index].getQuantity() - quantity);
                 _inventory[index] = removedItem;
             }
             else
             {
                 _inventory.RemoveAt(index);
+                saveSystem.saveInventory();
             }
         }
     }
 
-    public void addItemToBackup(lootItem item)
+    public void addItemToBackup(lootItem item, int quantity)
     {
         //Comprobamos que el objeto esté metido en la reserva
         int index = findBackupIndex(item.getItem());
 
         if (index != -1)
         {
-            if (_backup[index].getQuantity() + item.getQuantity() <= _maximumItemsBackUp)
+            if (_backup[index].getQuantity() + quantity <= _maximumItemsBackUp)
             {
-                lootItem addedItem = new lootItem(item.getItem().getInstance(), _backup[index].getQuantity() + item.getQuantity());
+                lootItem addedItem = new lootItem(item.getItem().getInstance(), _backup[index].getQuantity() + quantity);
                 _backup[index] = addedItem;
             }
         }
@@ -148,14 +171,14 @@ public class inventoryManager : MonoBehaviour
             _backup.Add(addedItem);
         }
     }
-    public void removeItemFromBackup(lootItem item)
+    public void removeItemFromBackup(lootItem item, int quantity)
     {
         int index = findBackupIndex(item.getItem());
         if (index != -1)
         {
-            if (_backup[index].getQuantity() - item.getQuantity() > 0)
+            if (_backup[index].getQuantity() - quantity > 0)
             {
-                lootItem removedItem = new lootItem(item.getInstance(), _backup[index].getQuantity() - item.getQuantity());
+                lootItem removedItem = new lootItem(item.getInstance(), _backup[index].getQuantity() - quantity);
                 _backup[index] = removedItem;
             }
             else

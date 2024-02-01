@@ -39,5 +39,4 @@ public class generalItem : MonoBehaviour
         return _data.getData().getItemData().getRender();
     }
 
-
 }

@@ -7,6 +7,7 @@ public class equippedInventory : MonoBehaviour
     [SerializeField] private List<GameObject> _equippedItems;
     [SerializeField] private List<GameObject> _allItems;
     private equippedObjectData _data;
+    private int _indexInEquipped;
 
     public List<GameObject> getEquippedItems()
     {
@@ -15,6 +16,7 @@ public class equippedInventory : MonoBehaviour
 
     private void Awake()
     {
+        _indexInEquipped = -1;
         _data = saveSystem.loadEquippedObjectsData();
 
         if (_data != null)
@@ -26,6 +28,20 @@ public class equippedInventory : MonoBehaviour
                     _equippedItems[i] = Instantiate(_allItems.Find(item => item.GetComponent<generalItem>().getID() == _data.getData()[i].getItemID()));
                 }
             }
+            _indexInEquipped = _data.getIndexInEquipped();
+        }
+    }
+
+    private void Start()
+    {
+        if (_indexInEquipped != -1)
+        {
+            changeSpritesMode(true);
+            modifyEquippedObject(_indexInEquipped);
+        }
+        else
+        {
+            changeSpritesMode(false);
         }
     }
 
@@ -49,7 +65,13 @@ public class equippedInventory : MonoBehaviour
             if (_data != null)
             {
                 _data.setEquippedObject(searchedIndex, null);
-                saveSystem.saveEquippedObjectsData(_data.getData());
+
+                if (_equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getID() != itemID)
+                {
+                    index = _data.getIndexInEquipped();
+                }
+
+                saveSystem.saveEquippedObjectsData(_data.getData(), index);
             }
             Destroy(_equippedItems[searchedIndex]);
             _equippedItems[searchedIndex] = null;
@@ -72,17 +94,47 @@ public class equippedInventory : MonoBehaviour
             }
 
             aux[index] = new newEquippedObjectData(itemID);
-            saveSystem.saveEquippedObjectsData(aux);
+            saveSystem.saveEquippedObjectsData(aux, index);
+            changeSpritesMode(true);
+            modifyEquippedObject(index);
+        }
+        else if (allEquippedAreNull() && (_data.getIndexInEquipped() != -1))
+        {
+            _data.setEquippedObject(index, new newEquippedObjectData(itemID));
+            int id = _data.getIndexInEquipped();
+            saveSystem.saveEquippedObjectsData(_data.getData(), _data.getIndexInEquipped());
         }
         else
         {
             _data.setEquippedObject(index, new newEquippedObjectData(itemID));
-            saveSystem.saveEquippedObjectsData(_data.getData());
+            int id = index;
+            
+            saveSystem.saveEquippedObjectsData(_data.getData(), id);
+            _data = saveSystem.loadEquippedObjectsData();
+            changeSpritesMode(true);
+            modifyEquippedObject(index);
         }
-        UIConfig.getController().getSprite().enabled = true;
-        UIConfig.getController().getText().enabled = true;
+    }
+
+    public bool allEquippedAreNull()
+    {
+        return _equippedItems.Find(item => item != null) != null;
+    }
+
+    public void changeSpritesMode(bool mode)
+    {
+
+        UIConfig.getController().getSprite().enabled = mode;
+        UIConfig.getController().getText().enabled = mode;
+        UIConfig.getController().getQuantity().enabled = mode;
+    }
+
+    public void modifyEquippedObject(int index)
+    {
         UIConfig.getController().setSprite(_equippedItems[index].GetComponent<generalItem>().getIcon());
         UIConfig.getController().setText(_equippedItems[index].GetComponent<generalItem>().getName());
+        UIConfig.getController().setQuantity(config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == _equippedItems[index].GetComponent<generalItem>().getID()).getQuantity());
+
     }
 
     private void Update()
@@ -93,6 +145,72 @@ public class equippedInventory : MonoBehaviour
                 !UIController.getIsInInventory() && !UIController.getIsLevelingUp() && !UIController.getIsLevelingUpWeapon() && !bonfireBehaviour.getIsInBonfireMenu())
             {
                 //Controlar el desplazamiento en la lista
+                if (inputManager.GetKeyDown(inputEnum.nextItem))
+                {
+                    for (int i = (saveSystem.loadEquippedObjectsData().getIndexInEquipped() + 1) % _equippedItems.Count; ; i++)
+                    {
+                        i = (i % 6);
+                        if (_equippedItems[i] != null)
+                        {
+                            saveSystem.saveEquippedObjectsData(saveSystem.loadEquippedObjectsData().getData(), i);
+                            modifyEquippedObject(i);
+                            break;
+                        }
+                    }
+                }
+                else if (inputManager.GetKeyDown(inputEnum.previousItem))
+                {
+                    for (int i = (saveSystem.loadEquippedObjectsData().getIndexInEquipped() - 1) % _equippedItems.Count; ; i--)
+                    {
+                        if (i < 0)
+                        {
+                            i = 5;
+                        }
+                        if(_equippedItems[i] != null)
+                        {
+                            saveSystem.saveEquippedObjectsData(saveSystem.loadEquippedObjectsData().getData(), i);
+                            modifyEquippedObject(i);
+                            break;
+                        }
+                    }
+                }
+                else if (inputManager.GetKeyDown(inputEnum.useItem))
+                {
+                    _data = saveSystem.loadEquippedObjectsData();
+                    lootItem inventoryItem = new lootItem(_equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getData().getData(), config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == _equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getID()).getQuantity());
+                    config.getInventory().GetComponent<inventoryManager>().removeItemFromInventory(inventoryItem, 1);
+
+                    
+                    if (inventoryItem.getQuantity() > 1)
+                    {
+                        modifyEquippedObject(_data.getIndexInEquipped());
+                    }
+                    else
+                    {
+                        _equippedItems[_data.getIndexInEquipped()] = null;
+                        _data = saveSystem.loadEquippedObjectsData();
+                        _data.setEquippedObject(_data.getIndexInEquipped(), null);
+                        changeSpritesMode(false);
+                        for (int i = (_data.getIndexInEquipped() + 1) % _equippedItems.Count; ;i++)
+                        {
+                            i = (i % 6);
+
+                            if (i == _data.getIndexInEquipped())//No hay ningun objeto disponible
+                            {
+                                saveSystem.saveEquippedObjectsData(_data.getData(), -1);
+                                break;
+                            }
+
+                            if (_equippedItems[i] != null)
+                            {
+                                saveSystem.saveEquippedObjectsData(_data.getData(), i);
+                                modifyEquippedObject(i);
+                                changeSpritesMode(true);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
