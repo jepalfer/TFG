@@ -16,7 +16,7 @@ public class inputManager : MonoBehaviour
     /// <summary>
     /// Es el mapeo de string a botón de gamepad.
     /// </summary>
-    private static Dictionary<string, ButtonControl> _inputListgamepad;
+    private static Dictionary<string, ButtonControl> _inputListGamepad;
 
     /// <summary>
     /// Establece si hay o no un dispositivo conectado.
@@ -24,31 +24,31 @@ public class inputManager : MonoBehaviour
     private static bool _deviceIsConnected = false;
     /// <summary>
     /// Método que se ejecuta el primero al iniciarse un script.
-    /// Crea el mapeado de <see cref="_inputList"/> y si hay un gamepad conectado el de <see cref="_inputListgamepad"/>
+    /// Crea el mapeado de <see cref="_inputList"/> y si hay un gamepad conectado el de <see cref="_inputListGamepad"/>
     /// </summary>
     private void Awake()
     {
         _inputList = new Dictionary<string, KeyCode>();
 
-        _inputList.Add("jump", KeyCode.Space);
-        _inputList.Add("right", KeyCode.RightArrow);
-        _inputList.Add("left", KeyCode.LeftArrow);
-        _inputList.Add("down", KeyCode.S);
-        _inputList.Add("up", KeyCode.W);
-        _inputList.Add("primaryAttack", KeyCode.Mouse0);
-        _inputList.Add("secundaryAttack", KeyCode.Mouse1);
-        _inputList.Add("showMinimap", KeyCode.Tab);
-        _inputList.Add("roll", KeyCode.R);
-        _inputList.Add("pause", KeyCode.Escape);
-        _inputList.Add("interact", KeyCode.E);
-        _inputList.Add("previous", KeyCode.J);
-        _inputList.Add("next", KeyCode.K);
-        _inputList.Add("enterEquip", KeyCode.Return);
-        _inputList.Add("cancel", KeyCode.Escape);
-        _inputList.Add("accept", KeyCode.Return);
-        _inputList.Add("previousItem", KeyCode.LeftArrow);
-        _inputList.Add("nextItem", KeyCode.RightArrow);
-        _inputList.Add("useItem", KeyCode.DownArrow);
+        _inputList.Add(inputEnum.jump.ToString(), KeyCode.Space);
+        _inputList.Add(inputEnum.right.ToString(), KeyCode.RightArrow);
+        _inputList.Add(inputEnum.left.ToString(), KeyCode.LeftArrow);
+        _inputList.Add(inputEnum.down.ToString(), KeyCode.S);
+        _inputList.Add(inputEnum.up.ToString(), KeyCode.W);
+        _inputList.Add(inputEnum.primaryAttack.ToString(), KeyCode.Mouse0);
+        _inputList.Add(inputEnum.secundaryAttack.ToString(), KeyCode.Mouse1);
+        _inputList.Add(inputEnum.showMinimap.ToString(), KeyCode.Tab);
+        _inputList.Add(inputEnum.roll.ToString(), KeyCode.R);
+        _inputList.Add(inputEnum.pause.ToString(), KeyCode.Escape);
+        _inputList.Add(inputEnum.interact.ToString(), KeyCode.E);
+        _inputList.Add(inputEnum.previous.ToString(), KeyCode.J);
+        _inputList.Add(inputEnum.next.ToString(), KeyCode.K);
+        _inputList.Add(inputEnum.enterEquip.ToString(), KeyCode.Return);
+        _inputList.Add(inputEnum.cancel.ToString(), KeyCode.Escape);
+        _inputList.Add(inputEnum.accept.ToString(), KeyCode.Return);
+        _inputList.Add(inputEnum.previousItem.ToString(), KeyCode.LeftArrow);
+        _inputList.Add(inputEnum.nextItem.ToString(), KeyCode.RightArrow);
+        _inputList.Add(inputEnum.useItem.ToString(), KeyCode.DownArrow);
 
         //Comprueba si hay un gamepad conectado
         if (Gamepad.current != null)
@@ -59,30 +59,30 @@ public class inputManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Método que crea el mapeado de string a botón de gamepad de <see cref="_inputListgamepad"/>
+    /// Método que crea el mapeado de string a botón de gamepad de <see cref="_inputListGamepad"/>
     /// </summary>
     public static void createGamepadDefaultInputs()
     {
-        _inputListgamepad = new Dictionary<string, ButtonControl>();
-        _inputListgamepad.Add("jump", Gamepad.current.buttonSouth);
-        _inputListgamepad.Add("right", Gamepad.current.dpad.right);
-        _inputListgamepad.Add("left", Gamepad.current.dpad.left);
-        _inputListgamepad.Add("down", Gamepad.current.leftStick.down);
-        _inputListgamepad.Add("up", Gamepad.current.leftStick.up);
-        _inputListgamepad.Add("primaryAttack", Gamepad.current.rightShoulder);
-        _inputListgamepad.Add("secundaryAttack", Gamepad.current.leftShoulder);
-        _inputListgamepad.Add("showMinimap", Gamepad.current.selectButton);
-        _inputListgamepad.Add("roll", Gamepad.current.buttonEast);
-        _inputListgamepad.Add("pause", Gamepad.current.startButton);
-        _inputListgamepad.Add("interact", Gamepad.current.buttonWest);
-        _inputListgamepad.Add("previous", Gamepad.current.leftTrigger);
-        _inputListgamepad.Add("next", Gamepad.current.rightTrigger);
-        _inputListgamepad.Add("enterEquip", Gamepad.current.buttonSouth);
-        _inputListgamepad.Add("cancel", Gamepad.current.buttonEast);
-        _inputListgamepad.Add("accept", Gamepad.current.buttonSouth);
-        _inputListgamepad.Add("previousItem", Gamepad.current.dpad.left);
-        _inputListgamepad.Add("nextItem", Gamepad.current.dpad.right);
-        _inputListgamepad.Add("useItem", Gamepad.current.dpad.down);
+        _inputListGamepad = new Dictionary<string, ButtonControl>();
+        _inputListGamepad.Add(inputEnum.jump.ToString(), Gamepad.current.buttonSouth);
+        _inputListGamepad.Add(inputEnum.right.ToString(), Gamepad.current.dpad.right);
+        _inputListGamepad.Add(inputEnum.left.ToString(), Gamepad.current.dpad.left);
+        _inputListGamepad.Add(inputEnum.down.ToString(), Gamepad.current.leftStick.down);
+        _inputListGamepad.Add(inputEnum.up.ToString(), Gamepad.current.leftStick.up);
+        _inputListGamepad.Add(inputEnum.primaryAttack.ToString(), Gamepad.current.rightShoulder);
+        _inputListGamepad.Add(inputEnum.secundaryAttack.ToString(), Gamepad.current.leftShoulder);
+        _inputListGamepad.Add(inputEnum.showMinimap.ToString(), Gamepad.current.selectButton);
+        _inputListGamepad.Add(inputEnum.roll.ToString(), Gamepad.current.buttonEast);
+        _inputListGamepad.Add(inputEnum.pause.ToString(), Gamepad.current.startButton);
+        _inputListGamepad.Add(inputEnum.interact.ToString(), Gamepad.current.buttonWest);
+        _inputListGamepad.Add(inputEnum.previous.ToString(), Gamepad.current.leftTrigger);
+        _inputListGamepad.Add(inputEnum.next.ToString(), Gamepad.current.rightTrigger);
+        _inputListGamepad.Add(inputEnum.enterEquip.ToString(), Gamepad.current.buttonSouth);
+        _inputListGamepad.Add(inputEnum.cancel.ToString(), Gamepad.current.buttonEast);
+        _inputListGamepad.Add(inputEnum.accept.ToString(), Gamepad.current.buttonSouth);
+        _inputListGamepad.Add(inputEnum.previousItem.ToString(), Gamepad.current.dpad.left);
+        _inputListGamepad.Add(inputEnum.nextItem.ToString(), Gamepad.current.dpad.right);
+        _inputListGamepad.Add(inputEnum.useItem.ToString(), Gamepad.current.dpad.down);
     }
 
     /// <summary>
@@ -104,13 +104,13 @@ public class inputManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Método que cambia el botón asociado a ActionName en <see cref="_inputListgamepad"/>.
+    /// Método que cambia el botón asociado a ActionName en <see cref="_inputListGamepad"/>.
     /// </summary>
     /// <param name="ActionName">String que indica la acción.</param>
     /// <param name="newButton">Es el botón de la acción.</param>
     public static void changePadInput(string ActionName, ButtonControl newButton)
     {
-        _inputListgamepad[ActionName] = newButton;
+        _inputListGamepad[ActionName] = newButton;
 
     }
 
@@ -179,7 +179,7 @@ public class inputManager : MonoBehaviour
     /// <returns>El botón al que está asociado actionName.</returns>
     public static ButtonControl getGamepadAction(string actionName)
     {
-        return _inputListgamepad[actionName];
+        return _inputListGamepad[actionName];
     }
 
     /// <summary>
@@ -191,12 +191,12 @@ public class inputManager : MonoBehaviour
         return _inputList;
     }
     /// <summary>
-    /// Getter que devuelve <see cref="_inputListgamepad"/>.
+    /// Getter que devuelve <see cref="_inputListGamepad"/>.
     /// </summary>
     /// <returns>Un diccionario que contiene el mapeo de string a botón de gamepad.</returns>
     public static Dictionary<string, ButtonControl> getGamepadInputs()
     {
-        return _inputListgamepad;
+        return _inputListGamepad;
     }
 
     /// <summary>

@@ -30,7 +30,6 @@ public class inventoryManager : MonoBehaviour
             }
 
             List<serializedItemData> loadedBackup = inventoryData.getBackup();
-            bool addedFromBackup = false;
 
             for (int i = 0; i < loadedBackup.Count; ++i)
             {
@@ -41,11 +40,12 @@ public class inventoryManager : MonoBehaviour
 
             for (int i = 0; i < loadedBackup.Count; i++)
             {
-                if ((_inventory.Find(item => item.getID() == loadedBackup[i].getData().getID()) == null))//No disponible en el inventario
+                lootItem searchedItem = _inventory.Find(item => item.getID() == loadedBackup[i].getData().getID());
+
+                if (searchedItem == null)//No disponible en el inventario
                 {
                     serializedItem = ScriptableObject.CreateInstance<item>();
                     serializedItem.setItemData(loadedBackup[i].getData());
-                    addedFromBackup = true;
                     int quantityToInventory;
                     if (loadedBackup[i].getQuantity() > _maximumItemsInventory)
                     {
@@ -56,6 +56,25 @@ public class inventoryManager : MonoBehaviour
                         quantityToInventory = loadedBackup[i].getQuantity();
                     }
                     removeItemFromBackup(new lootItem(serializedItem, loadedBackup[i].getQuantity()), quantityToInventory);
+                }
+                else
+                {
+                    if (searchedItem.getQuantity() < config.getInventory().GetComponent<inventoryManager>().getMaximumInventory())
+                    {
+                        serializedItem = ScriptableObject.CreateInstance<item>();
+                        serializedItem.setItemData(loadedBackup[i].getData());
+                        int quantityToInventory = 0;
+
+                        if (loadedBackup[i].getQuantity() < (config.getInventory().GetComponent<inventoryManager>().getMaximumInventory() - searchedItem.getQuantity()))
+                        {
+                            quantityToInventory = loadedBackup[i].getQuantity();
+                        }
+                        else
+                        {
+                            quantityToInventory = config.getInventory().GetComponent<inventoryManager>().getMaximumInventory() - searchedItem.getQuantity();
+                        }
+                        removeItemFromBackup(new lootItem(serializedItem, loadedBackup[i].getQuantity()), quantityToInventory);
+                    }
                 }
             }
             saveSystem.saveInventory();
@@ -104,6 +123,7 @@ public class inventoryManager : MonoBehaviour
 
                 lootItem itemBackUp = new lootItem(item.getInstance(), toBackUp);
 
+
                 addItemToBackup(itemBackUp, itemBackUp.getQuantity());
                 
             }
@@ -111,6 +131,7 @@ public class inventoryManager : MonoBehaviour
             {
                 lootItem addedItem = new lootItem(item.getInstance(), _inventory[index].getQuantity() + item.getQuantity());
                 _inventory[index] = addedItem;
+                saveSystem.saveInventory();
             }
         }
         else
@@ -128,6 +149,7 @@ public class inventoryManager : MonoBehaviour
             {
                 lootItem addedItem = new lootItem(item.getInstance(), item.getQuantity());
                 _inventory.Add(addedItem);
+                saveSystem.saveInventory();
             }
 
 
@@ -143,6 +165,7 @@ public class inventoryManager : MonoBehaviour
             {
                 lootItem removedItem = new lootItem(item.getItem().getInstance(), _inventory[index].getQuantity() - quantity);
                 _inventory[index] = removedItem;
+                saveSystem.saveInventory();
             }
             else
             {
@@ -163,12 +186,14 @@ public class inventoryManager : MonoBehaviour
             {
                 lootItem addedItem = new lootItem(item.getItem().getInstance(), _backup[index].getQuantity() + quantity);
                 _backup[index] = addedItem;
+                saveSystem.saveInventory();
             }
         }
         else
         {
             lootItem addedItem = new lootItem(item.getItem().getInstance(), item.getQuantity());
             _backup.Add(addedItem);
+            saveSystem.saveInventory();
         }
     }
     public void removeItemFromBackup(lootItem item, int quantity)
@@ -180,12 +205,14 @@ public class inventoryManager : MonoBehaviour
             {
                 lootItem removedItem = new lootItem(item.getInstance(), _backup[index].getQuantity() - quantity);
                 _backup[index] = removedItem;
+                saveSystem.saveInventory();
             }
             else
             {
                 _backup.RemoveAt(index);
+                saveSystem.saveInventory();
             }
-            lootItem addedItem = new lootItem(item.getInstance(), item.getQuantity());
+            lootItem addedItem = new lootItem(item.getInstance(), quantity);
 
             addItemToInventory(addedItem);
         }
