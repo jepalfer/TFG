@@ -37,17 +37,18 @@ public class skillUIController : MonoBehaviour
     public void equipSkill(skillData skill)
     {
         List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
+
         int index = -1;
 
         checkIfEquipped(equippedSkills, ref index, skill);
         equippedSkillData data = saveSystem.loadEquippedSkillsState();
         int[] IDs;
-        skillType[] types;
+        skillTypeEnum[] types;
 
         if (data == null)
         {
             IDs = new int[3];
-            types = new skillType[3];
+            types = new skillTypeEnum[3];
             for (int i = 0; i < equippedSkills.Count; ++i)
             {
                 IDs[i] = -1;
@@ -87,6 +88,12 @@ public class skillUIController : MonoBehaviour
         {
             if (skills[i] != null)
             {
+                if (skills[i].GetComponent<skill>().getData().getSkillID() == data.getSkillID() && i != _currentID)
+                {
+                    index = i;
+                    break;
+                }
+                /*
                 if (skills[i].GetComponent<comboIncreaseSkill>() != null)
                 {
                     if (skills[i].GetComponent<comboIncreaseSkill>().getData().getSkillID() == data.getSkillID() && i != _currentID)
@@ -118,7 +125,7 @@ public class skillUIController : MonoBehaviour
                         index = i;
                         break;
                     }
-                }
+                }*/
             }
         }
     }
@@ -128,27 +135,27 @@ public class skillUIController : MonoBehaviour
     {
         if (!UIController.getIsEquippingSkill())
         {
-            if (inputManager.getKeyDown(inputEnum.Left.ToString()) && _currentID > 0)
+            if (inputManager.GetKeyDown(inputEnum.left) && _currentID > 0)
             {
                 _slots[_currentID].SetActive(false);
                 _currentID--;
                 _slots[_currentID].SetActive(true);
             }
-            if (inputManager.getKeyDown(inputEnum.Right.ToString()) && _currentID < _slots.Count)
+            if (inputManager.GetKeyDown(inputEnum.right) && _currentID < _slots.Count)
             {
                 _slots[_currentID].SetActive(false);
                 _currentID++;
                 _slots[_currentID].SetActive(true);
             }
 
-            if (inputManager.getKeyDown(inputEnum.Enter_equip.ToString()))
+            if (inputManager.GetKeyDown(inputEnum.enterEquip))
             {
                 UIConfig.getController().useSelectSkillUI();
             }
         }
         else
         {
-            if (inputManager.getKeyDown(inputEnum.Enter_equip.ToString()))
+            if (inputManager.GetKeyDown(inputEnum.enterEquip))
             {
                 UIConfig.getController().useSelectSkillUI();
             }

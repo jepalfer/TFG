@@ -463,12 +463,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5305953782536018187, guid: 9b58f4e8d4ec6c3428cb47ab016b0acf, type: 3}
       propertyPath: _loot._quantity
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5305953782536018187, guid: 9b58f4e8d4ec6c3428cb47ab016b0acf, type: 3}
       propertyPath: _loot._serializableItem._instance
       value: 
-      objectReference: {fileID: 11400000, guid: 5057414fd6cb02b40a34231f74ce1d4f, type: 2}
+      objectReference: {fileID: 11400000, guid: bfcd2a9affc9553489734a0d88042ea0, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b58f4e8d4ec6c3428cb47ab016b0acf, type: 3}
 --- !u!1001 &913745362
@@ -1335,11 +1335,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5786038297635496361, guid: 4199432e3541820429c5903b48f05ba3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.779
+      value: 0.587
       objectReference: {fileID: 0}
     - target: {fileID: 5786038297635496361, guid: 4199432e3541820429c5903b48f05ba3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.369
+      value: -0.444
       objectReference: {fileID: 0}
     - target: {fileID: 7283085224089042959, guid: 4199432e3541820429c5903b48f05ba3, type: 3}
       propertyPath: m_LocalPosition.y

@@ -249,6 +249,11 @@ public class inventoryManager : MonoBehaviour
         return stock;
     }
 
+    public lootItem getMaterial(int index)
+    {
+        return getInventory().Find(item => item.getTipo() == itemTypeEnum.upgradeMaterial && item.getID() == config.getInventory().GetComponent<weaponInventoryManagement>().getWeaponList()[index].getWeapon().GetComponent<weapon>().getListOfMaterials()[(saveSystem.loadWeaponsState().getWeaponsLevels()[index] - 1)].getItemData().getID());
+    }
+
     public List<lootItem> getInventory()
     {
         return _inventory;

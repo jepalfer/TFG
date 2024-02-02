@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class item : ScriptableObject
 {
     [SerializeField] private itemData _itemData;
+
     public itemData getItemData()
     {
         return _itemData;
@@ -15,4 +16,5 @@ public class item : ScriptableObject
     {
         _itemData = data;
     }
+
 }

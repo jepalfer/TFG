@@ -113,6 +113,21 @@ public class weaponInventoryManagement : MonoBehaviour
         }
     }
 
+    public int getMaterialQuantity(int index)
+    {
+        return getWeaponList()[index].getWeapon().GetComponent<weapon>().getQuantites()[(saveSystem.loadWeaponsState().getWeaponsLevels()[index] - 1)];
+    }
+
+    public Sprite getMaterialSprite(int index)
+    {
+        return getWeaponList()[index].getWeapon().GetComponent<weapon>().getListOfMaterials()[(saveSystem.loadWeaponsState().getWeaponsLevels()[index] - 1)].getItemData().getIcon();
+    }
+
+    public int getQuantityOf(int index)
+    {
+        return getWeaponList()[index].getWeapon().GetComponent<weapon>().getQuantites()[(saveSystem.loadWeaponsState().getWeaponsLevels()[index] - 1)];
+    }
+
     public void destroySkills(GameObject weapon)
     {
 
