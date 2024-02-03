@@ -112,7 +112,7 @@ public class chestSystem : MonoBehaviour
     private void Update()
     {
         //Si pulsamos la tecla/botón asociado a interactuar, no está looteado, el jugador está tocando el cofre y no hay ninguna UI abierta
-        if (inputManager.GetKeyDown(inputEnum.interact) && !_isOpen && _playerOn && !config.getPlayer().GetComponent<playerMovement>().getIsDodging() && !UIController.getIsPaused() && !UIController.getIsLevelingUp() && !UIController.getIsAdquiringSkills() && !UIController.getIsLevelingUpWeapon() && !UIController.getIsInInventory())
+        if (inputManager.GetKeyDown(inputEnum.interact) && !_isOpen && _playerOn && !config.getPlayer().GetComponent<playerMovement>().getIsDodging() && !UIController.getIsInPauseUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI())
         {
             _animator.SetTrigger("Open");
             _isOpen = true;

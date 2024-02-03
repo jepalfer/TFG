@@ -19,6 +19,7 @@ public class collisionController : MonoBehaviour
     [SerializeField] private bool _isOnOneWay;
     [SerializeField] private LayerMask _ground;
     [SerializeField] private LayerMask _oneWayGround;
+    [SerializeField] private LayerMask _ladder;
     [SerializeField] private LayerMask _ladderTop;
     [SerializeField] private LayerMask _slope;
     [SerializeField] private float _slopeDistance;
@@ -44,7 +45,8 @@ public class collisionController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!UIController.getIsPaused() && !UIController.getIsInEquipUI() && !UIController.getIsLevelingUp() && !UIController.getIsAdquiringSkills() && !UIController.getIsLevelingUpWeapon() && !UIController.getIsEquippingSkill())
+        if (!UIController.getIsInPauseUI() && !UIController.getIsInEquippingSkillUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
+            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsSelectingSkillUI() && !UIController.getIsInShopUI())
         {
             if (GetComponent<combatController>().getPrimaryWeapon() != null || GetComponent<combatController>().getSecundaryWeapon() != null)
             {
@@ -177,7 +179,7 @@ public class collisionController : MonoBehaviour
         _isOnOneWay = false;
         _isOnOneWay = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 0f, _oneWayGround);
     }
-
+    
     private void ladderTopCheck()
     {
         _isOnLadderTop = false;

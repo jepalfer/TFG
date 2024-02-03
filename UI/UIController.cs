@@ -51,6 +51,12 @@ public class UIController : MonoBehaviour
     private static bool _isInEquippingItemUI = false;
 
     /// <summary>
+    /// Booleano que indica si estamos o no comprando en una tienda.
+    /// </summary>
+    private static bool _isInShopUI = false;
+
+
+    /// <summary>
     /// Referencia a la UI del menú de pausa.
     /// </summary>
     [SerializeField] private GameObject _pauseUI;
@@ -93,6 +99,10 @@ public class UIController : MonoBehaviour
     /// Referencia a la UI de inventario.
     /// </summary>
     [SerializeField] private GameObject _inventoryUI;
+    /// <summary>
+    /// Referencia a la UI de tienda.
+    /// </summary>
+    [SerializeField] private GameObject _shopUI;
 
     /// <summary>
     /// Referencia al texto que aparece en <see cref="_pauseUI"/> que es el nombre del perfil.
@@ -152,14 +162,14 @@ public class UIController : MonoBehaviour
         //Pausamos si no estamos en pausa
         if (!_isInPauseUI)
         {
-            if (inputManager.GetKeyDown(inputEnum.pause) && !bonfireBehaviour.getIsInBonfireMenu() && !_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI)
+            if (inputManager.GetKeyDown(inputEnum.pause) && !bonfireBehaviour.getIsInBonfireMenu() && !_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI)
             {
                 UIConfig.getController().usePauseUI();
             }
         }
         else //Quitamos la pausa
         {
-            if ((!_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !bonfireBehaviour.getIsInBonfireMenu()))
+            if ((!_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI && !bonfireBehaviour.getIsInBonfireMenu()))
             {
                 if (inputManager.GetKeyDown(inputEnum.pause))
                 {
@@ -255,6 +265,15 @@ public class UIController : MonoBehaviour
             }
         }
 
+        //Ocultamos la UI de comprar en la tienda
+        if (_isInShopUI)
+        {
+            if (inputManager.GetKeyDown(inputEnum.cancel))
+            {
+                UIConfig.getController().useShopUI(UIConfig.getController().getShopUI().GetComponent<shopUIController>().getShopItemsList());
+            }
+        }
+
     }
 
 
@@ -284,7 +303,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInPauseUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no en el menú de pausa.</returns>
-    public static bool getIsPaused()
+    public static bool getIsInPauseUI()
     {
         return _isInPauseUI;
     }
@@ -293,7 +312,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInLevelUpUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no subiendo de nivel.</returns>
-    public static bool getIsLevelingUp()
+    public static bool getIsInLevelUpUI()
     {
         return _isInLevelUpUI;
     }
@@ -302,7 +321,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_IsInAdquireSkillUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no adquiriendo una habilidad.</returns>
-    public static bool getIsAdquiringSkills()
+    public static bool getIsInAdquireSkillUI()
     {
         return _IsInAdquireSkillUI;
     }
@@ -311,7 +330,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInLevelUpWeaponUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no subiendo de nivel un arma.</returns>
-    public static bool getIsLevelingUpWeapon()
+    public static bool getIsInLevelUpWeaponUI()
     {
         return _isInLevelUpWeaponUI;
     }
@@ -319,7 +338,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInEquippingSkillUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no equipando una habilidad.</returns>
-    public static bool getIsInEquipUI()
+    public static bool getIsInEquippingSkillUI()
     {
         return _isInEquippingSkillUI;
     }
@@ -328,7 +347,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInInventoryUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no en el menú de inventario.</returns>
-    public static bool getIsInInventory()
+    public static bool getIsInInventoryUI()
     {
         return _isInInventoryUI;
     }
@@ -336,7 +355,7 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInSelectingSkillUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no seleccionando una habilidad.</returns>
-    public static bool getIsEquippingSkill()
+    public static bool getIsSelectingSkillUI()
     {
         return _isInSelectingSkillUI;
     }
@@ -345,9 +364,18 @@ public class UIController : MonoBehaviour
     /// Getter que devuelve <see cref="_isInEquippingItemUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no seleccionando un objeto.</returns>
-    public static bool getIsEquippingObject()
+    public static bool getIsEquippingObjectUI()
     {
         return _isInEquippingItemUI;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_isInShopUI"/>.
+    /// </summary>
+    /// <returns>Un booleano que indica si estamos o no comprando un objeto en una tienda.</returns>
+    public static bool getIsInShopUI()
+    {
+        return _isInShopUI;
     }
 
     /// <summary>
@@ -414,6 +442,16 @@ public class UIController : MonoBehaviour
         return _inventoryUI;
     }
 
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_shopUI"/>.
+    /// </summary>
+    /// <returns>Un GameObject que representa la UI de una tienda.</returns>
+    public GameObject getShopUI()
+    {
+        return _shopUI;
+    }
+
     /// <summary>
     /// Getter que devuelve <see cref="_lastSelectedInInventory"/>.
     /// </summary>
@@ -422,6 +460,7 @@ public class UIController : MonoBehaviour
     {
         return _lastSelectedInInventory;
     }
+
 
     /// <summary>
     /// Getter que devuelve <see cref="_selectedObjectSprite"/>.
@@ -629,6 +668,25 @@ public class UIController : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(_lastSelectedInInventory);
         }
     }
+
+    /// <summary>
+    /// Método que activa o desactiva <see cref="_shopUI"/>.
+    /// </summary>
+    public void useShopUI(List<shopItem> shopItemsList)
+    {
+        _shopUI.SetActive(!_shopUI.activeSelf);
+        _isInShopUI = !_isInShopUI;
+
+        if (_isInShopUI)
+        {
+            _shopUI.GetComponent<shopUIController>().initializeUI(shopItemsList);
+        }
+        else
+        {
+            _shopUI.GetComponent<shopUIController>().setUIOff();
+        }
+    }
+
 
     /// <summary>
     /// Setter que modifica el sprite de <see cref="_selectedObjectSprite"/>.

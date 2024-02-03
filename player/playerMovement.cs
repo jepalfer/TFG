@@ -95,11 +95,12 @@ public class playerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (UIController.getIsPaused())
+        if (UIController.getIsInPauseUI())
         {
             _distanceJumped = _JUMP_HEIGHT;
         }
-        if (!UIController.getIsPaused() && !UIController.getIsInEquipUI() && !UIController.getIsLevelingUp() && !UIController.getIsAdquiringSkills() && !UIController.getIsLevelingUpWeapon() && !UIController.getIsInInventory() && !bonfireBehaviour.getIsInBonfireMenu())
+        if (!UIController.getIsInPauseUI() && !UIController.getIsInEquippingSkillUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
+            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu())
         {
             if ((!inputManager.GetKey(inputEnum.right) && !inputManager.GetKey(inputEnum.left)))
             {
@@ -243,7 +244,6 @@ public class playerMovement : MonoBehaviour
             {
                 manageJump();
             }
-
 
             if (_canClimb && _rb.velocity.y == 0 && !_isDodging && !_isJumping && inputManager.GetKeyUp(inputEnum.jump))
             {

@@ -38,7 +38,7 @@ public class inventoryUIController : MonoBehaviour
 
     private void Update()
     {
-        if (UIController.getIsInInventory() && !UIController.getIsEquippingObject())
+        if (UIController.getIsInInventoryUI() && !UIController.getIsEquippingObjectUI())
         {
             GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
             if (inputManager.GetKeyDown(inputEnum.previous))

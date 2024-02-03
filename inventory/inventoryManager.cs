@@ -83,13 +83,19 @@ public class inventoryManager : MonoBehaviour
         {
             _inventory = new List<lootItem>();
             _backup = new List<lootItem>();
+            saveSystem.saveInventory();
         }
     }
 
     public void addItemToInventory(lootItem item)
     {
+        Debug.Log(item.getID());
         UIConfig.getController().gameObject.GetComponent<UIManager>().showItemAdded(item);
+
+        Debug.Log(item.getID());
         int index = findInventoryIndex(item.getItem());
+
+        Debug.Log(item.getTipo());
 
         if (item.getTipo() == itemTypeEnum.weapon)
         {
@@ -218,7 +224,7 @@ public class inventoryManager : MonoBehaviour
         }
     }
     public int findInventoryIndex(generalItemSerializable item)
-    {
+    {;
         return _inventory.FindIndex(entry => entry.getID() == item.getID());
     }
 

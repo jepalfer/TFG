@@ -182,7 +182,9 @@ public class combatController : MonoBehaviour
         {
             receiveSouls(10000);
         }
-        if (!UIController.getIsPaused() && !UIController.getIsLevelingUp() && !UIController.getIsAdquiringSkills() && !UIController.getIsLevelingUpWeapon() && !UIController.getIsInInventory() && !bonfireBehaviour.getIsInBonfireMenu())
+        if (!UIController.getIsInPauseUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
+            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() &&
+            !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu())
         {
             if (_primary != null)
             {

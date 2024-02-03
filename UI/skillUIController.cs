@@ -133,7 +133,7 @@ public class skillUIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!UIController.getIsEquippingSkill())
+        if (!UIController.getIsSelectingSkillUI())
         {
             if (inputManager.GetKeyDown(inputEnum.left) && _currentID > 0)
             {
