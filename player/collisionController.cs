@@ -71,6 +71,7 @@ public class collisionController : MonoBehaviour
                 else
                 {
                     _isOnSlope = false;
+                    _isOnOneWay = false;
                     _hitHead = false;
                     _isGrounded = false;
                     _Side = false;

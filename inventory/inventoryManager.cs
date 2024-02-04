@@ -89,13 +89,9 @@ public class inventoryManager : MonoBehaviour
 
     public void addItemToInventory(lootItem item)
     {
-        Debug.Log(item.getID());
         UIConfig.getController().gameObject.GetComponent<UIManager>().showItemAdded(item);
-
-        Debug.Log(item.getID());
         int index = findInventoryIndex(item.getItem());
 
-        Debug.Log(item.getTipo());
 
         if (item.getTipo() == itemTypeEnum.weapon)
         {

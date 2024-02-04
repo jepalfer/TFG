@@ -1,68 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ladderTopInteraction : MonoBehaviour
-{/*
-    [SerializeField] private bool _playerPassedOff = false;
-    [SerializeField] private float _timer = 0f;
-    [SerializeField] private float _crouchTime = 0f;
-
-    [SerializeField] private BoxCollider2D _bc;
-    [SerializeField] private PlatformEffector2D _platform;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        _bc = GetComponent<BoxCollider2D>();
-        _bc.enabled = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        _bc.enabled = false;
-        if (Config.getPlayer().GetComponent<CollisionController>().getIsOnLadderTop() && !_playerPassedOff)
-        {
-            _playerPassedOff = false;
-            _bc.enabled = true;
-            Config.getPlayer().GetComponent<PlayerMovement>().setCanGoDown(false);
-        }
-
-        if (inputManager.getKey("Down") && Config.getPlayer().GetComponent<CollisionController>().getIsOnLadderTop())
-        {
-            _crouchTime += Time.deltaTime;
-        }
-
-        if (inputManager.getKeyUp("Down")  && Config.getPlayer().GetComponent<CollisionController>().getIsOnLadderTop() && _crouchTime < 0.25f)
-        {
-            _crouchTime = 0f;
-        }
-
-        if (Config.getPlayer().GetComponent<CollisionController>().getIsOnLadderTop() && inputManager.getKey("Down") && _crouchTime >= 0.25f)
-        {
-            _bc.enabled = false;
-            _playerPassedOff = true;
-            _crouchTime = 0f;
-            Config.getPlayer().GetComponent<PlayerMovement>().setCanGoDown(true);
-
-            if (Config.getPlayer().GetComponent<PlayerMovement>().getCanClimb())
-            {
-                Config.getPlayer().GetComponent<PlayerMovement>().setGravity(0f);
-                Config.getPlayer().GetComponent<PlayerMovement>().setRigidBodyVelocity(new Vector2(0, 0));
-            }
-        }
-
-        if (_playerPassedOff)
-        {
-            _timer += Time.deltaTime;
-        }
-        if (_timer >= 0.25f)
-        {
-            _playerPassedOff = false;
-            _timer = 0f;
-        }
-    }*/
+{
     [SerializeField] private bool _playerPassedOff = false;
     [SerializeField] private float _timer = 0f;
     [SerializeField] private float _crouchTime = 0f;
@@ -73,7 +15,6 @@ public class ladderTopInteraction : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _bc = GetComponent<BoxCollider2D>();
         //Physics2D.IgnoreCollision(_bc, Config.getPlayer().GetComponent<BoxCollider2D>());
     }
 

@@ -19,6 +19,11 @@ public class skillTreeUIController : MonoBehaviour
     [SerializeField] private RectTransform _skillTreeContent;
     [SerializeField] private Image _leftButtonImage;
     [SerializeField] private Image _rightButtonImage;
+    [SerializeField] private Image _skillSprite;
+    [SerializeField] private TextMeshProUGUI _skillName;
+    [SerializeField] private TextMeshProUGUI _skillDesc;
+    [SerializeField] private TextMeshProUGUI _skillPrice;
+    private GameObject _formerEventSystemSelected = null;
 
     // Update is called once per frame
     void Update()
@@ -62,7 +67,32 @@ public class skillTreeUIController : MonoBehaviour
 
             EventSystem.current.SetSelectedGameObject(_instantiatedTreesPrefabs[_indexInList].GetComponent<treeController>().getInitialSkill());
         }
+        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
 
+        if (currentSelected != _formerEventSystemSelected)
+        {
+            _formerEventSystemSelected = currentSelected;
+            modifyRightPanel();
+        }
+
+    }
+
+    private void modifyRightPanel()
+    {
+        Debug.Log(_formerEventSystemSelected);
+        _skillSprite.sprite = _formerEventSystemSelected.GetComponent<skill>().getSkillSprite();
+        _skillName.text = _formerEventSystemSelected.GetComponent<skill>().getSkillName();
+        _skillDesc.text = _formerEventSystemSelected.GetComponent<skill>().getSkillDescription();
+        _skillPrice.text = _formerEventSystemSelected.GetComponent<skill>().getSkillPoints().ToString();
+
+        if (config.getPlayer().GetComponent<combatController>().getSouls() < _formerEventSystemSelected.GetComponent<skill>().getSkillPoints())
+        {
+            _skillPrice.color = Color.red;
+        }
+        else
+        {
+            _skillPrice.color = Color.black;
+        }
     }
 
     public void initializeUI()

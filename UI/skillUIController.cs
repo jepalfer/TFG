@@ -141,7 +141,7 @@ public class skillUIController : MonoBehaviour
                 _currentID--;
                 _slots[_currentID].SetActive(true);
             }
-            if (inputManager.GetKeyDown(inputEnum.right) && _currentID < _slots.Count)
+            if (inputManager.GetKeyDown(inputEnum.right) && _currentID < (_slots.Count - 1))
             {
                 _slots[_currentID].SetActive(false);
                 _currentID++;

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class shopUIController : MonoBehaviour
 {
@@ -19,8 +20,19 @@ public class shopUIController : MonoBehaviour
     private List<GameObject> _instantiatedPrefabs;
     private List<shopItem> _shopItemsList;
     private GameObject _formerEventSystemSelected = null;
+    private shopData _data;
     public void initializeUI(List<shopItem> shopItemsList)
     {
+        _data = saveSystem.loadShopData();
+
+        for (int i = 0; i < _data.getData().Count; i++)
+        {
+            for (int j = 0; j < _data.getData()[i].getItemsInShop().Count; ++j)
+            {
+                Debug.Log(_data.getData()[i].getItemsInShop()[j]);
+            }
+        }
+
         _shopItemsList = shopItemsList;
         _instantiatedPrefabs = new List<GameObject>();
 
@@ -28,30 +40,53 @@ public class shopUIController : MonoBehaviour
         {
             GameObject newSlot = Instantiate(_itemPrefab);
             newSlot.GetComponent<shopItemSlotLogic>().setSlotID(i);
-            newSlot.GetComponent<shopItemSlotLogic>().setSprite(_shopItemsList[i].getItem().GetComponent<generalItem>().getIcon());
 
+            int itemPrice = _shopItemsList[i].getPrice();
+            int itemIndex = i;
+            int shopID = _data.getShopID(SceneManager.GetActiveScene().buildIndex);
             if (_shopItemsList[i].getItem().GetComponent<generalItem>() != null)
             {
+                newSlot.GetComponent<shopItemSlotLogic>().setSprite(_shopItemsList[i].getItem().GetComponent<generalItem>().getIcon());
+                generalItem item = _shopItemsList[i].getItem().GetComponent<generalItem>();
+                int itemID = item.getID();
                 if (config.getPlayer().GetComponent<combatController>().getSouls() >= _shopItemsList[i].getPrice() && _shopItemsList[i].getQuantity() > 0)
                 {
                     lootItem newItem = new lootItem(_shopItemsList[i].getItem().GetComponent<generalItem>().getData().getData(), 1);
-                    int itemPrice = _shopItemsList[i].getPrice();
                     newSlot.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.AddListener(() => {
-                        Debug.Log(newItem.getID());
                         config.getInventory().GetComponent<inventoryManager>().addItemToInventory(newItem);
-                        config.getPlayer().GetComponent<combatController>().useSouls(itemPrice);
+                        config.getPlayer().GetComponent<combatController>().useSouls(itemPrice);     
                         changeInternalInformation();
+                        buyItem(shopID, itemIndex);
+                        config.getPlayer().GetComponent<equippedInventory>().modifyIfBuy(itemID);
                     });
                 }
             }
-            /*else if (_shopItemsList[i].getItem().GetComponent<skill>() != null)
+            else if (_shopItemsList[i].getItem().GetComponent<skill>() != null)
             {
+                newSlot.GetComponent<shopItemSlotLogic>().setSprite(_shopItemsList[i].getItem().GetComponent<skill>().getSkillSprite());
+                skill selectedSkill = _shopItemsList[i].getItem().GetComponent<skill>();
+                unlockedSkillsData data = saveSystem.loadSkillsState();
                 if (config.getPlayer().GetComponent<combatController>().getSouls() >= _shopItemsList[i].getPrice() && _shopItemsList[i].getQuantity() > 0)
                 {
                     newSlot.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.AddListener(() => {
+                        changeInternalInformation();
+                        buyItem(shopID, itemIndex);
+                        config.getPlayer().GetComponent<combatController>().useSouls(itemPrice);
+                        sceneSkillsState newSkill = new sceneSkillsState(-1, selectedSkill);
+                        if (data == null)
+                        {
+                            List<sceneSkillsState> newData = new List<sceneSkillsState>();
+                            newData.Add(newSkill);
+                            saveSystem.saveSkillsState(newData);
+                        }
+                        else
+                        {
+                            data.getUnlockedSkills().Add(newSkill);
+                            saveSystem.saveSkillsState(data.getUnlockedSkills());
+                        }
                     });
                 }
-            }*/
+            }
             newSlot.transform.SetParent(_prefabHolder, false);
             _instantiatedPrefabs.Add(newSlot);
         }
@@ -132,6 +167,13 @@ public class shopUIController : MonoBehaviour
         return _shopItemsList;
     }
 
+    private void buyItem(int shopID, int itemIndex)
+    {
+        sceneShopData currentShop = _data.getData().Find(shop => shop.getShopID() == shopID);
+        currentShop.buyItem(itemIndex);
+        saveSystem.saveShopData(_data.getData());
+    }
+
     private void Update()
     {
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
@@ -152,11 +194,29 @@ public class shopUIController : MonoBehaviour
     {
         shopItem selectedItem = _shopItemsList[_formerEventSystemSelected.transform.gameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotID()];
 
-        _itemSprite.sprite = selectedItem.getItem().GetComponent<generalItem>().getIcon();
-        _itemName.text = selectedItem.getItem().GetComponent<generalItem>().getName();
-        _itemDescription.text = selectedItem.getItem().GetComponent<generalItem>().getDesc();
+        if (selectedItem.getItem().GetComponent<generalItem>() != null)
+        {
+            _itemSprite.sprite = selectedItem.getItem().GetComponent<generalItem>().getIcon();
+            _itemName.text = selectedItem.getItem().GetComponent<generalItem>().getName();
+            _itemDescription.text = selectedItem.getItem().GetComponent<generalItem>().getDesc();
+        }
+        else if (selectedItem.getItem().GetComponent<skill>() != null)
+        {
+            _itemSprite.sprite = selectedItem.getItem().GetComponent<skill>().getSkillSprite();
+            _itemName.text = selectedItem.getItem().GetComponent<skill>().getSkillName();
+            _itemDescription.text = selectedItem.getItem().GetComponent<skill>().getSkillDescription();
+        }
         _itemPrice.text = selectedItem.getPrice().ToString();
         _quantityLeft.text = selectedItem.getQuantity().ToString();
+
+        if (config.getPlayer().GetComponent<combatController>().getSouls() < selectedItem.getPrice())
+        {
+            _itemPrice.color = Color.red;
+        }
+        else
+        {
+            _itemPrice.color = Color.black;
+        }
     }
 
     private void changeInternalInformation()

@@ -211,6 +211,26 @@ public class equippedInventory : MonoBehaviour
     }
 
     /// <summary>
+    /// Método auxiliar que cambia la información de la UI si el objeto comprado es el mismo que se muestra.
+    /// </summary>
+    /// <param name="ID">ID del objeto a modificar en la UI.</param>
+    public void modifyIfBuy(int ID)
+    {
+        _data = saveSystem.loadEquippedObjectsData();
+
+        if (_data != null)
+        {
+            if (_data.getIndexInEquipped() != -1)
+            {
+                if (_equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getID() == ID)
+                {
+                    modifyEquippedObject(_data.getIndexInEquipped());
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Método que se ejecuta cada frame para actualizar la lógica.
     /// </summary>
     private void Update()
