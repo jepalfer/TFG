@@ -49,7 +49,7 @@ public class bonfireBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if ((inputManager.GetKeyDown(inputEnum.interact) && _playerIsOn && !UIController.getIsPaused() && !UIController.getIsLevelingUp() && !UIController.getIsAdquiringSkills() && !UIController.getIsLevelingUpWeapon() && !UIController.getIsInInventory()))
+        if ((inputManager.GetKeyDown(inputEnum.interact) && _playerIsOn && !UIController.getIsInPauseUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI()))
         {
             useBonfireUI();
         }

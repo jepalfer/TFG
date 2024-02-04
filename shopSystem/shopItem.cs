@@ -24,8 +24,15 @@ public class shopItem
         return _price;
     }
 
+
+    public void setQuantity(int quantity)
+    {
+        _quantity = quantity;
+    }
+
     public void buyItem()
     {
         _quantity -= 1;
     }
+
 }

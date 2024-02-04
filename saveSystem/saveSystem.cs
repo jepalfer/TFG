@@ -399,14 +399,14 @@ public static class saveSystem
             return null;
         }
     }
-    public static void saveEquippedObjectsData(List<newEquippedObjectData> dataToStore)
+    public static void saveEquippedObjectsData(List<newEquippedObjectData> dataToStore, int id)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = createPath("objectsData");
 
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        equippedObjectData data = new equippedObjectData(dataToStore);
+        equippedObjectData data = new equippedObjectData(dataToStore, id);
         formatter.Serialize(stream, data);
         stream.Close();
     }
@@ -420,6 +420,37 @@ public static class saveSystem
             FileStream stream = new FileStream(path, FileMode.Open);
 
             equippedObjectData data = formatter.Deserialize(stream) as equippedObjectData;
+            stream.Close();
+            return data;
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    public static void saveShopData(List<sceneShopData> dataToStore)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = createPath("shopData");
+
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        shopData data = new shopData(dataToStore);
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static shopData loadShopData()
+    {
+        string path = createPath("shopData");
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            shopData data = formatter.Deserialize(stream) as shopData;
             stream.Close();
             return data;
         }
