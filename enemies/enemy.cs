@@ -346,7 +346,6 @@ public class enemy : MonoBehaviour
     /// <param name="piercesArmor">Si el golpe es penetrante.</param>
     public virtual void receiveDMG(float dmg, bool isCrit, bool piercesArmor)
     {
-        Debug.Log(dmg);
         _health -= calculateDMG(dmg, isCrit, piercesArmor);
         if (_health <= 0)
         {

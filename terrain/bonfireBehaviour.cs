@@ -57,7 +57,7 @@ public class bonfireBehaviour : MonoBehaviour
 
     public void rest()
     {
-        /*
+        
         enemyStateData data = saveSystem.loadEnemyData();
 
         if (data != null)
@@ -68,7 +68,7 @@ public class bonfireBehaviour : MonoBehaviour
             }
 
         }
-        saveSystem.saveEnemyData(data.getEnemyStates());*/
+        saveSystem.saveEnemyData(data.getEnemyStates());
 
         restoreHealth();
         restoreStamina();

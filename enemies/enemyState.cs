@@ -31,6 +31,7 @@ public abstract class enemyState
     /// <param name="_stateMachine"></param>
     public virtual void onEnter(enemyStateMachine _stateMachine)
     {
+        Debug.Log("hey");
         _currentStateMachine = _stateMachine;
     }
 

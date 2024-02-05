@@ -547,8 +547,8 @@ public class levelUpUIController : MonoBehaviour
                     config.getPlayer().GetComponent<statsController>().setCurrentHP(_hp);
                     //StatsController.setMaxHP(_hp);
                     //StatsController.setCurrentHP(_hp);
-                    UIConfig.getController().gameObject.GetComponent<UIManager>().setHPBarValue(1);
-                    config.getPlayer().GetComponent<statsController>().recalculateBar(statSystem.getVitality().getLevel(), UIConfig.getController().gameObject.GetComponent<UIManager>().getHPBar().GetComponent<RectTransform>(), config.getPlayer().GetComponent<statsController>().getHPExp());
+                    UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().setHPBarValue(1);
+                    config.getPlayer().GetComponent<statsController>().recalculateBar(statSystem.getVitality().getLevel(), UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().getHPBar().GetComponent<RectTransform>(), config.getPlayer().GetComponent<statsController>().getHPExp());
                     //StatsController.recalculateBar(_vitalityLevels, GetComponent<UIManager>().getHPBar().GetComponent<RectTransform>(), StatsController.getHPExp());
                     _hasUpgradedVitality = false;
                 }
@@ -559,8 +559,8 @@ public class levelUpUIController : MonoBehaviour
                     config.getPlayer().GetComponent<statsController>().setCurrentStamina(_stamina);
                     //StatsController.setMaxStamina(_stamina);
                     //StatsController.setCurrentStamina(_stamina);
-                    UIConfig.getController().gameObject.GetComponent<UIManager>().setStaminaBarValue(1);
-                    config.getPlayer().GetComponent<statsController>().recalculateBar(statSystem.getEndurance().getLevel(), UIConfig.getController().gameObject.GetComponent<UIManager>().getStaminaBar().GetComponent<RectTransform>(), config.getPlayer().GetComponent<statsController>().getStaminaExp());
+                    UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().setStaminaBarValue(1);
+                    config.getPlayer().GetComponent<statsController>().recalculateBar(statSystem.getEndurance().getLevel(), UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().getStaminaBar().GetComponent<RectTransform>(), config.getPlayer().GetComponent<statsController>().getStaminaExp());
 
                     //StatsController.recalculateBar(_enduranceLevels, GetComponent<UIManager>().getStaminaBar().GetComponent<RectTransform>(), StatsController.getStaminaExp());
                     _hasUpgradedEndurance = false;
