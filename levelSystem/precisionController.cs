@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class precisionController : MonoBehaviour
 {
 
-    [SerializeField] TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     // Update is called once per frame
     void Update()
     {

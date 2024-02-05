@@ -6,7 +6,7 @@ using TMPro;
 
 public class vitalityController : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     // Update is called once per frame
     void Update()
     {

@@ -158,7 +158,7 @@ public class combatController : MonoBehaviour
         levelUpUIController.updateUI(ref field, _souls.ToString());
 
         field = generalUIConfiguration.getAlmas();
-        UIManager.setSouls(ref field, _souls.ToString());
+        generalUIController.setSouls(ref field, _souls.ToString());
         saveSystem.saveSouls();
     }
 

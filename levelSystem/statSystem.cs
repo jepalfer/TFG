@@ -14,50 +14,6 @@ public class statSystem : MonoBehaviour
     private static attribute _dexterity = new attribute();
     private static attribute _agility = new attribute();
     private static attribute _precision = new attribute();
-
-    /*    public void levelUpVitality(ref int xp)
-        {
-            if (vitality.levelUpStat(ref xp))
-            {
-                level++;
-            }
-        }
-        public void levelUpEndurance(ref int xp)
-        {
-            if (endurance.levelUpStat(ref xp))
-            {
-                level++;
-            }
-        }
-        public void levelUpStrength(ref int xp)
-        {
-            if (strength.levelUpStat(ref xp))
-            {
-                level++;
-            }
-        }
-        public void levelUpDexterity(ref int xp)
-        {
-            if (dexterity.levelUpStat(ref xp))
-            {
-                level++;
-            }
-        }
-        public void levelUpAgility(ref int xp)
-        {
-            if (agility.levelUpStat(ref xp))
-            {
-                level++;
-            }
-        }
-        public void levelUpPrecision(ref int xp)
-        {
-            if (precision.levelUpStat(ref xp))
-            {
-                level++;
-            }
-        }*/
-
     public static int getLevel()
     {
         return _level;

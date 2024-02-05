@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class enduranceController : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     void Update()
     {
         if (EventSystem.current.currentSelectedGameObject == gameObject)

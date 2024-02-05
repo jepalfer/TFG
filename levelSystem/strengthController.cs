@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class strengthController : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     void Update()
     {
 

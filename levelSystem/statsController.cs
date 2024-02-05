@@ -41,7 +41,7 @@ public class statsController : MonoBehaviour
             dmg = _currentHP;
         }
         _currentHP -= dmg;
-        UIConfig.getController().gameObject.GetComponent<UIManager>().receiveDMG(dmg);
+        UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().receiveDMG(dmg);
         saveSystem.saveStats();
     }
 
@@ -52,7 +52,7 @@ public class statsController : MonoBehaviour
             use = _currentStamina;
         }
         _currentStamina -= use;
-        UIConfig.getController().gameObject.GetComponent<UIManager>().useStamina(use);
+        UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().useStamina(use);
     }
 
     public void healHP(float heal)
@@ -62,7 +62,7 @@ public class statsController : MonoBehaviour
             heal = _maxHP - _currentHP;
         }
         _currentHP += heal;
-        UIConfig.getController().gameObject.GetComponent<UIManager>().heal(heal);
+        UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().heal(heal);
         saveSystem.saveStats();
     }
 
@@ -73,7 +73,7 @@ public class statsController : MonoBehaviour
             stamina = _maxStamina - _currentStamina;
         }
         _currentStamina += stamina;
-        UIConfig.getController().gameObject.GetComponent<UIManager>().recoverStamina(stamina);
+        UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().recoverStamina(stamina);
         saveSystem.saveStats();
     }
     public int getHPExp()

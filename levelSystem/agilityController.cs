@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 public class agilityController : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _text;
+    [SerializeField] private TextMeshProUGUI _text;
     void Update()
     {
 

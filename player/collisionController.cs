@@ -14,14 +14,15 @@ public class collisionController : MonoBehaviour
     [SerializeField] private Transform _sideCheckCollider;
     [SerializeField] private bool _hitHead;
     [SerializeField] private bool _isGrounded;
-    [SerializeField] private bool _Side;
+    [SerializeField] private bool _side;
     [SerializeField] private bool _isOnLadderTop;
     [SerializeField] private bool _isOnOneWay;
-    [SerializeField] private LayerMask _ground;
-    [SerializeField] private LayerMask _oneWayGround;
-    [SerializeField] private LayerMask _ladder;
-    [SerializeField] private LayerMask _ladderTop;
-    [SerializeField] private LayerMask _slope;
+    [SerializeField] private bool _isOnSlope;
+    [SerializeField] private LayerMask _groundLayer;
+    [SerializeField] private LayerMask _oneWayGroundLayer;
+    [SerializeField] private LayerMask _ladderLayer;
+    [SerializeField] private LayerMask _ladderTopLayer;
+    [SerializeField] private LayerMask _slopeLayer;
     [SerializeField] private float _slopeDistance;
 
     private BoxCollider2D _bc;
@@ -29,7 +30,6 @@ public class collisionController : MonoBehaviour
     [SerializeField] private Vector2 _slopeNormalPerpendicular;
     [SerializeField] private float _slopeDownAngle;
     [SerializeField] private float _slopeDownAngleOld;
-    [SerializeField] private bool _isOnSlope;
     private float _slopeSideAngle;
     [SerializeField] private bool _canCheckSlope = true;
     // Start is called before the first frame update
@@ -74,7 +74,7 @@ public class collisionController : MonoBehaviour
                     _isOnOneWay = false;
                     _hitHead = false;
                     _isGrounded = false;
-                    _Side = false;
+                    _side = false;
                     _isOnLadderTop = false;
                 }
             }
@@ -106,7 +106,7 @@ public class collisionController : MonoBehaviour
 
     private void slopeCheckVertical (Vector2 checkPos)
     {
-        RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, _slopeDistance / 2.5f, _slope);
+        RaycastHit2D hit = Physics2D.Raycast(checkPos, Vector2.down, _slopeDistance / 2.5f, _slopeLayer);
 
         if (hit)
         {
@@ -127,8 +127,8 @@ public class collisionController : MonoBehaviour
 
     private void slopeCheckHorizontal (Vector2 checkPos)
     {
-        RaycastHit2D slopeHitFront = Physics2D.Raycast(checkPos, transform.right, _slopeDistance, _slope);
-        RaycastHit2D slopeHitBack = Physics2D.Raycast(checkPos, -transform.right, _slopeDistance, _slope);
+        RaycastHit2D slopeHitFront = Physics2D.Raycast(checkPos, transform.right, _slopeDistance, _slopeLayer);
+        RaycastHit2D slopeHitBack = Physics2D.Raycast(checkPos, -transform.right, _slopeDistance, _slopeLayer);
 
         if (slopeHitFront)
         {
@@ -159,32 +159,32 @@ public class collisionController : MonoBehaviour
 
     private void SideCheck()
     {
-        _Side = false;
-        _Side = Physics2D.OverlapBox(_sideCheckCollider.position, _lados, 1f, _ground);
+        _side = false;
+        _side = Physics2D.OverlapBox(_sideCheckCollider.position, _lados, 1f, _groundLayer);
 
     }
 
     private void headCheck()
     {
         _hitHead = false;
-        _hitHead = Physics2D.OverlapBox(_headCheckCollider.position, _suelo, 1f, _ground);
+        _hitHead = Physics2D.OverlapBox(_headCheckCollider.position, _suelo, 1f, _groundLayer);
 
     }
     private void GroundCheck()
     {
         _isGrounded = false;
-        _isGrounded = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 1f, _ground);
+        _isGrounded = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 1f, _groundLayer);
     }
     private void oneWayCheck()
     {
         _isOnOneWay = false;
-        _isOnOneWay = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 0f, _oneWayGround);
+        _isOnOneWay = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 0f, _oneWayGroundLayer);
     }
     
     private void ladderTopCheck()
     {
         _isOnLadderTop = false;
-        _isOnLadderTop = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 0f, _ladderTop);
+        _isOnLadderTop = Physics2D.OverlapBox(_groundCheckCollider.position, _suelo, 0f, _ladderTopLayer);
     }
 
     public bool getIsGrounded()
@@ -209,7 +209,7 @@ public class collisionController : MonoBehaviour
 
     public bool getSide()
     {
-        return _Side;
+        return _side;
     }
 
     public bool getIsOnSlope()

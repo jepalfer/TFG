@@ -89,7 +89,7 @@ public class inventoryManager : MonoBehaviour
 
     public void addItemToInventory(lootItem item)
     {
-        UIConfig.getController().gameObject.GetComponent<UIManager>().showItemAdded(item);
+        UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().showItemAdded(item);
         int index = findInventoryIndex(item.getItem());
 
 
