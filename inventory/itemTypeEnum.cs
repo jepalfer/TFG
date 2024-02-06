@@ -13,4 +13,5 @@ public enum itemTypeEnum
     consumable,
     weapon,
     upgradeMaterial,
+    refillable,
 }

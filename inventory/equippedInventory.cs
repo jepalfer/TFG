@@ -277,39 +277,44 @@ public class equippedInventory : MonoBehaviour
                 else if (inputManager.GetKeyDown(inputEnum.useItem))
                 {
                     _data = saveSystem.loadEquippedObjectsData();
-                    lootItem inventoryItem = new lootItem(_equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getData().getData(), config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == _equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getID()).getQuantity());
-                    config.getInventory().GetComponent<inventoryManager>().removeItemFromInventory(inventoryItem, 1);
-
-                    
-                    if (inventoryItem.getQuantity() > 1)
+                    if (_equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>() as consumableItem != null)
                     {
-                        modifyEquippedObject(_data.getIndexInEquipped());
-                    }
-                    else
-                    {
-                        _equippedItems[_data.getIndexInEquipped()] = null;
                         _data = saveSystem.loadEquippedObjectsData();
-                        _data.setEquippedObject(_data.getIndexInEquipped(), null);
-                        changeSpritesMode(false);
-                        for (int i = (_data.getIndexInEquipped() + 1) % _equippedItems.Count; ;i++)
+                        lootItem inventoryItem = new lootItem(_equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().getData().getData(), config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == _equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().getID()).getQuantity());
+                        config.getInventory().GetComponent<inventoryManager>().removeItemFromInventory(inventoryItem, 1);
+
+                        _equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().onUse();
+                        if (inventoryItem.getQuantity() > 1 || _equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>().getTipo() == itemTypeEnum.refillable)
                         {
-                            i = (i % 6);
-
-                            if (i == _data.getIndexInEquipped())//No hay ningun objeto disponible
+                            modifyEquippedObject(_data.getIndexInEquipped());
+                        }
+                        else
+                        {
+                            _equippedItems[_data.getIndexInEquipped()] = null;
+                            _data = saveSystem.loadEquippedObjectsData();
+                            _data.setEquippedObject(_data.getIndexInEquipped(), null);
+                            changeSpritesMode(false);
+                            for (int i = (_data.getIndexInEquipped() + 1) % _equippedItems.Count; ; i++)
                             {
-                                saveSystem.saveEquippedObjectsData(_data.getData(), -1);
-                                break;
-                            }
+                                i = (i % 6);
 
-                            if (_equippedItems[i] != null)
-                            {
-                                saveSystem.saveEquippedObjectsData(_data.getData(), i);
-                                modifyEquippedObject(i);
-                                changeSpritesMode(true);
-                                break;
+                                if (i == _data.getIndexInEquipped())//No hay ningun objeto disponible
+                                {
+                                    saveSystem.saveEquippedObjectsData(_data.getData(), -1);
+                                    break;
+                                }
+
+                                if (_equippedItems[i] != null)
+                                {
+                                    saveSystem.saveEquippedObjectsData(_data.getData(), i);
+                                    modifyEquippedObject(i);
+                                    changeSpritesMode(true);
+                                    break;
+                                }
                             }
                         }
                     }
+                    
                 }
             }
         }

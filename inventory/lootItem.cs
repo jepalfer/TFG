@@ -14,6 +14,11 @@ public class lootItem
         _quantity = quantity;
     }
 
+    public void setQuantity(int value)
+    {
+        _quantity = value;
+    }
+
     public itemTypeEnum getTipo()
     {
         return _serializableItem.getTipo();

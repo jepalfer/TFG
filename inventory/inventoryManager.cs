@@ -9,18 +9,19 @@ public class inventoryManager : MonoBehaviour
 {
     [SerializeField] private int _maximumItemsInventory;
     [SerializeField] private int _maximumItemsBackUp;
+    [SerializeField] private int _maximumRefillable;
     [SerializeField] private List<lootItem> _inventory;
     [SerializeField] private List<lootItem> _backup;
+    private inventoryData _inventoryData;
 
     private void Awake()
     {
         config.setInventory(gameObject);
+        _inventoryData = saveSystem.loadInventory();
 
-        inventoryData inventoryData = saveSystem.loadInventory();
-
-        if (inventoryData != null)
+        if (_inventoryData != null)
         {
-            List<serializedItemData> loadedInventory = inventoryData.getInventory();
+            List<serializedItemData> loadedInventory = _inventoryData.getInventory();
             item serializedItem;
             for (int i = 0; i < loadedInventory.Count; ++i)
             {
@@ -29,7 +30,7 @@ public class inventoryManager : MonoBehaviour
                 _inventory.Add(new lootItem(serializedItem, loadedInventory[i].getQuantity()));
             }
 
-            List<serializedItemData> loadedBackup = inventoryData.getBackup();
+            List<serializedItemData> loadedBackup = _inventoryData.getBackup();
 
             for (int i = 0; i < loadedBackup.Count; ++i)
             {
@@ -77,14 +78,28 @@ public class inventoryManager : MonoBehaviour
                     }
                 }
             }
+
+            _maximumRefillable = _inventoryData.getMaximumRefillable();
             saveSystem.saveInventory();
         }
         else
         {
             _inventory = new List<lootItem>();
             _backup = new List<lootItem>();
+            _maximumRefillable = 5;
             saveSystem.saveInventory();
         }
+    }
+
+    public void refill()
+    {
+        List<lootItem> refillableItems = _inventory.FindAll(item => item.getTipo() == itemTypeEnum.refillable);
+
+        for (int i = 0; i < refillableItems.Count; ++i)
+        {
+            _inventory[_inventory.FindIndex(item => item.getID() == refillableItems[i].getID())].setQuantity(_maximumRefillable);
+        }
+        saveSystem.saveInventory();
     }
 
     public void addItemToInventory(lootItem item)
@@ -171,8 +186,20 @@ public class inventoryManager : MonoBehaviour
             }
             else
             {
-                _inventory.RemoveAt(index);
-                saveSystem.saveInventory();
+                if (item.getTipo() != itemTypeEnum.refillable)
+                {
+                    _inventory.RemoveAt(index);
+                    saveSystem.saveInventory();
+                }
+                else
+                {
+                    if (_inventory[index].getQuantity() - quantity == 0)
+                    {
+                        lootItem removedItem = new lootItem(item.getItem().getInstance(), _inventory[index].getQuantity() - quantity);
+                        _inventory[index] = removedItem;
+                        saveSystem.saveInventory();
+                    }
+                }
             }
         }
     }
@@ -263,6 +290,11 @@ public class inventoryManager : MonoBehaviour
     public List<lootItem> getBackUp()
     {
         return _backup;
+    }
+
+    public int getMaximumRefillable()
+    {
+        return _maximumRefillable;
     }
 
     public int getMaximumInventory()
