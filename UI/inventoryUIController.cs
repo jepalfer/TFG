@@ -174,8 +174,14 @@ public class inventoryUIController : MonoBehaviour
 
     public void createInventory(itemTypeEnum type)
     {
+        itemTypeEnum secondType = type;
+        if (type == itemTypeEnum.consumable)
+        {
+            secondType = itemTypeEnum.refillable;
+        }
+       
         EventSystem.current.SetSelectedGameObject(null);
-        List<lootItem> inventoryQuery = config.getInventory().GetComponent<inventoryManager>().getInventory().FindAll(item => item.getItem().getInstance().getItemData().getTipo() == type);
+        List<lootItem> inventoryQuery = config.getInventory().GetComponent<inventoryManager>().getInventory().FindAll(item => item.getItem().getInstance().getItemData().getTipo() == type || item.getItem().getInstance().getItemData().getTipo() == secondType);
         List<lootItem> backUpQuery = config.getInventory().GetComponent<inventoryManager>().getBackUp();
 
         for (int i = 0; i < inventoryQuery.Count; ++i)
