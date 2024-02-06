@@ -6,7 +6,8 @@ public class inventoryData
 {
     [SerializeField] private List<serializedItemData> _inventory;
     [SerializeField] private List<serializedItemData> _backUp;
-    public inventoryData(List<lootItem> inventory, List<lootItem> backUp)
+    [SerializeField] private int _maximumRefillable;
+    public inventoryData(List<lootItem> inventory, List<lootItem> backUp, int refillable)
     {
         _inventory = new List<serializedItemData>();
         _backUp = new List<serializedItemData>();
@@ -19,7 +20,7 @@ public class inventoryData
         {
             _backUp.Add(new serializedItemData(backUp[i].getItem().getInstance().getItemData(), backUp[i].getQuantity()));
         }
-
+        _maximumRefillable = refillable;
     }
 
     public List<serializedItemData> getInventory()
@@ -29,6 +30,11 @@ public class inventoryData
     public List<serializedItemData> getBackup()
     {
         return _backUp;
+    }
+
+    public int getMaximumRefillable()
+    {
+        return _maximumRefillable;
     }
 
 }

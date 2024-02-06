@@ -68,8 +68,10 @@ public class bonfireBehaviour : MonoBehaviour
             }
 
         }
+
         saveSystem.saveEnemyData(data.getEnemyStates());
 
+        config.getInventory().GetComponent<inventoryManager>().refill();
         restoreHealth();
         restoreStamina();
         saveSystem.savePlayer();

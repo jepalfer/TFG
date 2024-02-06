@@ -194,7 +194,7 @@ public static class saveSystem
 
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        inventoryData data = new inventoryData(config.getInventory().GetComponent<inventoryManager>().getInventory(), config.getInventory().GetComponent<inventoryManager>().getBackUp());
+        inventoryData data = new inventoryData(config.getInventory().GetComponent<inventoryManager>().getInventory(), config.getInventory().GetComponent<inventoryManager>().getBackUp(), config.getInventory().GetComponent<inventoryManager>().getMaximumRefillable());
         formatter.Serialize(stream, data);
         stream.Close();
     }
