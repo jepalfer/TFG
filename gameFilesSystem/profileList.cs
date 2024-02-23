@@ -139,13 +139,13 @@ public class profileList : MonoBehaviour
     /// </summary>
     public void calculateNavigation()
     {
-        Navigation cancel_navigation = _cancelButton.navigation;
+        Navigation cancelNavigation = _cancelButton.navigation;
 
         //Recorremos los perfiles
         for (int i = 0; i < _profiles.Count; i++)
         {
-            Navigation current_UI_load = _profiles[i].getLoadBtn().navigation;
-            Navigation current_UI_remove = _profiles[i].getRemoveBtn().navigation;
+            Navigation currentUILoad = _profiles[i].getLoadBtn().navigation;
+            Navigation currentUIRemove = _profiles[i].getRemoveBtn().navigation;
 
             if (i == 0)                                     //Estamos en el primero
             {
@@ -153,39 +153,39 @@ public class profileList : MonoBehaviour
 
                 if (_profiles.Count > 1)
                 {
-                    current_UI_load.selectOnDown = _profiles[i + 1].getLoadBtn();
-                    current_UI_remove.selectOnDown = _profiles[i + 1].getRemoveBtn();
+                    currentUILoad.selectOnDown = _profiles[i + 1].getLoadBtn();
+                    currentUIRemove.selectOnDown = _profiles[i + 1].getRemoveBtn();
                 }
                 else
                 {
-                    current_UI_load.selectOnDown = _cancelButton;
-                    current_UI_remove.selectOnDown = _cancelButton;
-                    cancel_navigation.selectOnUp = _profiles[i].getLoadBtn();
-                    _cancelButton.navigation = cancel_navigation;
+                    currentUILoad.selectOnDown = _cancelButton;
+                    currentUIRemove.selectOnDown = _cancelButton;
+                    cancelNavigation.selectOnUp = _profiles[i].getLoadBtn();
+                    _cancelButton.navigation = cancelNavigation;
                 }
             }
             else if (i > 0 && i < _profiles.Count - 1)      //Estamos en los del medio
             {
-                current_UI_load.selectOnDown = _profiles[i + 1].getLoadBtn();
-                current_UI_remove.selectOnDown = _profiles[i + 1].getRemoveBtn();
+                currentUILoad.selectOnDown = _profiles[i + 1].getLoadBtn();
+                currentUIRemove.selectOnDown = _profiles[i + 1].getRemoveBtn();
 
-                current_UI_load.selectOnUp = _profiles[i - 1].getLoadBtn();
-                current_UI_remove.selectOnUp = _profiles[i - 1].getRemoveBtn();
+                currentUILoad.selectOnUp = _profiles[i - 1].getLoadBtn();
+                currentUIRemove.selectOnUp = _profiles[i - 1].getRemoveBtn();
             }
             else                                            //Estamos en el ultimo
             {
-                current_UI_load.selectOnDown = _cancelButton;
-                current_UI_remove.selectOnDown = _cancelButton;
+                currentUILoad.selectOnDown = _cancelButton;
+                currentUIRemove.selectOnDown = _cancelButton;
 
-                current_UI_load.selectOnUp = _profiles[i - 1].getLoadBtn();
-                current_UI_remove.selectOnUp = _profiles[i - 1].getRemoveBtn();
+                currentUILoad.selectOnUp = _profiles[i - 1].getLoadBtn();
+                currentUIRemove.selectOnUp = _profiles[i - 1].getRemoveBtn();
 
-                cancel_navigation.selectOnUp = _profiles[_profiles.Count - 1].getLoadBtn();
-                _cancelButton.navigation = cancel_navigation;
+                cancelNavigation.selectOnUp = _profiles[_profiles.Count - 1].getLoadBtn();
+                _cancelButton.navigation = cancelNavigation;
             }
 
-            _profiles[i].getLoadBtn().navigation = current_UI_load;
-            _profiles[i].getRemoveBtn().navigation = current_UI_remove;
+            _profiles[i].getLoadBtn().navigation = currentUILoad;
+            _profiles[i].getRemoveBtn().navigation = currentUIRemove;
         }
     }
 }

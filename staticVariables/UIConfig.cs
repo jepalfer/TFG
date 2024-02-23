@@ -22,6 +22,7 @@ public static class UIConfig
     {
         return _controller;
     }
+
     public static bonfireBehaviour getBonfire()
     {
         return _bonfire;
