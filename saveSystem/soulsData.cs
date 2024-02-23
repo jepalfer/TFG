@@ -8,14 +8,7 @@ public class soulsData
     private long _souls;
     public soulsData()
     {
-        if (long.TryParse(generalUIConfiguration.getAlmas().text, out _souls))
-        {
-        }
-        else
-        {
-            // No se pudo convertir el texto a long para 'requiredSouls'
-            Debug.LogError("Error al convertir requiredSouls a long");
-        }
+        _souls = config.getPlayer().GetComponent<combatController>().getSouls();
     }
 
     public long getSouls()

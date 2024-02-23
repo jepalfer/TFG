@@ -79,6 +79,11 @@ public class statsController : MonoBehaviour
 
     public void healHP(float heal)
     {
+        //Calculamos la regeneración extra
+        float HPUpgrade = 0, staminaUpgrade = 0;
+        config.getPlayer().GetComponent<combatController>().calculateRegenUpgrade(ref HPUpgrade, ref staminaUpgrade);
+
+        heal += heal * HPUpgrade;
         if ((heal + _currentHP) > _maxHP)
         {
             heal = _maxHP - _currentHP;
@@ -97,6 +102,10 @@ public class statsController : MonoBehaviour
     }
     public void restoreStamina(float restore)
     {
+        //Calculamos la regeneración extra
+        float HPUpgrade = 0, staminaUpgrade = 0;
+        config.getPlayer().GetComponent<combatController>().calculateRegenUpgrade(ref HPUpgrade, ref staminaUpgrade);
+        restore += restore * staminaUpgrade;
         if ((restore + _currentStamina) > _maxStamina)
         {
             restore = _maxStamina - _currentStamina;
