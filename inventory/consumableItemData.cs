@@ -12,7 +12,7 @@ public class consumableItemData : ScriptableObject
     /// <summary>
     /// El tipo de consumible.
     /// </summary>
-    [SerializeField] private consumableTypeEnum _typeOfConsumable;
+    [SerializeField] private upgradeTypeEnum _typeOfConsumable;
 
     /// <summary>
     /// Cuánto restaura.
@@ -27,8 +27,8 @@ public class consumableItemData : ScriptableObject
     /// <summary>
     /// Getter que devuelve <see cref="_typeOfConsumable"/>.
     /// </summary>
-    /// <returns>Un objeto de tipo <see cref="consumableTypeEnum"/> que representa si restaura hp o stamina.</returns>
-    public consumableTypeEnum getTypeOfConsumable()
+    /// <returns>Un objeto de tipo <see cref="upgradeTypeEnum"/> que representa si restaura hp o stamina.</returns>
+    public upgradeTypeEnum getTypeOfConsumable()
     {
         return _typeOfConsumable;
     }

@@ -23,12 +23,12 @@ public class weaponInventoryManagement : MonoBehaviour
             if (data.getPrimaryIndex() != -1)
             {
                 _primary = Instantiate(_weaponList[data.getPrimaryIndex()].getWeapon());
-                _primary.GetComponent<weapon>().createWeapon(data.getPrimaryIndex(), data.getWeaponsLevels()[data.getPrimaryIndex()]);
+                _primary.GetComponent<weapon>().createWeapon(data.getWeaponsLevels()[data.getPrimaryIndex()]);
             }
             if (data.getSecundaryIndex() != -1)
             {
                 _secundary = Instantiate(_weaponList[data.getSecundaryIndex()].getWeapon());
-                _secundary.GetComponent<weapon>().createWeapon(data.getSecundaryIndex(), data.getWeaponsLevels()[data.getSecundaryIndex()]);
+                _secundary.GetComponent<weapon>().createWeapon(data.getWeaponsLevels()[data.getSecundaryIndex()]);
                 
             }
         }
@@ -80,8 +80,6 @@ public class weaponInventoryManagement : MonoBehaviour
                 }*/
 
                 _pressedIndex = getIndexOf(_pressedItem);
-                _instantiatedPrefab = Instantiate(_weaponList[_pressedIndex].getWeapon());
-                _instantiatedPrefab.GetComponent<weapon>().createWeapon(_pressedIndex, data.getWeaponsLevels()[_pressedIndex]);
 
                 _clickedWeapon = _weaponList.Find(weapon => weapon.getID() == _pressedItem.getID());
                 if (_clickedWeapon.getHand() == handEnum.primary)
@@ -91,8 +89,9 @@ public class weaponInventoryManagement : MonoBehaviour
                         destroySkills(_primary);
                         Destroy(_primary);
                     }
+                    _instantiatedPrefab = Instantiate(_weaponList[_pressedIndex].getWeapon());
+                    _instantiatedPrefab.GetComponent<weapon>().createWeapon(data.getWeaponsLevels()[_pressedIndex]);
                     _primary = _instantiatedPrefab;
-
 
                     data.setPrimaryIndex(_weaponList.IndexOf(_clickedWeapon));
                 }
@@ -104,6 +103,9 @@ public class weaponInventoryManagement : MonoBehaviour
                         destroySkills(_secundary);
                         Destroy(_secundary);
                     }
+
+                    _instantiatedPrefab = Instantiate(_weaponList[_pressedIndex].getWeapon());
+                    _instantiatedPrefab.GetComponent<weapon>().createWeapon(data.getWeaponsLevels()[_pressedIndex]);
                     _secundary = _instantiatedPrefab;
                     data.setSecundaryIndex(_weaponList.IndexOf(_clickedWeapon));
                 }
