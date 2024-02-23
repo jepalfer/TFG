@@ -55,6 +55,11 @@ public class UIController : MonoBehaviour
     /// </summary>
     private static bool _isInShopUI = false;
 
+    /// <summary>
+    /// Booleano que indica si estamos o no mirando el estado del jugador.
+    /// </summary>
+    private static bool _isInStateUI = false;
+
 
     /// <summary>
     /// Referencia a la UI del menú de pausa.
@@ -103,6 +108,10 @@ public class UIController : MonoBehaviour
     /// Referencia a la UI de tienda.
     /// </summary>
     [SerializeField] private GameObject _shopUI;
+    /// <summary>
+    /// Referencia a la UI de estado del jugador.
+    /// </summary>
+    [SerializeField] private GameObject _stateUI;
 
     /// <summary>
     /// Referencia al texto que aparece en <see cref="_pauseUI"/> que es el nombre del perfil.
@@ -274,6 +283,15 @@ public class UIController : MonoBehaviour
             }
         }
 
+        //Ocultamos la UI de estado del jugador
+        if (_isInStateUI)
+        {
+            if (inputManager.GetKeyDown(inputEnum.cancel))
+            {
+                UIConfig.getController().useStateUI();
+            }
+        }
+
     }
 
 
@@ -379,6 +397,15 @@ public class UIController : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="_isInStateUI"/>.
+    /// </summary>
+    /// <returns>Un booleano que indica si estamos o no mirando el estado del jugador.</returns>
+    public static bool getIsInStateUI()
+    {
+        return _isInStateUI;
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_skillsUI"/>.
     /// </summary>
     /// <returns>Un GameObject que representa la UI de adquirir habilidades.</returns>
@@ -450,6 +477,15 @@ public class UIController : MonoBehaviour
     public GameObject getShopUI()
     {
         return _shopUI;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_stateUI"/>.
+    /// </summary>
+    /// <returns>Un GameObject que representa la UI del estado del jugador.</returns>
+    public GameObject getStateUI()
+    {
+        return _stateUI;
     }
 
     /// <summary>
@@ -639,13 +675,13 @@ public class UIController : MonoBehaviour
 
             if (data != null)
             {
-                 _selectSkillUI.GetComponent<equipSkillController>().createSkillInventory(data);
+                 _selectSkillUI.GetComponent<selectSkillUIController>().createSkillInventory(data);
             }
         }
         else
         {
             //Si no la quitamos y eliminamos lo necesario
-            _selectSkillUI.GetComponent<equipSkillController>().destroySkillInventory();
+            _selectSkillUI.GetComponent<selectSkillUIController>().destroySkillInventory();
         }
     }
 
@@ -684,6 +720,19 @@ public class UIController : MonoBehaviour
         else
         {
             _shopUI.GetComponent<shopUIController>().setUIOff();
+        }
+    }
+    /// <summary>
+    /// Método que activa o desactiva <see cref="_stateUI"/>.
+    /// </summary>
+    public void useStateUI()
+    {
+        _stateUI.SetActive(!_stateUI.activeSelf);
+        _isInStateUI = !_isInStateUI;
+
+        if (_isInStateUI)
+        {
+            _stateUI.GetComponent<stateUIController>().initializeUI();
         }
     }
 

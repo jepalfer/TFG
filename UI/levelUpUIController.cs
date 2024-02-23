@@ -521,21 +521,6 @@ public class levelUpUIController : MonoBehaviour
                 _secundaryDMG.text = weapon.getTotalDMG().ToString();
                 levelUpUIConfiguration.setSecundaryDMGValue(_secundaryDMG);
             }
-
-
-            /*            GameObject primary = GetComponent<CombatController>().getPrimaryWeapon();
-                        GameObject secundary = GetComponent<CombatController>().getSecundaryWeapon();
-                        if (primary != null)
-                        {
-                            primary.GetComponent<Weapon>().setBaseDMG(primary.GetComponent<Weapon>().calculateBaseDMG());
-                            primary.GetComponent<Weapon>().setTotalDMG(primary.GetComponent<Weapon>().calculateDMG(statSystem.getStrength()._level, statSystem.getDexterity()._level, statSystem.getPrecision()._level));
-                        }
-
-                        if (secundary != null)
-                        {
-                            secundary.GetComponent<Weapon>().setBaseDMG(secundary.GetComponent<Weapon>().calculateBaseDMG());
-                            secundary.GetComponent<Weapon>().setTotalDMG(secundary.GetComponent<Weapon>().calculateDMG(statSystem.getStrength()._level, statSystem.getDexterity()._level, statSystem.getPrecision()._level));
-                        }*/
             saveSystem.saveAttributes();
             //Calculamos vida y stamina maximas
 

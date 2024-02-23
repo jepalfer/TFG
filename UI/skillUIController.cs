@@ -59,7 +59,6 @@ public class skillUIController : MonoBehaviour
             IDs = data.getIDs();
             types = data.getTypes();
         }
-
         if (index != -1)
         {
             config.getPlayer().GetComponent<skillManager>().setEquippedValue(null, index);
@@ -79,6 +78,15 @@ public class skillUIController : MonoBehaviour
         types[_currentID] = skill.getType();
 
         saveSystem.saveEquippedSkillsState(IDs, types);
+
+        if (weaponConfig.getPrimaryWeapon() != null)
+        {
+            weaponConfig.getPrimaryWeapon().GetComponent<weapon>().setTotalDMG(weaponConfig.getPrimaryWeapon().GetComponent<weapon>().calculateDMG(statSystem.getStrength().getLevel(), statSystem.getDexterity().getLevel(), statSystem.getPrecision().getLevel()));
+        }
+        if (weaponConfig.getSecundaryWeapon() != null)
+        {
+            weaponConfig.getSecundaryWeapon().GetComponent<weapon>().setTotalDMG(weaponConfig.getSecundaryWeapon().GetComponent<weapon>().calculateDMG(statSystem.getStrength().getLevel(), statSystem.getDexterity().getLevel(), statSystem.getPrecision().getLevel()));
+        }
     }
 
 
@@ -93,39 +101,6 @@ public class skillUIController : MonoBehaviour
                     index = i;
                     break;
                 }
-                /*
-                if (skills[i].GetComponent<comboIncreaseSkill>() != null)
-                {
-                    if (skills[i].GetComponent<comboIncreaseSkill>().getData().getSkillID() == data.getSkillID() && i != _currentID)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                else if (skills[i].GetComponent<statUpgradeSkill>() != null)
-                {
-                    if (skills[i].GetComponent<statUpgradeSkill>().getData().getSkillID() == data.getSkillID() && i != _currentID)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                else if (skills[i].GetComponent<statusSkill>() != null)
-                {
-                    if (skills[i].GetComponent<statusSkill>().getData().getSkillID() == data.getSkillID() && i != _currentID)
-                    {
-                        index = i;
-                        break;
-                    }
-                }
-                else
-                {
-                    if (skills[i].GetComponent<functionalitySkill>().getData().getSkillID() == data.getSkillID() && i != _currentID)
-                    {
-                        index = i;
-                        break;
-                    }
-                }*/
             }
         }
     }

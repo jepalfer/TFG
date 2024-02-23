@@ -11,5 +11,8 @@ public enum skillTypeEnum
     combo,
     stat,
     status,
-    functionality
+    functionality,
+    regenUpgrade,
+    probabilityAugment,
+    lifeSteal
 }

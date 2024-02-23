@@ -37,6 +37,8 @@ public class levelUpWeaponUIController : MonoBehaviour
     {
         //Buscamos las armas en el inventario
         List<lootItem> weapons = config.getInventory().GetComponent<inventoryManager>().getInventory().FindAll(item => item.getTipo() == itemTypeEnum.weapon);
+
+        weapons.Sort((weapon1, weapon2) => weapon1.getID().CompareTo(weapon2.getID()));
         for (int i = 0; i < weapons.Count; ++i)
         {
             //Variables locales para cada iteración

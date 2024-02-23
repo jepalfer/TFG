@@ -79,13 +79,12 @@ public class skillTreeUIController : MonoBehaviour
 
     private void modifyRightPanel()
     {
-        Debug.Log(_formerEventSystemSelected);
         _skillSprite.sprite = _formerEventSystemSelected.GetComponent<skill>().getSkillSprite();
         _skillName.text = _formerEventSystemSelected.GetComponent<skill>().getSkillName();
         _skillDesc.text = _formerEventSystemSelected.GetComponent<skill>().getSkillDescription();
         _skillPrice.text = _formerEventSystemSelected.GetComponent<skill>().getSkillPoints().ToString();
 
-        if (config.getPlayer().GetComponent<combatController>().getSouls() < _formerEventSystemSelected.GetComponent<skill>().getSkillPoints())
+        if (!_formerEventSystemSelected.GetComponent<skill>().isUnlockable())
         {
             _skillPrice.color = Color.red;
         }
@@ -202,7 +201,28 @@ public class skillTreeUIController : MonoBehaviour
                 Debug.Log("ID: " + data.getUnlockedSkills()[i].getWeaponID());
             }
         }
+
+        if (skill.getData().getEquipType() == equipEnum.onWeapon)
+        {
+            if (weaponConfig.getPrimaryWeapon() != null)
+            {
+                if (data.getUnlockedSkills().Find(_skill => _skill.getWeaponID() == weaponConfig.getPrimaryWeapon().GetComponent<weapon>().getID() && _skill.getAssociatedSkill().getSkillID() == skill.getSkillID()) != null)
+                {
+                    GameObject searchedSkill = config.getPlayer().GetComponent<skillManager>().getAllSkills().Find(_skill => _skill.GetComponent<skill>().getSkillID() == skill.getSkillID());
+                    weaponConfig.getPrimaryWeapon().GetComponent<weapon>().addSkill(Instantiate(searchedSkill));
+                }
+            }
+            if (weaponConfig.getSecundaryWeapon() != null)
+            {
+                if (data.getUnlockedSkills().Find(_skill => _skill.getWeaponID() == weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getID() && _skill.getAssociatedSkill().getSkillID() == skill.getSkillID()) != null)
+                {
+                    GameObject searchedSkill = config.getPlayer().GetComponent<skillManager>().getAllSkills().Find(_skill => _skill.GetComponent<skill>().getSkillID() == skill.getSkillID());
+                    weaponConfig.getSecundaryWeapon().GetComponent<weapon>().addSkill(Instantiate(searchedSkill));
+                }
+            }
+        }
         saveSystem.saveSkillsState(data.getUnlockedSkills());
+        _skillPrice.color = Color.red;
     }
 
     public void setUIOff()
