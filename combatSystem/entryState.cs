@@ -12,7 +12,7 @@ public class entryState : baseState
     /// </summary>
     /// <param name="value">Asigna a <see cref="state._isPrimary"/> si el ataque es con el arma primaria o con la secundaria.</param>
     public entryState(bool value) : base(value) { }
-
+    
     /// <summary>
     /// Método que termina de implementar <see cref="baseState.onEnter(stateMachine)"/>.
     /// </summary>
@@ -68,32 +68,40 @@ public class entryState : baseState
         }*/
 
         //Esperamos un poco de tiempo
+
         if (_time >= _timeNextAttack / 2)
         {
-            if (GetComponent<combatController>().getPrimaryWeapon() != null)
+            if (!inputManager.GetKey(inputEnum.down) && !inputManager.GetKey(inputEnum.up))
             {
-                if (inputManager.GetKeyDown(inputEnum.primaryAttack))
+                int primaryAttack = 0, secundaryAttack = 0;
+
+                config.getPlayer().GetComponent<combatController>().calculateExtraComboHits(ref primaryAttack, ref secundaryAttack);
+                if (GetComponent<combatController>().getPrimaryWeapon() != null)
                 {
-                    if (baseState.getAttackIndex() < GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getNumberOfAttacks())
+                    if (inputManager.GetKeyDown(inputEnum.primaryAttack))
                     {
-                        baseState.incrementAttackIndex();
-                        GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
-                        _currentStateMachine.setNextState(new comboState(true));
+                        if (baseState.getAttackIndex() < (GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getNumberOfAttacks() + primaryAttack))
+                        {
+                            baseState.incrementAttackIndex();
+                            GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            _currentStateMachine.setNextState(new comboState(true));
+                        }
+                    }
+                }
+                if (GetComponent<combatController>().getSecundaryWeapon() != null)
+                {
+                    if (inputManager.GetKeyDown(inputEnum.secundaryAttack))
+                    {
+                        if (baseState.getAttackIndex() < (GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getNumberOfAttacks() + secundaryAttack))
+                        {
+                            baseState.incrementAttackIndex();
+                            GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            _currentStateMachine.setNextState(new comboState(false));
+                        }
                     }
                 }
             }
-            if (GetComponent<combatController>().getSecundaryWeapon() != null)
-            {
-                if (inputManager.GetKeyDown(inputEnum.secundaryAttack))
-                {
-                    if (baseState.getAttackIndex() < GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getNumberOfAttacks())
-                    {
-                        baseState.incrementAttackIndex();
-                        GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
-                        _currentStateMachine.setNextState(new comboState(false));
-                    }
-                }
-            }
+            
 
             //Si supera el tiempo máximo
             if (_time >= _timeNextAttack)

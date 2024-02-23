@@ -38,7 +38,7 @@ public class bossUIController : MonoBehaviour
     /// <param name="dmg">Es el daño que le infligimos al jefe.</param>
     public void recalculateHPBar(float dmg)
     {
-        float _received = dmg / GetComponent<enemy>().getHealth();
+        float _received = dmg / GetComponent<enemy>().getEnemyData().getHealth();
 
         _HPBar.value -= _received;
     }

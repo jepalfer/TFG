@@ -28,6 +28,8 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private bool _canJump = true;
     [SerializeField] private bool _isJumping = false;
     [SerializeField] private bool _wasJumping = false;
+    [SerializeField] private bool _canDoubleJump = false;
+    [SerializeField] private int _jumpsDone = 0;
 
     [Header("Dodge")]
     [SerializeField] private float _rollTime;
@@ -61,6 +63,8 @@ public class playerMovement : MonoBehaviour
     [SerializeField] private bool _couldClimb = false;
     [SerializeField] private bool _wasClimbing = false;
 
+    [SerializeField] private float _dashTimeMultiplier;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -87,6 +91,7 @@ public class playerMovement : MonoBehaviour
 
         _bc =  colliders[0];
         _g0 = _rb.gravityScale;
+        _dashTimeMultiplier = 0.90f;
         config.setPlayer(gameObject);
         saveSystem.savePlayer();
     }    
@@ -100,7 +105,8 @@ public class playerMovement : MonoBehaviour
             _distanceJumped = _JUMP_HEIGHT;
         }
         if (!UIController.getIsInPauseUI() && !UIController.getIsInEquippingSkillUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
-            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu())
+            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu() &&
+            !GetComponent<downWardBlowController>().getIsInDownWardBlow())
         {
             if ((!inputManager.GetKey(inputEnum.right) && !inputManager.GetKey(inputEnum.left)))
             {
@@ -148,11 +154,14 @@ public class playerMovement : MonoBehaviour
             //Si estamos en algo donde podemos saltar
             if (!_isDodging && (GetComponent<collisionController>().getIsGrounded() || GetComponent<collisionController>().getIsOnLadderTop() || GetComponent<collisionController>().getIsOnOneWay() || GetComponent<collisionController>().getIsOnSlope()))
             {
-                //_rb.gravityScale = _g0;
-                _wasJumping = false;
-                if (!_isDodging)
+                if (!inputManager.GetKey(inputEnum.jump))
                 {
-                    _canJump = true;
+                    _wasJumping = false;
+                    _jumpsDone = 0;
+                    if (!_isDodging)
+                    {
+                        _canJump = true;
+                    }
                 }
                 _canRoll = true;
                 _couldRoll = true;
@@ -200,7 +209,14 @@ public class playerMovement : MonoBehaviour
                 {
                     if (!_wasClimbing || _VSpeed != 0)
                     {
-                        _canJump = false;
+                        if (_canDoubleJump && _jumpsDone == 1 && _wasJumping)
+                        {
+                            _canJump = true;
+                        }
+                        else
+                        {
+                            _canJump = false;
+                        }
                     }
                     if (!_wasClimbing && !_isDodging && !GetComponent<combatController>().getIsAttacking())
                     {
@@ -307,6 +323,10 @@ public class playerMovement : MonoBehaviour
 
     void manageJump()
     {
+        if (inputManager.GetKeyDown(inputEnum.jump))
+        {
+            _jumpsDone++;
+        }
 
         if ((inputManager.GetKey(inputEnum.jump) && _canJump) && _distanceJumped < _JUMP_HEIGHT)
         {
@@ -316,6 +336,7 @@ public class playerMovement : MonoBehaviour
             _isJumping = true;
             camera.GetComponent<cameraController>().setOffset(0f);
             _rb.gravityScale = 0f;
+            _rb.velocity = new Vector2(0f, 0f);
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + _jump * Time.deltaTime, gameObject.transform.position.z);
 
             _distanceJumped += _jump * Time.deltaTime;
@@ -323,8 +344,16 @@ public class playerMovement : MonoBehaviour
 
         if (_wasJumping && ((inputManager.GetKeyUp(inputEnum.jump)) || _distanceJumped >= _JUMP_HEIGHT))
         {
-            _canJump = false;
-            _distanceJumped = _JUMP_HEIGHT;
+            if (_hasRolled || (_canDoubleJump && _jumpsDone < 2 && inputManager.GetKeyUp(inputEnum.jump)))
+            {
+                _canJump = true;
+                _distanceJumped = 0;
+            }
+            else
+            {
+                _canJump = false;
+                _distanceJumped = _JUMP_HEIGHT;
+            }
             _isJumping = false;
             GetComponent<collisionController>().setCanCheckSlope(true);
 
@@ -510,7 +539,14 @@ public class playerMovement : MonoBehaviour
 
         GetComponent<combatController>().getHurtbox().GetComponent<BoxCollider2D>().enabled = false;
 
-        yield return new WaitForSeconds(_rollTime);
+        float newRollTime = _rollTime;
+
+        if (statSystem.getAgility().getLevel() % 10 == 0)
+        {
+            newRollTime = Mathf.Pow(_rollTime * _dashTimeMultiplier, statSystem.getAgility().getLevel() / GetComponent<combatController>().getLevelThreshold());    
+        }
+
+        yield return new WaitForSeconds(newRollTime);
 
         GetComponent<combatController>().getHurtbox().GetComponent<BoxCollider2D>().enabled = true;
         GetComponent<combatController>().setCanAttack(true);
@@ -529,6 +565,7 @@ public class playerMovement : MonoBehaviour
         _rb.gravityScale = _g0;
         _isDodging = false;
         _canMove = true;
+        _isJumping = false;
     }
 
     #endregion
@@ -549,6 +586,10 @@ public class playerMovement : MonoBehaviour
         _couldClimb = couldClimb;
     }
 
+    public void setCanDoubleJump(bool doubleJump)
+    {
+        _canDoubleJump = doubleJump;
+    }
     public void setGravity(float gravity)
     {
         _rb.gravityScale = gravity;
@@ -587,11 +628,21 @@ public class playerMovement : MonoBehaviour
         _isLookingDown = value;
     }
 
+    public void setJumpsDone(int jumps)
+    {
+        _jumpsDone = jumps;
+    }
+
     #endregion
 
     //GETTERS
 
     #region gettersMethods
+
+    public BoxCollider2D getBoxCollider()
+    {
+        return _bc;
+    }
 
     public bool getIsDodging()
     {

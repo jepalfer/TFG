@@ -90,15 +90,16 @@ public class bulletController : MonoBehaviour
         {
             if (hit.collider != null)
             {
+                float bleed = 0f, penetration = 0f, crit = 0f;
+                config.getPlayer().GetComponent<combatController>().calculateExtraDamages(ref penetration, ref bleed, ref crit);
                 GameObject hitObject = hit.collider.gameObject;
-                Debug.Log(hitObject.name);
                 if (hitObject.GetComponent<enemy>() != null)
                 {
-                    hitObject.GetComponent<enemy>().receiveDMG(weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), false, false);
+                    hitObject.GetComponent<enemy>().receiveDMG(weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), crit, penetration, bleed);
                 }
                 else if (hitObject.GetComponent<boss>() != null)
                 {
-                    hitObject.GetComponent<boss>().receiveDMG(weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), false, false);
+                    hitObject.GetComponent<boss>().receiveDMG(weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), crit, penetration, bleed);
                 }
 
                 if (hitObject.GetComponent<obstacleLogic>() != null)

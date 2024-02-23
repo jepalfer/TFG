@@ -27,15 +27,18 @@ public class playerHitController : MonoBehaviour
         //Si es la hurtbox enemiga
         if (collision.CompareTag("enemyHurtbox"))
         {
+            float bleed = 0f, penetration = 0f, crit = 0f;
+            config.getPlayer().GetComponent<combatController>().calculateExtraDamages(ref penetration, ref bleed, ref crit);
+
             if (_primaryAttack)
             {
                 //Si es ataque primario el enemigo recibe el daño del arma primaria.
-                collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().receiveDMG(config.getPlayer().GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getTotalDMG(), false, false);
+                collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().receiveDMG(config.getPlayer().GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getTotalDMG(), crit, penetration, bleed);
             }
             else if (_secundaryAttack)
             {
                 //Si es ataque secundario el enemigo recibe el daño del arma secudaria
-                collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().receiveDMG(config.getPlayer().GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), false, false);
+                collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().receiveDMG(config.getPlayer().GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), crit, penetration, bleed);
             }
         }
     }

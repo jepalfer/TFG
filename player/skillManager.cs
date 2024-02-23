@@ -37,60 +37,8 @@ public class skillManager : MonoBehaviour
     public GameObject getSkillToEquip(skillTypeEnum type, int id)
     {
         GameObject skill = _allSkills.Find(searchedSkill => searchedSkill.GetComponent<skill>().getType() == type && searchedSkill.GetComponent<skill>().getSkillID() == id);
-
-        /*
-        if (type == skillTypeEnum.combo)
-        {
-            skill = _allSkills.Find(searchedSkill =>
-            {
-                comboIncreaseSkill combo = searchedSkill.GetComponent<comboIncreaseSkill>();
-                return combo != null && combo.getData()?.getSkillID() == id;
-            });
-        }
-        else if (type == skillTypeEnum.stat)
-        {
-            skill = _allSkills.Find(searchedSkill =>
-            {
-                statUpgradeSkill stat = searchedSkill.GetComponent<statUpgradeSkill>();
-                return stat != null && stat.getData()?.getSkillID() == id;
-            });
-        }
-        else if (type == skillTypeEnum.status)
-        {
-            skill = _allSkills.Find(searchedSkill =>
-            {
-                statusSkill status = searchedSkill.GetComponent<statusSkill>();
-                return status != null && status.getData()?.getSkillID() == id;
-            });
-        }
-        else
-        {
-            skill = _allSkills.Find(searchedSkill =>
-            {
-                functionalitySkill functionality = searchedSkill.GetComponent<functionalitySkill>();
-                return functionality != null && functionality.getData()?.getSkillID() == id;
-            });
-        }*/
-
         return skill;
     }
-    /*
-    public List<int> getIndexesOfSkill(skillType type)
-    {
-        List<int> indexes = new List<int>();
-
-        for (int i = 0; i < _equippedSkills.Count; ++i)
-        {
-            if (_equippedSkills[i] != null)
-            {
-                if (_equippedSkills[i].getType() == type)
-                {
-                    indexes.Add(i);
-                }
-            }
-        }
-        return indexes;
-    }*/
     // Start is called before the first frame update
     void Start()
     {
@@ -115,23 +63,7 @@ public class skillManager : MonoBehaviour
                     if (_equippedSkills[i] != null)
                     {
                         UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<skill>().getSkillSprite();
-                        /*
-                        if (equippedData.getTypes()[i] == skillTypeEnum.combo)
-                        {
-                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<comboIncreaseSkill>().getSkillSprite();
-                        }
-                        else if (equippedData.getTypes()[i] == skillTypeEnum.stat)
-                        {
-                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<statUpgradeSkill>().getSkillSprite();
-                        }
-                        else if (equippedData.getTypes()[i] == skillTypeEnum.status)
-                        {
-                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<statusSkill>().getSkillSprite();
-                        }
-                        else
-                        {
-                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<functionalitySkill>().getSkillSprite();
-                        }*/
+                        
                         UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].SetActive(true);
                     }
                 }

@@ -295,6 +295,15 @@ public class enemy : MonoBehaviour
     {
         return _isLookingRight;
     }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_enemy"/>.
+    /// </summary>
+    /// <returns>Devuelve un objeto de tipo <see cref="baseEnemy"/> que contiene la información del enemigo base.</returns>
+    public baseEnemy getEnemyData()
+    {
+        return _enemy;
+    }
     
     /// <summary>
     /// Método que voltea el sprite del enemigo.
@@ -311,30 +320,45 @@ public class enemy : MonoBehaviour
     /// Método que calcula el daño que se le inflige al enemigo.
     /// </summary>
     /// <param name="dmg">El daño plano entrante.</param>
-    /// <param name="isCrit">Si el golpe es crítico.</param>
-    /// <param name="piercesArmor">Si el golpe penetra armadura.</param>
+    /// <param name="critDamage">El daño crítico.</param>
+    /// <param name="penetrationDamage">La armadura que eliminamos.</param>
+    /// <param name="bleedingDamage">El daño por sangrado.</param>
     /// <returns></returns>
-    public float calculateDMG(float dmg, bool isCrit, bool piercesArmor)
+    public float calculateDMG(float dmg, float critDamage, float penetrationDamage, float bleedingDamage)
     {
-        float received = 0;
+        float received;
         float armor = _armor;
 
-        //Disminuimos armadura (en un 20%) si es penetrante
-        if (piercesArmor)
+        //Disminuimos armadura si es penetrante
+        penetrationDamage /= 100;
+        bleedingDamage /= 100;
+        critDamage /= 100;
+        armor -= armor * (penetrationDamage);
+
+        float critProbability = config.getPlayer().GetComponent<combatController>().getCritProbability();
+        int critValue = Random.Range(1, 101);
+        float critDealt = 0;
+        config.getPlayer().GetComponent<combatController>().calculateExtraCritDamageProbability(ref critProbability);
+
+        Debug.Log(critProbability);
+        if ((float)critValue <= critProbability)
         {
-            armor *= 0.8f;
+            critDealt = critDamage;
         }
 
-        //Si es crítico hacemos el doble de daño
-        if (isCrit)
+        received = (dmg + (dmg * critDealt)) - (armor);
+
+        int bleedValue = Random.Range(1, 101);
+        float bleedProbability = config.getPlayer().GetComponent<combatController>().getBleedProbability();
+
+        Debug.Log(bleedProbability);
+        config.getPlayer().GetComponent<combatController>().calculateExtraBleedingProbability(ref bleedProbability);
+        if ((float)bleedValue <= bleedProbability)
         {
-            received = dmg * (2.0f - (armor / _maxArmor));
-        }
-        else
-        {
-            received = dmg * (1.0f - (armor / _maxArmor));
+            received += (_enemy.getHealth() * bleedingDamage);
         }
 
+        Debug.Log(received);
         return received;
     }
 
@@ -342,21 +366,33 @@ public class enemy : MonoBehaviour
     /// Método que inflige el daño al enemigo.
     /// </summary>
     /// <param name="dmg">Daño plano entrante.</param>
-    /// <param name="isCrit">Si el golpe es crítico.</param>
-    /// <param name="piercesArmor">Si el golpe es penetrante.</param>
-    public virtual void receiveDMG(float dmg, bool isCrit, bool piercesArmor)
+    /// <param name="critDamage">El daño crítico.</param>
+    /// <param name="penetrationDamage">La armadura que eliminamos.</param>
+    /// <param name="bleedingDamage">El daño por sangrado.</param>
+    public virtual void receiveDMG(float dmg, float critDamage, float penetrationDamage, float bleedingDamage)
     {
-        _health -= calculateDMG(dmg, isCrit, piercesArmor);
+        int damageDealt = (int)calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
+        _health -= damageDealt;
+
+        if (config.getPlayer().GetComponent<combatController>().getSecundaryWeapon() != null && 
+            config.getPlayer().GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getIsAttacking())
+        {
+            if (config.getPlayer().GetComponent<combatController>().getLifeSteal() != 0)
+            {
+                config.getPlayer().GetComponent<statsController>().healHP(damageDealt * config.getPlayer().GetComponent<combatController>().getLifeSteal());
+            }
+        }
+
         if (_health <= 0)
         {
-            Die();
+            die();
         }
     }
 
     /// <summary>
     /// Método que maneja la lógica de muerte del enemigo.
     /// </summary>
-    public void Die()
+    public void die()
     {
         //Si tiene loot
         if (_loot.Length > 0 && _dropRate > 0f)

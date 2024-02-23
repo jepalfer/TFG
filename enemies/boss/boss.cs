@@ -2,18 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using TMPro;
 /// <summary>
 /// boss es una clase que representa a un tipo de enemigo especial.
 /// </summary>
 public class boss : enemy
 {
     /// <summary>
+    /// Daño que ha recibido para ponerlo en la UI como feedback visual.
+    /// </summary>
+    private float _receivedDamage;
+
+    /// <summary>
+    /// Booleano para saber cuándo podemos modificar el campo de texto de daño.
+    /// </summary>
+    private bool _isReceivingDamage;
+
+    /// <summary>
+    /// Campo de texto de daño recibido.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _receivedDamageText;
+
+    /// <summary>
+    /// Timer para saber cuánto tiempo llevamos sin recibir daño;
+    /// </summary>
+    private float _timerNotReceivingDamage;
+
+    /// <summary>
+    /// Tiempo máximo para recibir daño.
+    /// </summary>
+    private float _maximumTimeNotReceivingDamage;
+
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// Carga los datos del enemigo y modifica si debe estar activo o no.
     /// </summary>
     private void Start()
     {
+        _receivedDamage = 0f;
+        _maximumTimeNotReceivingDamage = 1.5f;
         //Cargamos los datos
         enemyStateData data = saveSystem.loadEnemyData();
 
@@ -30,11 +57,30 @@ public class boss : enemy
     /// Método que implementa <see cref="enemy.receiveDMG(float, bool, bool)"/>.
     /// </summary>
     /// <param name="dmg">Es el daño que recibe el jefe.</param>
-    /// <param name="isCrit">Si el golpe es crítico.</param>
-    /// <param name="piercesArmor">Si el golpe penetra armadura.</param>
-    public override void receiveDMG(float dmg, bool isCrit, bool piercesArmor)
+    /// <param name="critDamage">El daño crítico.</param>
+    /// <param name="penetrationDamage">La armadura que eliminamos.</param>
+    /// <param name="bleedingDamage">El daño por sangrado.</param>
+    public override void receiveDMG(float dmg, float critDamage, float penetrationDamage, float bleedingDamage)
     {
-        GetComponent<bossUIController>().recalculateHPBar(dmg);
-        base.receiveDMG(dmg, isCrit, piercesArmor);
+        GetComponent<bossUIController>().recalculateHPBar(calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage));
+        base.receiveDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
+        _receivedDamage += calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
+        _timerNotReceivingDamage = 0f;
+        _receivedDamageText.enabled = true;
+        _receivedDamageText.text = _receivedDamage.ToString();
+    }
+
+    /// <summary>
+    /// Método que se ejecuta cada frame para actualizar la lógica.
+    /// </summary>
+    private void Update()
+    {
+        _timerNotReceivingDamage += Time.deltaTime;
+
+        if (_timerNotReceivingDamage >= _maximumTimeNotReceivingDamage)
+        {
+            _receivedDamage = 0f;
+            _receivedDamageText.enabled = false;
+        }
     }
 }
