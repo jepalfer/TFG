@@ -14,8 +14,8 @@ public class statsController : MonoBehaviour
 
     private long _currentSouls;
 
-    private int _HPBarExp = 20;
-    private int _StaminaBarExp = 20;
+    private int _HPBarExp = 60;
+    private int _StaminaBarExp = 60;
 
     private int _maxHPExp = 200;
     private int _maxStaminaExp = 20;

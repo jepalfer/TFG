@@ -67,7 +67,7 @@ public class boss : enemy
         _receivedDamage += calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
         _timerNotReceivingDamage = 0f;
         _receivedDamageText.enabled = true;
-        _receivedDamageText.text = _receivedDamage.ToString();
+        _receivedDamageText.text = ((int) _receivedDamage).ToString();
     }
 
     /// <summary>

@@ -448,6 +448,10 @@ public class weapon : generalItem
         return canLevelUp;
     }
 
+    /// <summary>
+    /// Método auxiliar para añadir una habilidad a <see cref="_skills"/>.
+    /// </summary>
+    /// <param name="skill">La habilidad a añadir a la lista.</param>
     public void addSkill(GameObject skill)
     {
         if (_skills == null)

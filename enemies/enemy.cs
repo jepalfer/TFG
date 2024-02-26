@@ -338,6 +338,7 @@ public class enemy : MonoBehaviour
         float critProbability = config.getPlayer().GetComponent<combatController>().getCritProbability();
         int critValue = Random.Range(1, 101);
         float critDealt = 0;
+
         config.getPlayer().GetComponent<combatController>().calculateExtraCritDamageProbability(ref critProbability);
 
         Debug.Log(critProbability);
@@ -351,7 +352,6 @@ public class enemy : MonoBehaviour
         int bleedValue = Random.Range(1, 101);
         float bleedProbability = config.getPlayer().GetComponent<combatController>().getBleedProbability();
 
-        Debug.Log(bleedProbability);
         config.getPlayer().GetComponent<combatController>().calculateExtraBleedingProbability(ref bleedProbability);
         if ((float)bleedValue <= bleedProbability)
         {
