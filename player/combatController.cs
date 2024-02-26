@@ -121,6 +121,10 @@ public class combatController : MonoBehaviour
     private float _lifeSteal;
 
     /// <summary>
+    /// Referencia a la hitbox del ataque en picado.
+    /// </summary>
+    [SerializeField] private BoxCollider2D _downWardHitbox;
+    /// <summary>
     /// Método que se ejecuta al iniciar el script. Asigna varios valores.
     /// </summary>
     private void Start()
@@ -325,6 +329,15 @@ public class combatController : MonoBehaviour
     {
         return _lifeSteal;
     }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_downWardHitbox"/>.
+    /// </summary>
+    /// <returns>BoxCollider que contiene la hitbox del ataque en picado.</returns>
+    public BoxCollider2D getDownWardHitbox()
+    {
+        return _downWardHitbox;
+    }
     /// <summary>
     /// Método que instancia una bala en una posición que depende de la dirección a la que miremos.
     /// </summary>
@@ -517,6 +530,7 @@ public class combatController : MonoBehaviour
                 }
             }
         }
+
         int extraStrength = 0, extraDexterity = 0, extraPrecision = 0;
         calculateAttributesLevelUp(ref extraStrength, ref extraDexterity, ref extraPrecision);
 
@@ -678,7 +692,17 @@ public class combatController : MonoBehaviour
 
         if (_hitbox.GetComponent<BoxCollider2D>().enabled)
         {
-            Gizmos.DrawCube(_hitbox.transform.position, new Vector3(_hitbox.GetComponent<BoxCollider2D>().size.x, _hitbox.GetComponent<BoxCollider2D>().size.y, 1));
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(_hitbox.transform.position, new Vector3(_hitbox.GetComponent<BoxCollider2D>().size.x, _hitbox.GetComponent<BoxCollider2D>().size.y, 1));
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(_hurtbox.transform.position, new Vector3(_hurtbox.GetComponent<BoxCollider2D>().size.x, _hurtbox.GetComponent<BoxCollider2D>().size.y, 1));
+
+            if (_downWardHitbox.enabled)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(_downWardHitbox.transform.position, new Vector3(_downWardHitbox.GetComponent<BoxCollider2D>().size.x, _downWardHitbox.GetComponent<BoxCollider2D>().size.y, 1));
+            }
 
         }
     }

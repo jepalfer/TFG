@@ -8,25 +8,79 @@ public class downWardBlowSkill : MonoBehaviour
     [SerializeField] private LayerMask _ladderTopLayer;
     [SerializeField] private LayerMask _oneWayLayer;
     [SerializeField] private LayerMask _slopeLayer;
+    [SerializeField] private LayerMask _enemiesLayer;
 
+    private List<int> _enemiesID;
     // Update is called once per frame
     void Update()
     {
-
+        Debug.Log(config.getPlayer().GetComponent<downWardBlowController>().getIsInDownWardBlow());
         if (!config.getPlayer().GetComponent<collisionController>().getIsGrounded() && !config.getPlayer().GetComponent<collisionController>().getIsOnLadderTop() &&
             !config.getPlayer().GetComponent<collisionController>().getIsOnOneWay() && !config.getPlayer().GetComponent<collisionController>().getIsOnSlope() && 
             !config.getPlayer().GetComponent<playerMovement>().getIsDodging())
         {
-            if (inputManager.GetKey(inputEnum.down) && inputManager.GetKeyDown(inputEnum.primaryAttack))
+            if (inputManager.GetKey(inputEnum.down) && inputManager.GetKeyDown(inputEnum.primaryAttack) && !config.getPlayer().GetComponent<downWardBlowController>().getIsInDownWardBlow())
             {
+                _enemiesID = new List<int>();
                 config.getPlayer().GetComponent<playerMovement>().getRigidBody().velocity = new Vector2(0f, -10f);
                 config.getPlayer().GetComponent<downWardBlowController>().setIsInDownWardBlow(true);
-                doRayCast();
+                doTerrainRayCast();
+                config.getPlayer().GetComponent<combatController>().getDownWardHitbox().enabled = true;
             }
+        }
+
+        if (config.getPlayer().GetComponent<downWardBlowController>().getIsInDownWardBlow())
+        {
+            doEnemiesRayCast();
         }
     }
 
-    private void doRayCast()
+    private void doEnemiesRayCast()
+    {
+
+        //Debug.DrawRay(initialPos, Vector2.down, Color.black);
+        //Debug.DrawRay(finalPos, Vector2.down, Color.black);
+        int step = 5;
+        float distanceBetweenRays = (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.x + (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.x / 2)) - 
+                                    (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.x - (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.x / 2));
+
+        distanceBetweenRays = distanceBetweenRays / step;
+        for (int i = 0; i < step; i++)
+        {
+            Vector3 initialPos = new Vector3(config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.x - (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.x / 2),
+                                 config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.y - (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.y / 2),
+                                 1.0f);
+
+            Vector3 finalPos = new Vector3(config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.x + (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.x / 2),
+                                 config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.y - (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.y / 2),
+                                 1.0f);
+
+            Vector3 initialRayPosition = new Vector3(initialPos.x + (distanceBetweenRays * i), initialPos.y);
+
+            Debug.DrawRay(initialRayPosition, Vector2.down, Color.red);
+            float rayDistance = 0.1f;
+            RaycastHit2D hit = Physics2D.Raycast(initialRayPosition, Vector2.down, rayDistance, _enemiesLayer);
+
+            if (hit.collider != null && _enemiesID.FindIndex(index => index == hit.collider.gameObject.GetComponent<enemy>().getEnemyID()) == -1)
+            {
+                _enemiesID.Add(hit.collider.gameObject.GetComponent<enemy>().getEnemyID());
+                float bleed = 0f, penetration = 0f, crit = 0f;
+                config.getPlayer().GetComponent<combatController>().calculateExtraDamages(ref penetration, ref bleed, ref crit);
+                
+                if (config.getPlayer().GetComponent<downWardBlowController>().getAttackHeight() == heightEnum.weak)
+                {
+                    hit.collider.gameObject.GetComponent<enemy>().receiveDMG(weaponConfig.getPrimaryWeapon().GetComponent<weapon>().getTotalDMG() / 4.0f, crit, penetration, bleed);
+                }
+                else
+                {
+                    hit.collider.gameObject.GetComponent<enemy>().receiveDMG(weaponConfig.getPrimaryWeapon().GetComponent<weapon>().getTotalDMG() / 2.0f, crit, penetration, bleed);
+                }
+            }
+        }
+
+    }
+
+    private void doTerrainRayCast()
     {
 
         Vector3 origin = config.getPlayer().transform.position - Vector3.up * (config.getPlayer().GetComponent<playerMovement>().getBoxCollider().size.y / 2f);

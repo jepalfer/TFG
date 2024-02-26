@@ -50,15 +50,40 @@ public class downWardBlowController : MonoBehaviour
         {
             if (_canCreateExpansive && _blowHeight == heightEnum.strong)
             {
-                Vector2 leftHit = new Vector2(transform.position.x - (GetComponent<playerMovement>().getBoxCollider().size.x / 2), transform.position.y - (GetComponent<playerMovement>().getBoxCollider().size.y / 2));
-                Vector2 rightHit = new Vector2(transform.position.x + (GetComponent<playerMovement>().getBoxCollider().size.x / 2), transform.position.y - (GetComponent<playerMovement>().getBoxCollider().size.y / 2));
-                /*
-                Instantiate(_expansivePrefab, leftHit, Quaternion.identity);
-                Instantiate(_expansivePrefab, rightHit, Quaternion.identity);*/
+                Vector2 leftHitPos = new Vector2(transform.position.x - GetComponent<playerMovement>().getBoxCollider().size.x, 
+                                                 transform.position.y - (GetComponent<playerMovement>().getBoxCollider().size.y / 2) - 
+                                                 (Mathf.Abs(GetComponent<playerMovement>().getBoxCollider().offset.y / 2)));
+
+                Vector2 rightHitPos = new Vector2(transform.position.x + GetComponent<playerMovement>().getBoxCollider().size.x, 
+                                                  transform.position.y - (GetComponent<playerMovement>().getBoxCollider().size.y / 2) - 
+                                                  (Mathf.Abs(GetComponent<playerMovement>().getBoxCollider().offset.y / 2)));
+                
+                
+                GameObject leftHit = Instantiate(_expansivePrefab, leftHitPos, Quaternion.identity);
+                leftHit.GetComponent<expansiveController>().setGoingLeft(true);
+                
+                GameObject rightHit = Instantiate(_expansivePrefab, rightHitPos, Quaternion.identity);
+                rightHit.GetComponent<expansiveController>().setGoingLeft(false);
             }
             _blowHeight = heightEnum.none;
             GetComponent<downWardBlowController>().setIsInDownWardBlow(false);
+            GetComponent<combatController>().getDownWardHitbox().enabled = false;
         }
+    }
+
+    public float getBaseDamage()
+    {
+        return _baseDamage;
+    }
+
+    public float getPenDamage()
+    {
+        return _penetratingDamage;
+    }
+
+    public float getCritDamage()
+    {
+        return _critDamage;
     }
 
     public void setCanCreateExpansive(bool value)
