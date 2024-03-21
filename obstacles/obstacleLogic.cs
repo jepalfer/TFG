@@ -26,7 +26,7 @@ public class obstacleLogic : MonoBehaviour
     /// <summary>
     /// Los datos guardados de los obstáculos. Ver <see cref="obstaclesData"/> para más información.
     /// </summary>
-    [SerializeField] private obstaclesData _data;
+    private obstaclesData _data;
 
     /// <summary>
     /// Getter que devuelve <see cref="_associatedWall"/>.
@@ -91,6 +91,7 @@ public class obstacleLogic : MonoBehaviour
                 {
                     //_associatedWall.GetComponent<BoxCollider2D>().enabled = false;
                     _hasBeenActivated = true;
+                    _associatedWall.active = false;
                     GetComponent<BoxCollider2D>().enabled = false;
                     GetComponent<Animator>().SetTrigger("pressed");
                 }
@@ -108,6 +109,7 @@ public class obstacleLogic : MonoBehaviour
         GetComponent<BoxCollider2D>().enabled = false;
         GetComponent<Animator>().SetTrigger("pressed");
         _data.modifyObstacle(true, _obstacleID, SceneManager.GetActiveScene().buildIndex);
+        _associatedWall.active = false;
         saveSystem.saveObstaclesData(_data.getStoredData());
     }
 

@@ -9,15 +9,13 @@ public class downWardBlowSkill : MonoBehaviour
     [SerializeField] private LayerMask _oneWayLayer;
     [SerializeField] private LayerMask _slopeLayer;
     [SerializeField] private LayerMask _enemiesLayer;
+    [SerializeField] private LayerMask _breakableWall;
 
     private List<int> _enemiesID;
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(config.getPlayer().GetComponent<downWardBlowController>().getIsInDownWardBlow());
-        if (!config.getPlayer().GetComponent<collisionController>().getIsGrounded() && !config.getPlayer().GetComponent<collisionController>().getIsOnLadderTop() &&
-            !config.getPlayer().GetComponent<collisionController>().getIsOnOneWay() && !config.getPlayer().GetComponent<collisionController>().getIsOnSlope() && 
-            !config.getPlayer().GetComponent<playerMovement>().getIsDodging())
+        if (!config.getPlayer().GetComponent<collisionController>().getIsOnPlatform() && !config.getPlayer().GetComponent<playerMovement>().getIsDodging())
         {
             if (inputManager.GetKey(inputEnum.down) && inputManager.GetKeyDown(inputEnum.primaryAttack) && !config.getPlayer().GetComponent<downWardBlowController>().getIsInDownWardBlow())
             {
@@ -32,6 +30,21 @@ public class downWardBlowSkill : MonoBehaviour
         if (config.getPlayer().GetComponent<downWardBlowController>().getIsInDownWardBlow())
         {
             doEnemiesRayCast();
+            doBreakableRayCast();
+        }
+    }
+
+    private void doBreakableRayCast()
+    {
+        Vector3 initialPos = new Vector3(config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.x - (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.x / 2),
+                                 config.getPlayer().GetComponent<combatController>().getDownWardHitbox().transform.position.y - (config.getPlayer().GetComponent<combatController>().getDownWardHitbox().size.y / 2),
+                                 1.0f);
+        float rayDistance = 0.5f;
+        RaycastHit2D hit = Physics2D.Raycast(initialPos, Vector2.down, rayDistance, _breakableWall);
+
+        if (hit.collider != null)
+        {
+            hit.collider.GetComponent<breakableWallBehaviour>().destroyWall();
         }
     }
 
@@ -86,7 +99,7 @@ public class downWardBlowSkill : MonoBehaviour
         Vector3 origin = config.getPlayer().transform.position - Vector3.up * (config.getPlayer().GetComponent<playerMovement>().getBoxCollider().size.y / 2f);
 
         // Lanzamos el rayo hacia abajo
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, Mathf.Infinity, _groundLayer | _ladderTopLayer | _oneWayLayer | _slopeLayer);
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, Mathf.Infinity, _groundLayer | _ladderTopLayer | _oneWayLayer | _slopeLayer | _breakableWall);
 
         if (hit && ((config.getPlayer().transform.position.y - hit.point.y) >= 10.0f))
         {

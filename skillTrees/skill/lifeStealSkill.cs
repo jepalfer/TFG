@@ -7,6 +7,11 @@ public class lifeStealSkill : skill, ISkill
 {
     [SerializeField] private lifeStealSkillData _skillData;
 
+    private void Awake()
+    {
+        _skillValues = new Dictionary<skillValuesEnum, float>();
+        _skillValues.Add(skillValuesEnum.lifeSteal, _skillData.getLifeSteal());
+    }
     public override skillData getData()
     {
         return _skillData;

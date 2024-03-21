@@ -8,6 +8,7 @@ public abstract class skill : MonoBehaviour
 {
     [SerializeField] protected skill[] _skillsToUnlock;
     [SerializeField] protected GameObject[] _linkList;
+    protected Dictionary<skillValuesEnum, float> _skillValues;
     private void Start()
     {
 
@@ -48,6 +49,10 @@ public abstract class skill : MonoBehaviour
 
     public abstract skillData getData();
 
+    public Dictionary<skillValuesEnum, float> getSkillValues()
+    {
+        return _skillValues;
+    }
     public void unlockSkill()
     {
         if (isUnlockable())

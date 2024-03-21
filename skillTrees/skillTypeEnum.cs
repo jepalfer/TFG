@@ -14,5 +14,6 @@ public enum skillTypeEnum
     functionality,
     regenUpgrade,
     probabilityAugment,
-    lifeSteal
+    lifeSteal,
+    souls
 }

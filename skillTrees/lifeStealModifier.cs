@@ -5,7 +5,7 @@ using UnityEngine;
 public class lifeStealModifier : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         lifeStealSkillData skillData = GetComponent<lifeStealSkill>().getData() as lifeStealSkillData;
         config.getPlayer().GetComponent<combatController>().setLifeSteal(config.getPlayer().GetComponent<combatController>().getLifeSteal() + skillData.getLifeSteal());

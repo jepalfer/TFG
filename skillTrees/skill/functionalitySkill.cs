@@ -14,12 +14,4 @@ public class functionalitySkill : skill, ISkill
     {
         return this;
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            Debug.Log("a");
-        }
-    }
 }

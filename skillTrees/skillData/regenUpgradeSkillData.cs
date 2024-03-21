@@ -7,11 +7,11 @@ public class regenUpgradeSkillData : skillData
 {
     [SerializeField] private upgradeTypeEnum _upgradeType;
     [SerializeField] private float _upgradeAmount;
+    
     public upgradeTypeEnum getUpgradeType()
     {
         return _upgradeType;
     }
-
     public float getUpgradeAmount()
     {
         return _upgradeAmount;

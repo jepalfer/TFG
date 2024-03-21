@@ -88,6 +88,31 @@ public class bonfireBehaviour : MonoBehaviour
     private enemyStateData _enemiesData;
 
     /// <summary>
+    /// Referencia al GameObject para tener 1 consumible recargable más.
+    /// </summary>
+    [SerializeField] private GameObject _levelUpRefillable;
+
+    /// <summary>
+    /// Referencia al GameObject que contiene la UI que indica que no tienes objetos clave para obtener 1 carga extra.
+    /// </summary>
+    [SerializeField] private GameObject _noItemUI;
+
+    /// <summary>
+    /// Referencia al GameObject que contiene la UI que indica que tienes objetos clave para obtener 1 carga.
+    /// </summary>
+    [SerializeField] private GameObject _obtainChargeUI;
+
+    /// <summary>
+    /// Booleano que indica si estamos en la interfaz que indica que no tenemos objeto clave.
+    /// </summary>
+    private static bool _isInNoItemUI;
+
+    /// <summary>
+    /// Booleano que indica si estamos en la interfaz que indica que tenemos objeto clave.
+    /// </summary>
+    private static bool _isInObtainChargeUI;
+
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// Asigna algunas variables, entre ellas la estática correspondiente.
     /// </summary>
@@ -163,6 +188,7 @@ public class bonfireBehaviour : MonoBehaviour
 
         //Guardamos la posición del jugador
         saveSystem.savePlayer();
+        saveSystem.saveLastScene();
 
         //Cargamos la escena en la que nos encontramos
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -218,6 +244,65 @@ public class bonfireBehaviour : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="_levelUpRefillable"/>.
+    /// </summary>
+    /// <returns>Objeto para obtener 1 carga extra.</returns>
+    public GameObject getChargeItem()
+    {
+        return _levelUpRefillable;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_noItemUI"/>.
+    /// </summary>
+    /// <returns>GameObject que contiene la UI que indica que no tienes objeto clave para obtener 1 carga más.</returns>
+    public GameObject getNoItemUI()
+    {
+        return _noItemUI;
+    }
+
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_obtainChargeUI"/>.
+    /// </summary>
+    /// <returns>GameObject que contiene la UI que indica que tienes objeto clave para obtener 1 carga más.</returns>
+    public GameObject getObtainChargeUI()
+    {
+        return _obtainChargeUI;
+    }
+
+    /// <summary>
+    /// Método que se ejecuta al pulsar el botón de usar infusión del támesis.
+    /// </summary>
+    public void useKeyItem()
+    {
+        inventoryData loadedInventory = saveSystem.loadInventory();
+
+        if (loadedInventory != null)
+        {
+            serializedItemData item = loadedInventory.getInventory().Find(item => item.getData().getID() == _levelUpRefillable.GetComponent<generalItem>().getID());
+            if (item != null)
+            {
+                //Interfaz de confirmación de uso de objeto
+                _obtainChargeUI.SetActive(true);
+                _isInObtainChargeUI = true;
+            }
+            else
+            {
+                //Interfaz de aviso de que no tienes objeto
+                _noItemUI.SetActive(true);
+                _isInNoItemUI = true;
+            }
+        }
+        else
+        {
+            //Interfaz de aviso de que no tienes objeto
+            _noItemUI.SetActive(true);
+            _isInNoItemUI = true;
+        }
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_isInBonfireMenu"/>.
     /// </summary>
     /// <returns>Booleano que indica si estamos o no en el menú de la hoguera.</returns>
@@ -225,6 +310,43 @@ public class bonfireBehaviour : MonoBehaviour
     {
         return _isInBonfireMenu;
     }
+
+    /// <summary>
+    /// Setter que modifica <see cref="_isInNoItemUI"/>.
+    /// </summary>
+    /// <param name="val">El valor a asignar.</param>
+    public static void setIsInNoItem(bool val)
+    {
+        _isInNoItemUI = val;
+    }
+
+    /// <summary>
+    /// Setter que modifica <see cref="_isInObtainChargeUI"/>.
+    /// </summary>
+    /// <param name="val">El valor a asignar.</param>
+    public static void setIsInObtainCharge(bool val)
+    {
+        _isInObtainChargeUI = val;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_isInNoItemUI"/>.
+    /// </summary>
+    /// <returns>Booleano que indica si estamos en la UI que indica que no tenemos objeto clave.</returns>
+    public static bool getIsInNoItem()
+    {
+        return _isInNoItemUI;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_isInObtainChargeUI"/>.
+    /// </summary>
+    /// <returns>Booleano que indica si estamos en la UI que indica que tenemos objeto clave.</returns>
+    public static bool getIsInObtainCharge()
+    {
+        return _isInObtainChargeUI;
+    }
+
 
     /// <summary>
     /// Método que activa o desactiva la UI de la hoguera.
