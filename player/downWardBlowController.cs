@@ -45,10 +45,9 @@ public class downWardBlowController : MonoBehaviour
 
     private void Update()
     {
-        if (config.getPlayer().GetComponent<collisionController>().getIsGrounded() || config.getPlayer().GetComponent<collisionController>().getIsOnLadderTop() ||
-            config.getPlayer().GetComponent<collisionController>().getIsOnOneWay() || config.getPlayer().GetComponent<collisionController>().getIsOnSlope())
+        if (config.getPlayer().GetComponent<collisionController>().getIsOnPlatform())
         {
-            if (_canCreateExpansive && _blowHeight == heightEnum.strong)
+            if (_canCreateExpansive && _blowHeight == heightEnum.strong && !config.getPlayer().GetComponent<collisionController>().getIsOnBreakable())
             {
                 Vector2 leftHitPos = new Vector2(transform.position.x - GetComponent<playerMovement>().getBoxCollider().size.x, 
                                                  transform.position.y - (GetComponent<playerMovement>().getBoxCollider().size.y / 2) - 

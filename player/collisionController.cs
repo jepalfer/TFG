@@ -63,9 +63,18 @@ public class collisionController : MonoBehaviour
     [SerializeField] private bool _isOnSlope;
 
     /// <summary>
+    /// Booleano que indica si estamos en una plataforma rompible.
+    /// </summary>
+    [SerializeField] private bool _isOnBreakable;
+
+    /// <summary>
     /// Referencia a la capa de suelo.
     /// </summary>
     [SerializeField] private LayerMask _groundLayer;
+    /// <summary>
+    /// Referencia a la capa de plataformas rompibles.
+    /// </summary>
+    [SerializeField] private LayerMask _breakableLayer;
 
     /// <summary>
     /// Referencia a la capa de plataformas "oneWay".
@@ -149,21 +158,21 @@ public class collisionController : MonoBehaviour
             //Si tenemos equipada algun arma
             if (GetComponent<combatController>().getPrimaryWeapon() != null || GetComponent<combatController>().getSecundaryWeapon() != null)
             {
-                bool condicion = true;
+                bool condition = true;
                 //Si tenemos equipada el arma primaria
                 if (GetComponent<combatController>().getPrimaryWeapon() != null)
                 {
                     //Comprobamos que NO estemos atacando
-                    condicion = !GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getIsAttacking();
+                    condition = !GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getIsAttacking();
                 }
                 //Si tenemos el arma secundaria
                 if (GetComponent<combatController>().getSecundaryWeapon() != null)
                 {
                     //Comprobamos que NO estemos atacando y hacemos un AND para no perder el valor anterior
-                    condicion = !GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getIsAttacking() && condicion;
+                    condition = !GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getIsAttacking() && condition;
                 }
                 //Si no estábamos atacando con cualquiera de las 2 armas comprobamos colisiones
-                if (condicion)
+                if (condition)
                 {
                     headCheck();
                     oneWayCheck();
@@ -171,6 +180,7 @@ public class collisionController : MonoBehaviour
                     GroundCheck();
                     ladderTopCheck();
                     slopeCheck();
+                    breakableCheck();
                 }
                 else //Si no entonces ponemos todo a false para evitar poder movernos, saltar, dashear...
                 {
@@ -190,6 +200,7 @@ public class collisionController : MonoBehaviour
                 GroundCheck();
                 ladderTopCheck();
                 slopeCheck();
+                breakableCheck();
             }
         }
            
@@ -211,6 +222,7 @@ public class collisionController : MonoBehaviour
             slopeCheckVertical(checkPos);
         }
     }
+
 
     /// <summary>
     /// Método que hace un trazado de rayos vertical.
@@ -277,6 +289,14 @@ public class collisionController : MonoBehaviour
         _isTouchingSide = Physics2D.OverlapBox(_sideCheckCollider.position, _side, 1f, _groundLayer);
 
     }
+    /// <summary>
+    /// Método que comprueba la colisión con una plataforma rompible.
+    /// </summary>
+    private void breakableCheck()
+    {
+        _isOnBreakable = false;
+        _isOnBreakable = Physics2D.OverlapBox(_groundCheckCollider.position, _ground, 1f, _breakableLayer);
+    }
 
     /// <summary>
     /// Método que comprueba la colisión con el techo.
@@ -335,6 +355,15 @@ public class collisionController : MonoBehaviour
     }
 
     /// <summary>
+    /// Método auxiliar para saber cuándo estamos tocando cualquier suelo.
+    /// </summary>
+    /// <returns>Booleano que se obtiene de hacer OR lógicos a las distintas comprobaciones.</returns>
+    public bool getIsOnPlatform()
+    {
+        return getIsGrounded() || getIsOnLadderTop() || getIsOnOneWay() || getIsOnSlope() || getIsOnBreakable();
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_isGrounded"/>.
     /// </summary>
     /// <returns>Booleano que indica si estamos tocando suelo.</returns>
@@ -359,6 +388,15 @@ public class collisionController : MonoBehaviour
     public bool getIsOnOneWay()
     {
         return _isOnOneWay;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_isOnBreakable"/>.
+    /// </summary>
+    /// <returns>Booleano que indica si estamos tocando una plataforma rompible.</returns>
+    public bool getIsOnBreakable()
+    {
+        return _isOnBreakable;
     }
 
     /// <summary>

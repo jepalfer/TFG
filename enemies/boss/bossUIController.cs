@@ -42,4 +42,13 @@ public class bossUIController : MonoBehaviour
 
         _HPBar.value -= _received;
     }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_UI"/>.
+    /// </summary>
+    /// <returns>Un GameObject que contiene la interfaz del jefe.</returns>
+    public GameObject getUI()
+    {
+        return _UI;
+    }
 }

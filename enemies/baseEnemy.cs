@@ -16,6 +16,7 @@ public class baseEnemy : ScriptableObject
     /// <summary>
     /// La descripción del enemigo.
     /// </summary>
+    [TextArea]
     [SerializeField] private string _enemyDesc;
 
     /// <summary>

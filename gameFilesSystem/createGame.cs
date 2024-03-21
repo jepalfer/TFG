@@ -52,7 +52,7 @@ public class createGame : MonoBehaviour
 
             profileIndex.addName(profileName);
             saveSystem.saveProfiles();
-            SceneManager.LoadScene("ToL");
+            SceneManager.LoadScene("royalPalace1");
         }
         else
         {

@@ -11,7 +11,11 @@ public class skillManager : MonoBehaviour
     public void equipSkill(skillData skillToEquip, int index)
     {
 
-        _equippedSkills[index] = getSkillToEquip(skillToEquip.getType(), skillToEquip.getSkillID());
+        if (_equippedSkills[index] != null)
+        {
+            Destroy(_equippedSkills[index]);
+        }
+        _equippedSkills[index] = Instantiate(getSkillToEquip(skillToEquip.getType(), skillToEquip.getSkillID()));
     }
 
     public List<GameObject> getAllSkills()
@@ -59,7 +63,8 @@ public class skillManager : MonoBehaviour
             {
                 if (equippedData.getIDs()[i] != -1)
                 {
-                    _equippedSkills[i] = getSkillToEquip(equippedData.getTypes()[i], equippedData.getIDs()[i]);
+                    Destroy(_equippedSkills[i]);
+                    _equippedSkills[i] = Instantiate(getSkillToEquip(equippedData.getTypes()[i], equippedData.getIDs()[i]));
                     if (_equippedSkills[i] != null)
                     {
                         UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<skill>().getSkillSprite();

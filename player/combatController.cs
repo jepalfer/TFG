@@ -111,7 +111,7 @@ public class combatController : MonoBehaviour
     private int _levelThreshold;
 
     /// <summary>
-    /// Datos sobre la última hoguera visitada.
+    /// Datos sobre la última hoguera visitada para revivir ahí.
     /// </summary>
     private lastBonfireData _bonfireData;
 
@@ -124,6 +124,127 @@ public class combatController : MonoBehaviour
     /// Referencia a la hitbox del ataque en picado.
     /// </summary>
     [SerializeField] private BoxCollider2D _downWardHitbox;
+
+    /// <summary>
+    /// Datos sobre el contenedor de almas instanciado.
+    /// </summary>
+    private soulContainerData _soulContainerData;
+
+    /// <summary>
+    /// Referencia al prefab del contenedor de almas para instanciarlo.
+    /// </summary>
+    [SerializeField] private GameObject _soulContainerPrefab;
+
+    /// <summary>
+    /// Tiempo total de aumento de daño de sangrado.
+    /// </summary>
+    [SerializeField] private float _bleedDamageTotalTime;
+
+    /// <summary>
+    /// Tiempo transcurrido con el buff de subida de daño de sangrado.
+    /// </summary>
+    private float _bleedDamageTime;
+
+    /// <summary>
+    /// Tiempo total de aumento de penetración de armadura.
+    /// </summary>
+    [SerializeField] private float _armorPenTotalTime;
+
+    /// <summary>
+    /// Tiempo transcurrido con el buff de subida de penetración de armadura.
+    /// </summary>
+    private float _armorPenTime;
+
+    /// <summary>
+    /// Tiempo total de aumento de daño crítico.
+    /// </summary>
+    [SerializeField] private float _critDamageTotalTime;
+
+    /// <summary>
+    /// Tiempo transcurrido con el buff de subida de daño crítico.
+    /// </summary>
+    private float _critDamageTime;
+
+    /// <summary>
+    /// Tiempo total de aumento de probabilidad de sangrado.
+    /// </summary>
+    [SerializeField] private float _bleedProbabilityTotalTime;
+
+    /// <summary>
+    /// Tiempo transcurrido con el buff de subida de probabilidad de sangrado.
+    /// </summary>
+    private float _bleedProbabilityTime;
+
+    /// <summary>
+    /// Tiempo total de aumento de probabilidad de crítico.
+    /// </summary>
+    [SerializeField] private float _critProbabilityTotalTime;
+
+    /// <summary>
+    /// Tiempo transcurrido con el buff de subida de probabilidad de crítico.
+    /// </summary>
+    private float _critProbabilityTime;
+
+    /// <summary>
+    /// Flag booleano para saber si está activo el bufo de subida de daño de sangrado.
+    /// </summary>
+    private bool _bleedDamageActive;
+
+    /// <summary>
+    /// Flag booleano para saber si está activo el bufo de subida de penetración de armadura.
+    /// </summary>
+    private bool _armorPenActive;
+
+    /// <summary>
+    /// Flag booleano para saber si está activo el bufo de subida de probabilidad de sangrado.
+    /// </summary>
+    private bool _bleedProbabilityActive;
+
+    /// <summary>
+    /// Flag booleano para saber si está activo el bufo de subida de daño crítico.
+    /// </summary>
+    private bool _critDamageActive;
+
+    /// <summary>
+    /// Flag booleano para saber si está activo el bufo de subida de probabilidad de crítico.
+    /// </summary>
+    private bool _critProbabilityActive;
+
+    /// <summary>
+    /// Flag booleano para saber si está activo el bufo de recuperación de stamina.
+    /// </summary>
+    private bool _staminaUpgradeActive;
+
+    /// <summary>
+    /// Valor extra de la probabilidad de sangrado dada por los consumibles.
+    /// </summary>
+    private float _extraBleedingProbability;
+
+    /// <summary>
+    /// Valor extra de la probabilidad de crítico dada por los consumibles.
+    /// </summary>
+    private float _extraCritProbability;
+
+    /// <summary>
+    /// Tiempo total de bufo de recuperación de stamina
+    /// </summary>
+    private float _staminaUpgradeTotalTime;
+
+    /// <summary>
+    /// Tiempo transcurrido con el buff de recuperación de stamina.
+    /// </summary>
+    private float _staminaUpgradeTime;
+
+    /// <summary>
+    /// Valor extra de recuperación de stamina.
+    /// </summary>
+    private float _extraStaminaUpgrade;
+
+    /// <summary>
+    /// Booleano para controlar que no se llame varias veces al método de morir.
+    /// </summary>
+    private bool _isDying;
+
     /// <summary>
     /// Método que se ejecuta al iniciar el script. Asigna varios valores.
     /// </summary>
@@ -135,7 +256,21 @@ public class combatController : MonoBehaviour
         _critDamageProbability = 10;
         _levelThreshold = 10;
         _levelUpMultiplier = 5f;
-    }
+        _isDying = false;
+        _bonfireData = saveSystem.loadLastBonfireData();
+
+        if (_bonfireData == null)
+        {
+            saveSystem.saveLastBonfireData();
+        }
+
+        _soulContainerData = saveSystem.loadSoulContainerData();
+
+        if (_soulContainerData != null && _soulContainerData.getPlayerDied() && _soulContainerData.getSceneID() == SceneManager.GetActiveScene().buildIndex)
+        {
+            Instantiate(_soulContainerPrefab);
+        }
+    } 
 
     /// <summary>
     /// Método que se ejecuta al iniciar el script antes de start. Asigna los valores de <see cref="statSystem"/>.
@@ -338,6 +473,25 @@ public class combatController : MonoBehaviour
     {
         return _downWardHitbox;
     }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_extraBleedingProbability"/>.
+    /// </summary>
+    /// <returns>La probabilidad extra de infligir sangrado.</returns>
+    public float getExtraBleedingProbability()
+    {
+        return _extraBleedingProbability;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_extraCritProbability"/>.
+    /// </summary>
+    /// <returns>La probabilidad extra de infligir crítico.</returns>
+    public float getExtraCritProbability()
+    {
+        return _extraCritProbability;
+    }
+
     /// <summary>
     /// Método que instancia una bala en una posición que depende de la dirección a la que miremos.
     /// </summary>
@@ -468,6 +622,84 @@ public class combatController : MonoBehaviour
     }
 
     /// <summary>
+    /// Método auxiliar para controlar la inicialización del efecto de la mejora de penetración de armadura.
+    /// </summary>
+    /// <param name="value">La mejora.</param>
+    /// <param name="totalTime">El tiempo que dura la mejora.</param>
+    public void useArmorPenConsumable(float value, float totalTime)
+    {
+        _armorPenActive = true;
+        _armorPenTime = 0f;
+        _armorPenTotalTime = totalTime;
+        _penetrationDamage = value * 100;
+    }
+
+    /// <summary>
+    /// Método auxiliar para controlar la inicialización del efecto de la mejora de daño de sangrado.
+    /// </summary>
+    /// <param name="value">La mejora.</param>
+    /// <param name="totalTime">El tiempo que dura la mejora.</param>
+    public void useBleedDamageConsumable(float value, float totalTime)
+    {
+        _bleedDamageActive = true;
+        _bleedDamageTime = 0f;
+        _bleedDamageTotalTime = totalTime;
+        _bleedingDamage = value * 100;
+    }
+
+    /// <summary>
+    /// Método auxiliar para controlar la inicialización del efecto de la mejora de probabilidad de sangrado.
+    /// </summary>
+    /// <param name="value">La mejora.</param>
+    /// <param name="totalTime">El tiempo que dura la mejora.</param>
+    public void useBleedProbabilityConsumable(float value, float totalTime)
+    {
+        _bleedProbabilityActive = true;
+        _bleedProbabilityTime = 0f;
+        _bleedProbabilityTotalTime = totalTime;
+        _extraBleedingProbability = value * 100;
+    }
+
+    /// <summary>
+    /// Método auxiliar para controlar la inicialización del efecto de la mejora de daño crítico.
+    /// </summary>
+    /// <param name="value">La mejora.</param>
+    /// <param name="totalTime">El tiempo que dura la mejora.</param>
+    public void useCritDamageConsumable(float value, float totalTime)
+    {
+        _critDamageActive = true;
+        _critDamageTime = 0f;
+        _critDamageTotalTime = totalTime;
+        _critDamage = value * 100;
+    }
+
+    /// <summary>
+    /// Método auxiliar para controlar la inicialización del efecto de la mejora de probabilidad crítica.
+    /// </summary>
+    /// <param name="value">La mejora.</param>
+    /// <param name="totalTime">El tiempo que dura la mejora.</param>
+    public void useCritProbabilityConsumable(float value, float totalTime)
+    {
+        _critProbabilityActive = true;
+        _critProbabilityTime = 0f;
+        _critProbabilityTotalTime = totalTime;
+        _extraCritProbability = value * 100;
+    }
+
+    /// <summary>
+    /// Método auxiliar para controlar la inicialización del efecto de la mejora de stamina.
+    /// </summary>
+    /// <param name="value">La mejora.</param>
+    /// <param name="totalTime">El tiempo que dura la mejora.</param>
+    public void useStaminaUpgradeConsumable(float value, float totalTime)
+    {
+        _staminaUpgradeActive = true;
+        _staminaUpgradeTime = 0f;
+        _staminaUpgradeTotalTime = totalTime;
+        _extraStaminaUpgrade = value;
+    }
+
+    /// <summary>
     /// Método auxiliar para calcular los golpes extras.
     /// </summary>
     /// <param name="primaryAttack">Paso de referencia de la variable donde se almacenan los golpes extras del arma primaria.</param>
@@ -477,12 +709,12 @@ public class combatController : MonoBehaviour
         List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
         for (int i = 0; i < equippedSkills.Count; ++i)
         {
-            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.combo)
+            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<comboIncreaseSkill>() != null)
             {
-                comboSkillData skillData = equippedSkills[i].GetComponent<skill>().getData() as comboSkillData;
+                //comboSkillData skillData = equippedSkills[i].GetComponent<skill>().getData() as comboSkillData;
 
-                primaryAttack += skillData.getPrimaryIncrease();
-                secundaryAttack += skillData.getSecundaryIncrease();
+                primaryAttack += (int) equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.primaryAttackIncrease];
+                secundaryAttack += (int)equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.secundaryAttackIncrease];
             }
         }
     }
@@ -492,18 +724,20 @@ public class combatController : MonoBehaviour
     /// Método auxiliar para calcular la probabilidad extra de sangrado proporcionada por habilidades.
     /// </summary>
     /// <param name="probability">Paso por referencia de la probabilidad base para sumar y que se almacene.</param>
-    public void calculateExtraBleedingProbability(ref float probability)
+    public void calculateSkillBleedingProbability(ref float probability)
     {
         List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
         for (int i = 0; i < equippedSkills.Count; i++)
         {
-            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.probabilityAugment)
+            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<probabilityAugmentSkill>() != null)
             {
+                /*
                 probabilityAugmentSkillData castedData = equippedSkills[i].GetComponent<skill>().getData() as probabilityAugmentSkillData;
                 if (castedData.getAugmentType() == probabilityTypeEnum.bleeding)
                 {
                     probability += (int)(castedData.getAugment() * 100);
-                }
+                }*/
+                probability += (int) (equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.bleedProbability] * 100);
             }
         }
         int extraStrength = 0, extraDexterity = 0, extraPrecision = 0;
@@ -516,18 +750,21 @@ public class combatController : MonoBehaviour
     /// Método auxiliar para calcular la probabilidad extra de daño crítico proporcionada por habilidades.
     /// </summary>
     /// <param name="probability">Paso por referencia de la probabilidad base para sumar y que se almacene.</param>
-    public void calculateExtraCritDamageProbability(ref float probability)
+    public void calculateSkillCritDamageProbability(ref float probability)
     {
         List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
         for (int i = 0; i < equippedSkills.Count; i++)
         {
-            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.probabilityAugment)
+            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<probabilityAugmentSkill>() != null)
             {
+                /*
                 probabilityAugmentSkillData castedData = equippedSkills[i].GetComponent<skill>().getData() as probabilityAugmentSkillData;
                 if (castedData.getAugmentType() == probabilityTypeEnum.critDamage)
                 {
                     probability += (int)(castedData.getAugment() * 100);
-                }
+                }*/
+
+                probability += (int)(equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.critProbability] * 100);
             }
         }
 
@@ -548,13 +785,11 @@ public class combatController : MonoBehaviour
         List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
         for (int i = 0; i < equippedSkills.Count; ++i)
         {
-            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.stat)
+            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<statUpgradeSkill>() != null)
             {
-                statSkillData skillData = equippedSkills[i].GetComponent<skill>().getData() as statSkillData;
-
-                strength += skillData.getStrength();
-                dexterity += skillData.getDexterity();
-                precision += skillData.getPrecision();
+                strength += (int)equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.strengthUpgrade];
+                dexterity += (int)equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.dexterityUpgrade];
+                precision += (int)equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.precisionUpgrade];
             }
         }
     }
@@ -568,8 +803,9 @@ public class combatController : MonoBehaviour
         List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
         for (int i = 0; i < equippedSkills.Count; ++i)
         {
-            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.regenUpgrade)
+            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<regenUpgradeSkill>() != null)
             {
+                /*
                 regenUpgradeSkillData skillData = equippedSkills[i].GetComponent<skill>().getData() as regenUpgradeSkillData;
 
                 if (skillData.getUpgradeType() == upgradeTypeEnum.HP)
@@ -580,6 +816,9 @@ public class combatController : MonoBehaviour
                 {
                     stamina += skillData.getUpgradeAmount();
                 }
+                */
+                HP += equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.HPUpgrade];
+                stamina += equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.staminaUpgrade];
             }
         }
     }
@@ -592,23 +831,29 @@ public class combatController : MonoBehaviour
     /// <param name="crit">Paso por referencia al daño crítico.</param>
     public void calculateExtraDamages(ref float penetrating, ref float bleeding, ref float crit)
     {
-
+        penetrating = _penetrationDamage;
+        bleeding = _bleedingDamage;
+        crit = _critDamage;
         List<GameObject> equipped = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
         for (int i = 0; i < equipped.Count; i++)
         {
             if (equipped[i] != null && equipped[i].GetComponent<statusSkill>() != null)
             {
+                /*
                 statusSkillData skillData = equipped[i].GetComponent<statusSkill>().getData() as statusSkillData;
                 bleeding += skillData.getBleedingDamage() * 100;
                 penetrating += skillData.getPenetrationDamage() * 100;
-                crit += skillData.getCritDamage() * 100;
+                crit += skillData.getCritDamage() * 100;*/
+                penetrating += equipped[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.penetrationDamage] * 100;
+                bleeding += equipped[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.bleedingDamage] * 100;
+                crit += equipped[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.critDamage] * 100;
+
+                Debug.Log(equipped[i].GetComponent<skill>().getSkillValues());
             }
         }
         int extraStrength = 0, extraDexterity = 0, extraPrecision = 0;
         calculateAttributesLevelUp(ref extraStrength, ref extraDexterity, ref extraPrecision);
         penetrating += (config.getPlayer().GetComponent<combatController>().getLevelMultiplier()) * ((statSystem.getStrength().getLevel() + extraStrength) / config.getPlayer().GetComponent<combatController>().getLevelThreshold());
-
-
     }
 
     /// <summary>
@@ -626,6 +871,79 @@ public class combatController : MonoBehaviour
             !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu() && !inputManager.GetKey(inputEnum.down) && !inputManager.GetKey(inputEnum.up) &&
             !GetComponent<downWardBlowController>().getIsInDownWardBlow())
         {
+
+            if (_bleedDamageActive)
+            {
+                _bleedDamageTime += Time.deltaTime;
+
+                if (_bleedDamageTime > _bleedDamageTotalTime)
+                {
+                    _bleedDamageActive = false;
+                    _bleedingDamage = 0f;
+                    Debug.Log("sangradoDaño");
+                }
+            }
+
+            if (_armorPenActive)
+            {
+                _armorPenTime += Time.deltaTime;
+
+                if (_armorPenTime > _armorPenTotalTime)
+                {
+                    _armorPenActive = false;
+                    _penetrationDamage = 0f;
+                    Debug.Log("armorpen");
+                }
+            }
+
+            if (_critDamageActive)
+            {
+                _critDamageTime += Time.deltaTime;
+
+                if (_critDamageTime> _critDamageTotalTime)
+                {
+                    _critDamageActive = false;
+                    _critDamage = 0f;
+                    Debug.Log("critDaño");
+                }
+            }
+
+            if (_bleedProbabilityActive)
+            {
+                _bleedProbabilityTime += Time.deltaTime;
+
+                if (_bleedProbabilityTime > _bleedProbabilityTotalTime)
+                {
+                    _bleedProbabilityActive = false;
+                    _extraBleedingProbability = 0f;
+                    Debug.Log("sangradoProb");
+                }
+            }
+
+            if (_critProbabilityActive)
+            {
+                _critProbabilityTime += Time.deltaTime;
+
+                if (_critProbabilityTime > _critProbabilityTotalTime)
+                {
+                    _critProbabilityActive = false;
+                    _extraCritProbability = 0f;
+                    Debug.Log("critProb");
+                }
+            }
+
+            if (_staminaUpgradeActive)
+            {
+                _staminaUpgradeTime += Time.deltaTime;
+
+                if (_staminaUpgradeTime > _staminaUpgradeTotalTime)
+                {
+                    _staminaUpgradeActive = false;
+                    _extraStaminaUpgrade = 0f;
+                    Debug.Log("stamina");
+                }
+            }
+
             //Comprobamos arma primaria
             if (_primary != null)
             {
@@ -656,15 +974,18 @@ public class combatController : MonoBehaviour
 
             if (!_isAttacking && !GetComponent<playerMovement>().getIsDodging())
             {
-                float HPUpgrade = 0, staminaUpgrade = 0;
+                float HPUpgrade = 0, staminaUpgrade = _extraStaminaUpgrade;
                 config.getPlayer().GetComponent<combatController>().calculateRegenUpgrade(ref HPUpgrade, ref staminaUpgrade);
 
                 GetComponent<statsController>().restoreStamina(_staminaRestore + (_staminaRestore * staminaUpgrade));
             }
         }
-        if (GetComponent<statsController>().getCurrentHP() <= 0)
+        if (GetComponent<statsController>().getCurrentHP() <= 0 && !_isDying)
         {
-            die();
+            _isDying = true;
+            GetComponent<playerMovement>().enabled = false;
+            GetComponent<stateMachine>().enabled = false;
+            Invoke("die", 2f);
         }
     }
 
@@ -674,7 +995,8 @@ public class combatController : MonoBehaviour
     private void die()
     {
         _bonfireData = saveSystem.loadLastBonfireData();
-
+        saveSystem.saveSoulContainerData(true);
+        setSouls(0);
         if (_bonfireData != null)
         {
             Debug.Log(_bonfireData.getSceneID());
@@ -683,7 +1005,9 @@ public class combatController : MonoBehaviour
             GetComponent<statsController>().healHP(GetComponent<statsController>().getMaxHP());
             GetComponent<statsController>().restoreStamina(GetComponent<statsController>().getMaxStamina());
             transform.position = pos;
+            saveSystem.savePlayer();
         }
+        config.getInventory().GetComponent<inventoryManager>().refill();
     }
 
     private void OnDrawGizmos()

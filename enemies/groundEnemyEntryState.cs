@@ -23,7 +23,7 @@ public class groundEnemyEntryState : enemyBaseState
     public override void onEnter(enemyStateMachine _stateMachine)
     {
         base.onEnter(_stateMachine);
-        //Debug.Log("Entry" + getAttackCounter().ToString());
+        Debug.Log("Entry" + getAttackCounter().ToString());
 
         //_stateMachine.getAnimator().SetTrigger("Attack" + getAttackCounter().ToString());
         GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = true;
@@ -40,19 +40,25 @@ public class groundEnemyEntryState : enemyBaseState
         //El tiempo de espera ha acabado
         if (_time >= _attackTime)
         {
-
-            //Estamos a la vista pero fuera del rango de ataque
-            if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().gameObject.transform.position, config.getPlayer().transform.position) >= _currentStateMachine.GetComponent<enemy>().getAttackRange())
+            //Si estamos fuera del rango de ataque
+            if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().transform.position, config.getPlayer().transform.position) > GetComponent<enemy>().getAttackRange())
             {
                 GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
-                _currentStateMachine.setNextState(new enemyChaseState());
-            } //No estamos a rango de ataque
+                if (GetComponent<boss>() != null)
+                {
+                    _currentStateMachine.setNextState(new enemyChaseState());
+                }
+                else
+                {
+                    _currentStateMachine.setNextState(new idleEnemyState());
+                }
+            }
             else if (_attackCounter == (_currentStateMachine.GetComponent<enemy>().getTimes().Count - 1))    //Ya ha acabado
             {
                 GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
-                _currentStateMachine.setNextState(new idleEnemyState());
+                _currentStateMachine.setNextState(new groundEnemyEntryState(GetComponent<enemy>().getTimes()[0], 0));
             } //El siguiente ataque es el último
-            else if (_attackCounter == (_currentStateMachine.GetComponent<enemy>().getTimes().Count - 2))   //Es finisher
+            else if (_attackCounter == (_currentStateMachine.GetComponent<enemy>().getTimes().Count - 2))   //El siguiente es el último golpe
             {
                 GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
                 _currentStateMachine.setNextState(new groundEnemyFinisherState(_currentStateMachine.GetComponent<enemy>().getTimes()[_attackCounter + 1], _attackCounter + 1));

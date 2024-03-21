@@ -40,7 +40,7 @@ public class enemyController : MonoBehaviour
         _sightDistance = GetComponent<enemy>().getDetectionRange();
 
         //Ignoramos colisiones
-        Physics2D.IgnoreCollision(_player.GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
+        Physics2D.IgnoreCollision(config.getPlayer().GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
     }
 
     /// <summary>
@@ -48,24 +48,27 @@ public class enemyController : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        
         //Si estamos en rango de visionado y fuera del rango de ataque
-        if (Vector3.Distance(transform.position, _player.transform.position) <= _sightDistance && Vector3.Distance(transform.position, _player.transform.position) >= GetComponent<enemy>().getAttackRange())
+        if (Vector3.Distance(transform.position, config.getPlayer().transform.position) <= _sightDistance && Vector3.Distance(transform.position, config.getPlayer().transform.position) >= GetComponent<enemy>().getAttackRange())
         {
+            /*
             //Perseguimos al jugador
             if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState) || _stateMachine.getCurrentState().GetType() == typeof(idleEnemyState))
             {
                 _stateMachine.setNextState(new enemyChaseState());
-            }
+            }*/
         }
         //Si estamos en rango de ataque
-        else if (Vector3.Distance(transform.position, _player.transform.position) <= GetComponent<enemy>().getAttackRange())
+        else if (Vector3.Distance(transform.position, config.getPlayer().transform.position) <= GetComponent<enemy>().getAttackRange())
         {
             //Atacamos
-            if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState))
+            if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState) || _stateMachine.getCurrentState().GetType() == typeof(idleEnemyState))
             {
                 _stateMachine.setNextState(new groundEnemyEntryState(GetComponent<enemy>().getTimes()[0], 0));
             }
         }
+        
     }
 
     /// <summary>
@@ -85,4 +88,5 @@ public class enemyController : MonoBehaviour
     {
         return _sightDistance;
     }
+
 }

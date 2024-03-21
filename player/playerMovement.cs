@@ -2,13 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class playerMovement : MonoBehaviour
 {
     //Camera
-    [SerializeField] private GameObject camera;
-
-
+    [SerializeField] private GameObject _camera;
     //------------------------------------------- PLAYER COMPONENTS --------------------------------------------------------
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private BoxCollider2D _bc;
@@ -68,22 +67,6 @@ public class playerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        playerData data = saveSystem.loadPlayer();
-
-        if (data != null)
-        {
-            Vector3 pos = new Vector3(data.getX(), data.getY(), data.getZ());
-            _facingRight = data.getIsFacingRight();
-
-            if (!_facingRight)
-            {
-                Vector3 currentScale = gameObject.transform.localScale;
-                currentScale.x *= -1;
-                gameObject.transform.localScale = currentScale;
-            }
-
-            transform.position = pos;
-        }
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
 
@@ -91,9 +74,9 @@ public class playerMovement : MonoBehaviour
 
         _bc =  colliders[0];
         _g0 = _rb.gravityScale;
-        _dashTimeMultiplier = 0.90f;
+        _dashTimeMultiplier = 5f;
         config.setPlayer(gameObject);
-        saveSystem.savePlayer();
+        //saveSystem.savePlayer();
     }    
 
 
@@ -106,8 +89,9 @@ public class playerMovement : MonoBehaviour
         }
         if (!UIController.getIsInPauseUI() && !UIController.getIsInEquippingSkillUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
             !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu() &&
-            !GetComponent<downWardBlowController>().getIsInDownWardBlow())
-        {
+            !GetComponent<downWardBlowController>().getIsInDownWardBlow() && !GetComponent<combatController>().getIsAttacking())
+        { 
+       
             if ((!inputManager.GetKey(inputEnum.right) && !inputManager.GetKey(inputEnum.left)))
             {
                 _ySpeed = _rb.velocity.y;
@@ -150,9 +134,13 @@ public class playerMovement : MonoBehaviour
                 _VSpeed = _direction * _climbingSpeed;
             }
 
+            if (!_hasRolled && !GetComponent<collisionController>().getIsOnPlatform())
+            {
+                _canRoll = true;
+            }
 
             //Si estamos en algo donde podemos saltar
-            if (!_isDodging && (GetComponent<collisionController>().getIsGrounded() || GetComponent<collisionController>().getIsOnLadderTop() || GetComponent<collisionController>().getIsOnOneWay() || GetComponent<collisionController>().getIsOnSlope()))
+            if (!_isDodging && (GetComponent<collisionController>().getIsOnPlatform()))
             {
                 if (!inputManager.GetKey(inputEnum.jump))
                 {
@@ -167,10 +155,6 @@ public class playerMovement : MonoBehaviour
                 _couldRoll = true;
                 _wasClimbing = false;
                 _hasRolled = false;
-                if (!_isDodging)
-                {
-                    _canMove = true;
-                }
 
                 /*_isJumping = false;
                 _distanceJumped = 0f;*/
@@ -237,6 +221,10 @@ public class playerMovement : MonoBehaviour
                 }
             }
 
+            if (!_isDodging && !GetComponent<combatController>().getIsAttacking() && !_wasClimbing)
+            {
+                _canMove = true;
+            }
 
             if (GetComponent<collisionController>().getHithead() && !_canClimb)
             {
@@ -246,7 +234,7 @@ public class playerMovement : MonoBehaviour
                 _rb.gravityScale = _g0;
             }
 
-            if (GetComponent<collisionController>().getIsGrounded() || GetComponent<collisionController>().getIsOnOneWay())
+            if (GetComponent<collisionController>().getIsOnPlatform() && !GetComponent<collisionController>().getIsOnLadderTop())
             {
                 manageLook();
             }
@@ -268,10 +256,6 @@ public class playerMovement : MonoBehaviour
             }
             if (_canClimb && !_isDodging)
             {
-                if (!GetComponent<collisionController>().getIsGrounded() && !GetComponent<collisionController>().getIsOnOneWay() && !_isJumping && !GetComponent<collisionController>().getIsOnLadderTop())
-                {
-//                    _canJump = false;
-                }
                 manageClimb();
             }
             if (_canRoll && inputManager.GetKeyDown(inputEnum.roll))
@@ -304,6 +288,8 @@ public class playerMovement : MonoBehaviour
                 }
             }
             _canMove = false;
+            _canRoll = true;
+            _hasRolled = false;
         }
 
         if (_isJumping)
@@ -321,6 +307,9 @@ public class playerMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método responsable de manejar el salto
+    /// </summary>
     void manageJump()
     {
         if (inputManager.GetKeyDown(inputEnum.jump))
@@ -328,16 +317,18 @@ public class playerMovement : MonoBehaviour
             _jumpsDone++;
         }
 
-        if ((inputManager.GetKey(inputEnum.jump) && _canJump) && _distanceJumped < _JUMP_HEIGHT)
+        if ((inputManager.GetKey(inputEnum.jump) && !_isDodging && _canJump) && _distanceJumped < _JUMP_HEIGHT)
         {
             GetComponent<collisionController>().setCanCheckSlope(false);
             GetComponent<collisionController>().setIsOnSlope(false);
             _wasJumping = true;
             _isJumping = true;
-            camera.GetComponent<cameraController>().setOffset(0f);
+            _camera.GetComponent<cameraController>().setOffset(0f);
             _rb.gravityScale = 0f;
             _rb.velocity = new Vector2(0f, 0f);
-            gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y + _jump * Time.deltaTime, gameObject.transform.position.z);
+            gameObject.transform.position = new Vector3(gameObject.transform.position.x, 
+                                                        gameObject.transform.position.y + _jump * Time.deltaTime, 
+                                                        gameObject.transform.position.z);
 
             _distanceJumped += _jump * Time.deltaTime;
         }
@@ -389,7 +380,7 @@ public class playerMovement : MonoBehaviour
 
             if (_cameraTimer >= _TIMELIMIT)
             {
-                camera.GetComponent<cameraController>().setOffset(2f);
+                _camera.GetComponent<cameraController>().setOffset(2f);
             }
         }
 
@@ -419,7 +410,7 @@ public class playerMovement : MonoBehaviour
             {
                 if (_cameraTimer >= _TIMELIMIT)
                 {
-                    camera.GetComponent<cameraController>().setOffset(-2f);
+                    _camera.GetComponent<cameraController>().setOffset(-2f);
                 }
             }
 
@@ -431,14 +422,14 @@ public class playerMovement : MonoBehaviour
             _canClimb = _couldClimb;
             _couldClimb = false;
             _cameraTimer = 0;
-            camera.GetComponent<cameraController>().setOffset(0f);
+            _camera.GetComponent<cameraController>().setOffset(0f);
         }
 
         if (inputManager.GetKeyUp(inputEnum.down))
         {
             _canRoll = true;
             _cameraTimer = 0;
-            camera.GetComponent<cameraController>().setOffset(0f);
+            _camera.GetComponent<cameraController>().setOffset(0f);
             _canMove = true;
             _isLookingDown = false;
             _canClimb = _couldClimb;
@@ -448,33 +439,42 @@ public class playerMovement : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Método responsable de mover al jugador.
+    /// </summary>
     void manageWalk()
     {
+        //Estamos presionando hacia la izquierda o derecha
         if (_HSpeed != 0)
         {
+            //Si no estamos chocando con una pared
             if (!GetComponent<collisionController>().getSide())
             {
-
                 if (GetComponent<collisionController>().getIsOnSlope() && !_isJumping)
                 {
-                    /* _newVelocity.Set(_movementSpeed * GetComponent<CollisionController>().getSlopeNormalPerpendicular().x * -_HSpeed, _movementSpeed * GetComponent<CollisionController>().getSlopeNormalPerpendicular().y * -_HSpeed);
-                     _rb.velocity = _newVelocity;
-                     */
                     if (GetComponent<collisionController>().getSlopeNormalPerpendicular().x == 0) //Estamos entrando  a una rampa
                     {
-                        gameObject.transform.position = new Vector3(gameObject.transform.position.x + (_HSpeed * Time.deltaTime), gameObject.transform.position.y, gameObject.transform.position.z);
+                        gameObject.transform.position = new Vector3(gameObject.transform.position.x + (_HSpeed * Time.deltaTime), 
+                                                                   gameObject.transform.position.y, 
+                                                                   gameObject.transform.position.z);
                     }
                     else //Estamos en la rampa
                     {
-                        gameObject.transform.position = new Vector3(gameObject.transform.position.x + (GetComponent<collisionController>().getSlopeNormalPerpendicular().x * -_HSpeed * Time.deltaTime), gameObject.transform.position.y + (GetComponent<collisionController>().getSlopeNormalPerpendicular().y * -_HSpeed * Time.deltaTime), gameObject.transform.position.z);
+                        float xOffset = (GetComponent<collisionController>().getSlopeNormalPerpendicular().x * -_HSpeed * Time.deltaTime);
+                        float yOffset = (GetComponent<collisionController>().getSlopeNormalPerpendicular().y * -_HSpeed * Time.deltaTime);
+                        gameObject.transform.position = new Vector3(gameObject.transform.position.x + xOffset, 
+                                                                   gameObject.transform.position.y + yOffset,
+                                                                   gameObject.transform.position.z);
                     }
                 }
-                else
+                else //El suelo es plano
                 {
-                    gameObject.transform.position = new Vector3(gameObject.transform.position.x + _HSpeed * Time.deltaTime, gameObject.transform.position.y, gameObject.transform.position.z);
+                    gameObject.transform.position = new Vector3(gameObject.transform.position.x + _HSpeed * Time.deltaTime, 
+                                                                gameObject.transform.position.y, 
+                                                                gameObject.transform.position.z);
                 }
             }
-            camera.GetComponent<cameraController>().setOffset(0f);
+            _camera.GetComponent<cameraController>().setOffset(0f);
         }
     }
 
@@ -494,7 +494,6 @@ public class playerMovement : MonoBehaviour
         _isDodging = true;
         _couldRoll = false;
         _canClimb = false;
-        _hasRolled = true;
         
 
         _rb.gravityScale = 0f;
@@ -541,10 +540,7 @@ public class playerMovement : MonoBehaviour
 
         float newRollTime = _rollTime;
 
-        if (statSystem.getAgility().getLevel() % 10 == 0)
-        {
-            newRollTime = Mathf.Pow(_rollTime * _dashTimeMultiplier, statSystem.getAgility().getLevel() / GetComponent<combatController>().getLevelThreshold());    
-        }
+        newRollTime -= newRollTime * ((_dashTimeMultiplier / 100f) * statSystem.getAgility().getLevel() / GetComponent<combatController>().getLevelThreshold());
 
         yield return new WaitForSeconds(newRollTime);
 
@@ -566,6 +562,8 @@ public class playerMovement : MonoBehaviour
         _isDodging = false;
         _canMove = true;
         _isJumping = false;
+        _hasRolled = true;
+        _canRoll = false;
     }
 
     #endregion
@@ -579,6 +577,11 @@ public class playerMovement : MonoBehaviour
     public void setCanClimb(bool climb)
     {
         _canClimb = climb;
+    }
+
+    public void setFacingRight(bool value)
+    {
+        _facingRight = value;
     }
 
     public void setCouldClimb(bool couldClimb)
@@ -638,6 +641,11 @@ public class playerMovement : MonoBehaviour
     //GETTERS
 
     #region gettersMethods
+
+    public GameObject getCamera()
+    {
+        return _camera;
+    }
 
     public BoxCollider2D getBoxCollider()
     {

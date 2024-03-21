@@ -21,7 +21,7 @@ public class groundEnemyComboState : enemyBaseState
     public override void onEnter(enemyStateMachine _stateMachine)
     {
         base.onEnter(_stateMachine);
-        //Debug.Log("combo" + getAttackCounter().ToString());
+        Debug.Log("combo" + getAttackCounter().ToString());
         GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = true;
         //_stateMachine.getAnimator().SetTrigger("Attack" + getAttackCounter().ToString());
 
@@ -38,12 +38,21 @@ public class groundEnemyComboState : enemyBaseState
         base.onUpdate();
         if (_time >= _attackTime)
         {
-            //No estamos en rango de ataque
-            if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().gameObject.transform.position, config.getPlayer().transform.position) >= _currentStateMachine.GetComponent<enemy>().getAttackRange())
+
+
+            if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().transform.position, config.getPlayer().transform.position) > GetComponent<enemy>().getAttackRange())
             {
-                GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
-                _currentStateMachine.setNextState(new enemyChaseState());
-            } //El combo ha acabado
+                GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false; 
+                
+                if (GetComponent<boss>() != null)
+                {
+                    _currentStateMachine.setNextState(new enemyChaseState());
+                }
+                else
+                {
+                    _currentStateMachine.setNextState(new idleEnemyState());
+                }
+            }
             else if (_attackCounter == (_currentStateMachine.GetComponent<enemy>().getTimes().Count - 1))    //Ya ha acabado
             {
                 GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;

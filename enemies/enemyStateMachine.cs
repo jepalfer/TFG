@@ -10,31 +10,31 @@ public class enemyStateMachine : MonoBehaviour
     /// <summary>
     /// El nombre de la máquina de estados.
     /// </summary>
-    [SerializeField] private string _name;
+    [SerializeField] protected string _name;
 
     /// <summary>
     /// El animator para las animaciones de ataques.
     /// </summary>
-    [SerializeField] private Animator _animator;
+    [SerializeField] protected Animator _animator;
     /// <summary>
     /// El estado principal.
     /// </summary>
-    private enemyState _mainStateType;
+    protected enemyState _mainStateType;
 
     /// <summary>
     /// El estado actual.
     /// </summary>
-    private enemyState _currentState;
+    protected enemyState _currentState;
 
     /// <summary>
     /// El próximo estado.
     /// </summary>
-    private enemyState _nextState;
+    protected enemyState _nextState;
 
     /// <summary>
     /// Método que se ejecuta al inicio del script e inicializa <see cref="_currentState"/>.
     /// </summary>
-    private void Start()
+    protected virtual void Start()
     {
         _currentState = new idleEnemyState();
     }
@@ -114,6 +114,10 @@ public class enemyStateMachine : MonoBehaviour
     /// </summary>
     private void Awake()
     {
+        if (_mainStateType == null)
+        {
+            _mainStateType = new idleEnemyState();
+        }
         setNextStateToMain();
     }
 

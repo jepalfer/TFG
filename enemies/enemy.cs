@@ -53,6 +53,16 @@ public class enemy : MonoBehaviour
     protected int _speed;
 
     /// <summary>
+    /// El punto de la izquierda para el movimiento del enemigo.
+    /// </summary>
+    [SerializeField] private GameObject _pointA;
+
+    /// <summary>
+    /// El punto de la derecha para el movimiento del enemigo.
+    /// </summary>
+    [SerializeField] private GameObject _pointB;
+
+    /// <summary>
     /// El rango de detección del enemigo.
     /// </summary>
     [SerializeField] protected float _detectionRange;
@@ -102,6 +112,10 @@ public class enemy : MonoBehaviour
     /// </summary>
     [SerializeField] private bool _isLookingRight;
 
+    /// <summary>
+    /// Flag booleano para saber cuando se puede dar la vuelta al llegar a <see cref="_pointA"/> o <see cref="_pointB"/>.
+    /// </summary>
+    [SerializeField] private bool _isFlipping;
     /// <summary>
     /// Método que se ejecuta al iniciar el script y que asigna todas las variables y carga la información acerca de los enemigos.
     /// </summary>
@@ -304,7 +318,44 @@ public class enemy : MonoBehaviour
     {
         return _enemy;
     }
-    
+
+    /// <summary>
+    /// Getter que devuelve un objeto nulo o <see cref="_pointA"/> dependiendo de si este existe.
+    /// </summary>
+    /// <returns>GameObject que contiene un objeto nulo o el punto izquierdo.</returns>
+    public GameObject getPointA()
+    {
+        GameObject point = null;
+        if (_pointA != null)
+        {
+            point = _pointA;
+        }
+        return point;
+    }
+
+    /// <summary>
+    /// Getter que devuelve un objeto nulo o <see cref="_pointB"/> dependiendo de si este existe.
+    /// </summary>
+    /// <returns>GameObject que contiene un objeto nulo o el punto derecho.</returns>
+    public GameObject getPointB()
+    {
+        GameObject point = null;
+        if (_pointB != null)
+        {
+            point = _pointB;
+        }
+        return point;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_isFlipping"/>.
+    /// </summary>
+    /// <returns>Booleano que indica si el enemigo está dándose la vuelta.</returns>
+    public bool getIsFlipping()
+    {
+        return _isFlipping;
+    }
+
     /// <summary>
     /// Método que voltea el sprite del enemigo.
     /// </summary>
@@ -314,6 +365,7 @@ public class enemy : MonoBehaviour
         currentScale.x *= -1;
         gameObject.transform.localScale = currentScale;
         _isLookingRight = !_isLookingRight;
+        _isFlipping = false;
     }
 
     /// <summary>
@@ -335,11 +387,11 @@ public class enemy : MonoBehaviour
         critDamage /= 100;
         armor -= armor * (penetrationDamage);
 
-        float critProbability = config.getPlayer().GetComponent<combatController>().getCritProbability();
+        float critProbability = config.getPlayer().GetComponent<combatController>().getCritProbability() + config.getPlayer().GetComponent<combatController>().getExtraCritProbability();
         int critValue = Random.Range(1, 101);
         float critDealt = 0;
 
-        config.getPlayer().GetComponent<combatController>().calculateExtraCritDamageProbability(ref critProbability);
+        config.getPlayer().GetComponent<combatController>().calculateSkillCritDamageProbability(ref critProbability);
 
         Debug.Log(critProbability);
         if ((float)critValue <= critProbability)
@@ -350,9 +402,9 @@ public class enemy : MonoBehaviour
         received = (dmg + (dmg * critDealt)) - (armor);
 
         int bleedValue = Random.Range(1, 101);
-        float bleedProbability = config.getPlayer().GetComponent<combatController>().getBleedProbability();
+        float bleedProbability = config.getPlayer().GetComponent<combatController>().getBleedProbability() + config.getPlayer().GetComponent<combatController>().getExtraBleedingProbability();
 
-        config.getPlayer().GetComponent<combatController>().calculateExtraBleedingProbability(ref bleedProbability);
+        config.getPlayer().GetComponent<combatController>().calculateSkillBleedingProbability(ref bleedProbability);
         if ((float)bleedValue <= bleedProbability)
         {
             received += (_enemy.getHealth() * bleedingDamage);
@@ -372,14 +424,17 @@ public class enemy : MonoBehaviour
     public virtual void receiveDMG(float dmg, float critDamage, float penetrationDamage, float bleedingDamage)
     {
         int damageDealt = (int)calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
-        _health -= damageDealt;
-
-        if (config.getPlayer().GetComponent<combatController>().getSecundaryWeapon() != null && 
-            config.getPlayer().GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getIsAttacking())
+        if (damageDealt >= 0) //puede pasar que la armadura del enemigo sea mayor a nuestro daño y hagamos daño negativo y le curemos
         {
-            if (config.getPlayer().GetComponent<combatController>().getLifeSteal() != 0)
+            _health -= damageDealt;
+
+            if (config.getPlayer().GetComponent<combatController>().getSecundaryWeapon() != null &&
+                config.getPlayer().GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getIsAttacking())
             {
-                config.getPlayer().GetComponent<statsController>().healHP(damageDealt * config.getPlayer().GetComponent<combatController>().getLifeSteal());
+                if (config.getPlayer().GetComponent<combatController>().getLifeSteal() != 0)
+                {
+                    config.getPlayer().GetComponent<statsController>().healHP(damageDealt * config.getPlayer().GetComponent<combatController>().getLifeSteal());
+                }
             }
         }
 
@@ -395,7 +450,7 @@ public class enemy : MonoBehaviour
     public void die()
     {
         //Si tiene loot
-        if (_loot.Length > 0 && _dropRate > 0f)
+        if (_loot.Length > 0)
         {
             //Pasamos _dropRate que está en un rango [0, 1] a un valor entre [1, 100] para cuando usemos Random.Range comprobemos si
             //el valor 
@@ -407,7 +462,17 @@ public class enemy : MonoBehaviour
             }
         }
         //Le damos las almas al jugador
-        config.getPlayer().GetComponent<combatController>().receiveSouls(_souls);
+        long soulsToGive = _souls;
+        float soulModifier = 0f;
+        List<GameObject> equippedSkills = config.getPlayer().GetComponent<skillManager>().getEquippedSkills();
+        for (int i = 0; i < equippedSkills.Count; i++)
+        {
+            if (equippedSkills[i] != null && equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.souls)
+            {
+                soulModifier += equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.soulIncrease];
+            }
+        }
+        config.getPlayer().GetComponent<combatController>().receiveSouls(soulsToGive + (int)(soulsToGive * soulModifier));
 
         //Guardamos la información del enemigo y lo desactivamos
         enemyStateData _data = saveSystem.loadEnemyData();
@@ -426,4 +491,25 @@ public class enemy : MonoBehaviour
         _enemyID = id;
     }
 
+    private void OnDrawGizmos()
+    {
+        if (_pointA)
+        {
+            Gizmos.DrawWireSphere(_pointA.transform.position, 0.5f);
+        }
+
+        if (_pointB)
+        {
+            Gizmos.DrawWireSphere(_pointB.transform.position, 0.5f);
+        }
+    }
+    /// <summary>
+    /// Método auxiliar para dar la vuelta al enemigo en un tiempo random.
+    /// </summary>
+    /// <param name="time">El tiempo necesario para dar la vuelta.</param>
+    public void flipInTime(float time)
+    {
+        _isFlipping = true;
+        Invoke("flip", time);
+    }
 }

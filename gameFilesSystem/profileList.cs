@@ -93,7 +93,8 @@ public class profileList : MonoBehaviour
                 statSystem.getPrecision().setLevel(UI.getPrecision());
 
                 saveSystem.savePath(profileSystem.getCurrentPath(), UI.getName());
-                SceneManager.LoadScene("ToL");
+
+                SceneManager.LoadScene(saveSystem.loadLastSceneData().getSceneID());
             });
 
             //Añadimos el evento de click

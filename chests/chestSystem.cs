@@ -117,7 +117,7 @@ public class chestSystem : MonoBehaviour
             _animator.SetTrigger("Open");
             _isOpen = true;
             GetComponent<chestUI>().hideUI();
-            GetComponent<lootSystem>().giveLoot();
+            GetComponent<chestLoot>().giveLoot();
 
             //Obtenemos la información de los objetos lootables, lo modificamos y guardamos
             lootableItemData data = saveSystem.loadLootableObjectsData();

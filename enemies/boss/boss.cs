@@ -62,12 +62,16 @@ public class boss : enemy
     /// <param name="bleedingDamage">El daño por sangrado.</param>
     public override void receiveDMG(float dmg, float critDamage, float penetrationDamage, float bleedingDamage)
     {
-        GetComponent<bossUIController>().recalculateHPBar(calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage));
-        base.receiveDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
-        _receivedDamage += calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
-        _timerNotReceivingDamage = 0f;
-        _receivedDamageText.enabled = true;
-        _receivedDamageText.text = ((int) _receivedDamage).ToString();
+        float damageDealt = calculateDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
+        if (damageDealt >= 0)
+        {
+            GetComponent<bossUIController>().recalculateHPBar(damageDealt);
+            base.receiveDMG(dmg, critDamage, penetrationDamage, bleedingDamage);
+            _receivedDamage += damageDealt;
+            _timerNotReceivingDamage = 0f;
+            _receivedDamageText.enabled = true;
+            _receivedDamageText.text = ((int)_receivedDamage).ToString();
+        }
     }
 
     /// <summary>
