@@ -102,7 +102,6 @@ public class entryState : baseState
                 }
             }
             
-
             //Si supera el tiempo máximo
             if (_time >= _timeNextAttack)
             {

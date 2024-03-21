@@ -138,11 +138,14 @@ public class equippedInventory : MonoBehaviour
         checkIfEquipped(index, itemID);
 
         //Instanciamos el objeto (equipamos)
+        Debug.Log(itemID);
+        Debug.Log(_allItems.Find(item => item.GetComponent<generalItem>().getID() == itemID).GetComponent<generalItem>().getID());
         _equippedItems[index] = Instantiate(_allItems.Find(item => item.GetComponent<generalItem>().getID() == itemID));
 
         //Cargamos datos
         _data = saveSystem.loadEquippedObjectsData();
 
+        Debug.Log(itemID);
         if (_data == null) //Primer objeto que equipamos
         {
             //Creamos un objeto equipable y serializable

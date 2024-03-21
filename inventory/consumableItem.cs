@@ -10,13 +10,13 @@ public class consumableItem : generalItem
     /// <summary>
     /// Referencia a los datos internos del objeto.
     /// </summary>
-    [SerializeField] private consumableItemData _consumableData;
+    [SerializeField] protected consumableItemData _consumableData;
 
     /// <summary>
     /// Método que se ejecuta al utilizar el objeto.
     /// </summary>
-    public void onUse()
-    {
+    public virtual void onUse() { }
+    /*{
 
         //Calculamos los valores reales
         float actualHeal = config.getPlayer().GetComponent<statsController>().getMaxHP() * (_consumableData.getRestore()) / 100f;
@@ -49,5 +49,5 @@ public class consumableItem : generalItem
                 }
             break;
         }
-    }
+    }*/
 }

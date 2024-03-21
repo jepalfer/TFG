@@ -107,20 +107,12 @@ public class stateMachine : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        setNextStateToMain();
-
-    }
-
-    /// <summary>
-    /// Método que se ejecuta al hacer un cambio en el inspector o al cargarlo.
-    /// Establece <see cref="_mainStateType"/> como un <see cref="idleCombatState"/>.
-    /// </summary>
-    private void OnValidate()
-    {
         if (_mainStateType == null)
         {
             _mainStateType = new idleCombatState();
         }
+        setNextStateToMain();
+
     }
 
     /// <summary>

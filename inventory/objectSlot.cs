@@ -38,7 +38,6 @@ public class objectSlot : MonoBehaviour
     public void equipObject()
     {
         config.getPlayer().GetComponent<equippedInventory>().equipObject(_slotID, UIConfig.getController().getLastSelected().GetComponent<slotData>().getID());
-
         UIConfig.getController().useEquippingObjectUI();
     }
 }

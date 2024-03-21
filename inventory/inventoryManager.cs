@@ -80,6 +80,7 @@ public class inventoryManager : MonoBehaviour
             }
 
             _maximumRefillable = _inventoryData.getMaximumRefillable();
+
             saveSystem.saveInventory();
         }
         else
@@ -91,13 +92,27 @@ public class inventoryManager : MonoBehaviour
         }
     }
 
+    public void addMaximumRefillable()
+    {
+        _maximumRefillable++;
+        refill();
+    }
+
     public void refill()
     {
         List<lootItem> refillableItems = _inventory.FindAll(item => item.getTipo() == itemTypeEnum.refillable);
-
+        equippedObjectData equippedData = saveSystem.loadEquippedObjectsData();
         for (int i = 0; i < refillableItems.Count; ++i)
         {
             _inventory[_inventory.FindIndex(item => item.getID() == refillableItems[i].getID())].setQuantity(_maximumRefillable);
+        }
+
+        if (equippedData != null)
+        {
+            if (_inventory.Find(item => item.getID() == equippedData.getData()[equippedData.getIndexInEquipped()].getItemID()) != null)
+            {
+                config.getPlayer().GetComponent<equippedInventory>().modifyEquippedObject(equippedData.getIndexInEquipped());
+            }
         }
         saveSystem.saveInventory();
     }

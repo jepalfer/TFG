@@ -14,8 +14,8 @@ public class statsController : MonoBehaviour
 
     private long _currentSouls;
 
-    private int _HPBarExp = 60;
-    private int _StaminaBarExp = 60;
+    private int _HPBarExp = 30;
+    private int _StaminaBarExp = 30;
 
     private int _maxHPExp = 200;
     private int _maxStaminaExp = 20;
@@ -105,7 +105,7 @@ public class statsController : MonoBehaviour
         //Calculamos la regeneración extra
         float HPUpgrade = 0, staminaUpgrade = 0;
         config.getPlayer().GetComponent<combatController>().calculateRegenUpgrade(ref HPUpgrade, ref staminaUpgrade);
-        restore += restore * staminaUpgrade;
+        restore += restore * staminaUpgrade * Time.deltaTime;
         if ((restore + _currentStamina) > _maxStamina)
         {
             restore = _maxStamina - _currentStamina;

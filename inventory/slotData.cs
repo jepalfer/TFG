@@ -12,6 +12,7 @@ public class slotData : MonoBehaviour
     private string _description;*/
 
     [SerializeField] private lootItem _itemReference;
+    [SerializeField] private Image _itemOverlay;
 
     public void setLootItem(lootItem item)
     {
@@ -45,6 +46,7 @@ public class slotData : MonoBehaviour
     {
         _inventoryStock = value;
     }
+
     public void setBackUpStock(int value)
     {
         _backUpStock = value;
@@ -70,6 +72,10 @@ public class slotData : MonoBehaviour
     public Sprite getIcon()
     {
         return _itemReference.getIcon();
+    }
+    public Image getOverlayImage()
+    {
+        return _itemOverlay;
     }
 
     public string getName()
