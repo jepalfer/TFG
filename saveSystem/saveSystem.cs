@@ -709,6 +709,91 @@ public static class saveSystem
         }
     }
 
+    public static void saveSoulContainerData(bool died)
+    {
+        //Creamos el formateador binario
+        BinaryFormatter formatter = new BinaryFormatter();
+
+        //Obtenemos la ruta
+        string path = createPath("soulContainerData");
+
+        //Abrimos el archivo
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        //Serializamos el flujo de datos
+        float[] position = new float[3];
+        position[0] = config.getPlayer().transform.position.x;
+        position[1] = config.getPlayer().transform.position.y - (config.getPlayer().transform.localScale.y * config.getPlayer().GetComponent<BoxCollider2D>().size.y / 2);
+        position[2] = config.getPlayer().transform.position.z;
+        soulContainerData data = new soulContainerData(config.getPlayer().GetComponent<combatController>().getSouls(), position, SceneManager.GetActiveScene().buildIndex, died);
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static soulContainerData loadSoulContainerData()
+    {
+        //Obtenemos la ruta
+        string path = createPath("soulContainerData");
+        if (File.Exists(path))
+        {
+            //Creamos el formateador binario
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            //Abrimos el archivo
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            //Deserializamos el flujo de datos
+            soulContainerData data = formatter.Deserialize(stream) as soulContainerData;
+            stream.Close();
+            return data;
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
+    public static void saveLastScene()
+    {
+        //Creamos el formateador binario
+        BinaryFormatter formatter = new BinaryFormatter();
+
+        //Obtenemos la ruta
+        string path = createPath("lastSceneData");
+
+        //Abrimos el archivo
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        lastSceneData data = new lastSceneData(SceneManager.GetActiveScene().buildIndex);
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static lastSceneData loadLastSceneData()
+    {
+        //Obtenemos la ruta
+        string path = createPath("lastSceneData");
+        if (File.Exists(path))
+        {
+            //Creamos el formateador binario
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            //Abrimos el archivo
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            //Deserializamos el flujo de datos
+            lastSceneData data = formatter.Deserialize(stream) as lastSceneData;
+            stream.Close();
+            return data;
+        }
+
+        else
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Método que devuelve la ruta al archivo que contiene la última ruta.
     /// </summary>

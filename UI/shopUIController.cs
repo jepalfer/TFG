@@ -47,17 +47,17 @@ public class shopUIController : MonoBehaviour
     [SerializeField] private GridLayoutGroup _grid;
 
     /// <summary>
-    /// El sprite del objeto a comprar en el panel derecho.
+    /// El prefav del objeto a comprar en el panel derecho.
     /// </summary>
     [SerializeField] private GameObject _itemPrefab;
 
     /// <summary>
-    /// El sprite del objeto a comprar en el panel derecho.
+    /// El objeto a comprar en el panel derecho instanciado.
     /// </summary>
     private List<GameObject> _instantiatedPrefabs;
 
     /// <summary>
-    /// El sprite del objeto a comprar en el panel derecho.
+    /// El objeto a comprar en el panel derecho.
     /// </summary>
     private List<shopItem> _shopItemsList;
 
@@ -70,11 +70,16 @@ public class shopUIController : MonoBehaviour
     /// El sprite del objeto a comprar en el panel derecho.
     /// </summary>
     private shopData _data;
-    
+
     /// <summary>
-    /// 
+    /// ID interno de la tienda.
     /// </summary>
-    /// <param name="shopItemsList"></param>
+    private int _shopID;
+
+    /// <summary>
+    /// Método que se ejecuta al activar la UI.
+    /// </summary>
+    /// <param name="shopItemsList">Lista de los objetos de la tienda.</param>
     public void initializeUI(List<shopItem> shopItemsList)
     {
         _data = saveSystem.loadShopData();
@@ -99,10 +104,9 @@ public class shopUIController : MonoBehaviour
             //Instanciamos y sacamos variables comunes
             GameObject newSlot = Instantiate(_itemPrefab);
             newSlot.GetComponent<shopItemSlotLogic>().setSlotID(i);
-
+            _shopID = _data.getShopID(SceneManager.GetActiveScene().buildIndex);
             int itemPrice = _shopItemsList[i].getPrice();
-            int itemIndex = i;
-            int shopID = _data.getShopID(SceneManager.GetActiveScene().buildIndex);
+            int slotID = i;
             //Si es un objeto
             if (_shopItemsList[i].getItem().GetComponent<generalItem>() != null)
             {
@@ -110,39 +114,39 @@ public class shopUIController : MonoBehaviour
                 newSlot.GetComponent<shopItemSlotLogic>().setSprite(_shopItemsList[i].getItem().GetComponent<generalItem>().getIcon());
                 generalItem item = _shopItemsList[i].getItem().GetComponent<generalItem>();
                 int itemID = item.getID();
-                //En caso de que podamos comprar asignamos esa función al botón
-                if (config.getPlayer().GetComponent<combatController>().getSouls() >= _shopItemsList[i].getPrice() && _shopItemsList[i].getQuantity() > 0)
+                lootItem searchedItem = config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == itemID);
+                lootItem searchedItemBackup = config.getInventory().GetComponent<inventoryManager>().getBackUp().Find(item => item.getID() == itemID);
+
+                bool canBuy = searchedItem == null ||
+                            ((searchedItem != null && searchedItem.getQuantity() < config.getInventory().GetComponent<inventoryManager>().getMaximumInventory()) ||
+                             (searchedItemBackup != null && searchedItemBackup.getQuantity() < config.getInventory().GetComponent<inventoryManager>().getMaximumBackUp()));
+
+                canBuy = config.getPlayer().GetComponent<combatController>().getSouls() >= _shopItemsList[i].getPrice() && _shopItemsList[i].getQuantity() > 0 && canBuy;
+
+                canBuy = canBuy && !UIController.getIsInBuyingUI();
+                if (canBuy)
                 {
-                    lootItem newItem = new lootItem(_shopItemsList[i].getItem().GetComponent<generalItem>().getData().getData(), 1);
                     newSlot.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.AddListener(() => {
-                        buyItem(shopID, itemIndex, itemPrice);
-                        config.getInventory().GetComponent<inventoryManager>().addItemToInventory(newItem);
-                        config.getPlayer().GetComponent<equippedInventory>().modifyIfBuy(itemID);
+                        if (!UIController.getIsInBuyingUI())
+                        {
+                            UIConfig.getController().useBuyItemUI();
+                        }
                     });
                 }
-            }
+                else
+                {
+                }
+            } 
             else if (_shopItemsList[i].getItem().GetComponent<skill>() != null) //Si es una habilidad
             {
                 //Asignamos variables a componentes de la UI
                 newSlot.GetComponent<shopItemSlotLogic>().setSprite(_shopItemsList[i].getItem().GetComponent<skill>().getSkillSprite());
-                skill selectedSkill = _shopItemsList[i].getItem().GetComponent<skill>();
-                unlockedSkillsData data = saveSystem.loadSkillsState();
-                //En caso de que podamos comprar asignamos esa función al botón
                 if (config.getPlayer().GetComponent<combatController>().getSouls() >= _shopItemsList[i].getPrice() && _shopItemsList[i].getQuantity() > 0)
                 {
                     newSlot.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.AddListener(() => {
-                        buyItem(shopID, itemIndex, itemPrice);
-                        sceneSkillsState newSkill = new sceneSkillsState(-1, selectedSkill);
-                        if (data == null)
+                        if (!UIController.getIsInBuyingUI())
                         {
-                            List<sceneSkillsState> newData = new List<sceneSkillsState>();
-                            newData.Add(newSkill);
-                            saveSystem.saveSkillsState(newData);
-                        }
-                        else
-                        {
-                            data.getUnlockedSkills().Add(newSkill);
-                            saveSystem.saveSkillsState(data.getUnlockedSkills());
+                            UIConfig.getController().useBuyItemUI();
                         }
                     });
                 }
@@ -221,6 +225,19 @@ public class shopUIController : MonoBehaviour
     }
 
     /// <summary>
+    /// Método auxiliar para desactivar la navegación cuando entramos al menú de seleccionar cantidad de compra;
+    /// </summary>
+    public void setNavigationOff()
+    {
+        Navigation modeNavigation = new Navigation();
+        foreach (GameObject item in _instantiatedPrefabs)
+        {
+            modeNavigation.mode = Navigation.Mode.None;
+            item.GetComponent<shopItemSlotLogic>().getSlotButton().navigation = modeNavigation;
+        }
+    }
+
+    /// <summary>
     /// Método usado para limpiar la UI de la tienda para las siguientes veces que entremos.
     /// </summary>
     public void setUIOff()
@@ -247,12 +264,12 @@ public class shopUIController : MonoBehaviour
     /// <param name="shopID">El ID de la tienda en la que estamos comprando.</param>
     /// <param name="itemIndex">El ID del objeto que estamos comprando.</param>
     /// <param name="price">El precio del objeto que estamos comprando.</param>
-    private void buyItem(int shopID, int itemIndex, int price)
+    public void buyItem(int shopID, int itemIndex, int price, int quantity)
     {
         config.getPlayer().GetComponent<combatController>().useSouls(price);
-        changeInternalInformation();
+        changeInternalInformation(quantity);
         sceneShopData currentShop = _data.getData().Find(shop => shop.getShopID() == shopID);
-        currentShop.buyItem(itemIndex);
+        currentShop.buyItem(itemIndex, quantity);
         saveSystem.saveShopData(_data.getData());
     }
 
@@ -274,6 +291,50 @@ public class shopUIController : MonoBehaviour
         if (_shopItemsList[_formerEventSystemSelected.transform.gameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotID()].getQuantity() == 0)
         {
             EventSystem.current.currentSelectedGameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.RemoveAllListeners();
+        }
+        int slotID = _formerEventSystemSelected.transform.gameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotID();
+        shopItem selectedItem = _shopItemsList[slotID];
+        generalItem selectedItemInstance = selectedItem.getItem().GetComponent<generalItem>();
+        if (selectedItemInstance != null)
+        {
+            lootItem searchedItem = config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == selectedItemInstance.getID());
+            lootItem searchedItemBackup = config.getInventory().GetComponent<inventoryManager>().getBackUp().Find(item => item.getID() == selectedItemInstance.getID());
+
+            bool canBuy = searchedItem == null ||
+                        ((searchedItem != null && searchedItem.getQuantity() < config.getInventory().GetComponent<inventoryManager>().getMaximumInventory()) ||
+                         (searchedItemBackup != null && searchedItemBackup.getQuantity() < config.getInventory().GetComponent<inventoryManager>().getMaximumBackUp()));
+
+            canBuy = config.getPlayer().GetComponent<combatController>().getSouls() >= selectedItem.getPrice() && selectedItem.getQuantity() > 0 && canBuy;
+
+            //canBuy = canBuy && !UIController.getIsInBuyingUI();
+            if (!canBuy)
+            {
+                if (!UIController.getIsInBuyingUI())
+                {
+                    _itemPrice.color = Color.red;
+                    EventSystem.current.currentSelectedGameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.RemoveAllListeners();
+                }
+            }
+            else
+            {
+            }
+        }
+
+        skill selectedSkillInstance = selectedItem.getItem().GetComponent<skill>();
+        if (selectedSkillInstance != null)
+        {
+            unlockedSkillsData data = saveSystem.loadSkillsState();
+            //En caso de que podamos comprar asignamos esa función al botón
+            bool canBuySkill = config.getPlayer().GetComponent<combatController>().getSouls() >= _shopItemsList[slotID].getPrice() && _shopItemsList[slotID].getQuantity() > 0;
+            if (!canBuySkill)
+            {
+                EventSystem.current.currentSelectedGameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotButton().onClick.RemoveAllListeners();
+                _itemPrice.color = Color.red;
+            }
+            else
+            {
+            }
+
         }
     }
 
@@ -316,10 +377,11 @@ public class shopUIController : MonoBehaviour
     /// <summary>
     /// Método que se encarga de comprar internamente el objeto y modifica la cantidad.
     /// </summary>
-    private void changeInternalInformation()
+    /// <param name="quantity">Cantidad del objeto a comprar.</param>
+    private void changeInternalInformation(int quantity)
     {
         shopItem selectedItem = _shopItemsList[_formerEventSystemSelected.transform.gameObject.transform.parent.GetComponent<shopItemSlotLogic>().getSlotID()];
-        selectedItem.buyItem();
+        selectedItem.buyItem(quantity);
         _quantityLeft.text = selectedItem.getQuantity().ToString();
     }
 }

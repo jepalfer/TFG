@@ -8,7 +8,6 @@ public class playerData
 {
     private float[] _position;
     private bool _isFacingRight;
-    private int _sceneID;
     public playerData()
     {
         _position = new float[3];
@@ -18,12 +17,6 @@ public class playerData
         _position[2] = config.getPlayer().transform.position.z;
 
         _isFacingRight = config.getPlayer().GetComponent<playerMovement>().getIsFacingRight();
-        _sceneID = SceneManager.GetActiveScene().buildIndex;
-    }
-
-    public int getSceneID()
-    {
-        return _sceneID;
     }
 
     public float getX()

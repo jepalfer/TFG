@@ -20,14 +20,34 @@ public class inventoryUIController : MonoBehaviour
     [SerializeField] private GameObject _informationPanel;
 
     /// <summary>
+    /// Referencia a la parte de la UI donde se instancian los prefabs si no se muestra la descipción.
+    /// </summary>
+    [SerializeField] private Transform _expandedSlotHolder;
+
+    /// <summary>
+    /// Referencia al grid donde se meten los objetos si no se muestra la descipción.
+    /// </summary>
+    [SerializeField] private GridLayoutGroup _expandedGrid;
+
+    /// <summary>
+    /// Referencia a la parte de la UI donde se instancian los prefabs si se muestra la descipción.
+    /// </summary>
+    [SerializeField] private Transform _descriptionSlotHolder;
+
+    /// <summary>
+    /// Referencia al grid donde se meten los objetos si se muestra la descipción.
+    /// </summary>
+    [SerializeField] private GridLayoutGroup _descriptionGrid;
+
+    /// <summary>
     /// Referencia a la parte de la UI donde se instancian los prefabs.
     /// </summary>
-    [SerializeField] private Transform _slotHolder;
+    private Transform _slotHolder;
 
     /// <summary>
     /// Referencia al grid donde se meten los objetos.
     /// </summary>
-    [SerializeField] private GridLayoutGroup _grid;
+    private GridLayoutGroup _grid;
 
     /// <summary>
     /// Referencia al último objeto seleccionado.
@@ -50,6 +70,11 @@ public class inventoryUIController : MonoBehaviour
     private bool _isShowingInformation = false;
 
     /// <summary>
+    /// ID interno del objeto seleccionado para que al abrir la descripción no cambie el objeto.
+    /// </summary>
+    private int _selectedID;
+
+    /// <summary>
     /// Referencia al campo de texto de <see cref="_informationPanel"/> que contiene el número de objetos en el inventario.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _inventoryValue;
@@ -68,6 +93,11 @@ public class inventoryUIController : MonoBehaviour
     /// Referencia a la descripción del objeto que aparece en <see cref="_informationPanel"/>.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _description;
+
+    /// <summary>
+    /// Referencia al nombre del objeto que aparece en <see cref="_informationPanel"/>.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _name;
 
     /// <summary>
     /// Referencia al icono de la imagen para navegar hacia la izquierda en tipos de objetos.
@@ -98,6 +128,11 @@ public class inventoryUIController : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (EventSystem.current.currentSelectedGameObject != null && !UIController.getIsEquippingObjectUI())
+        {
+            Debug.Log("hola");
+            _selectedID = EventSystem.current.currentSelectedGameObject.gameObject.GetComponent<slotData>().getID();
+        }
         //Comprobamos que no estemos equipando un objeto
         if (!UIController.getIsEquippingObjectUI())
         {
@@ -171,7 +206,12 @@ public class inventoryUIController : MonoBehaviour
             }
             if (currentSelected != _formerEventSystemSelected)
             {
+                if (_formerEventSystemSelected != null)
+                {
+                    _formerEventSystemSelected.GetComponent<slotData>().getOverlayImage().GetComponent<Image>().enabled = false;
+                }
                 _formerEventSystemSelected = currentSelected;
+                _formerEventSystemSelected.GetComponent<slotData>().getOverlayImage().GetComponent<Image>().enabled = true;
                 changeInformationPanel();
             }
 
@@ -195,6 +235,19 @@ public class inventoryUIController : MonoBehaviour
         _isShowingInformation = !_isShowingInformation;
         _informationPanel.SetActive(!_informationPanel.activeSelf);
         changeInformationPanel();
+
+        if (_isShowingInformation)
+        {
+            _slotHolder = _descriptionSlotHolder;
+            _grid = _descriptionGrid;
+        }
+        else
+        {
+            _slotHolder = _expandedSlotHolder;
+            _grid = _expandedGrid;
+        }
+        destroyItems();
+        createInventory((itemTypeEnum)_counter);
     }
 
     /// <summary>
@@ -206,6 +259,7 @@ public class inventoryUIController : MonoBehaviour
         setBackUpValue(EventSystem.current.currentSelectedGameObject.gameObject.GetComponent<slotData>().getBackUpStock());
         setRenderImage(EventSystem.current.currentSelectedGameObject.gameObject.GetComponent<slotData>().getRender());
         setDescriptionText(EventSystem.current.currentSelectedGameObject.gameObject.GetComponent<slotData>().getDescription());
+        setItemName(EventSystem.current.currentSelectedGameObject.gameObject.GetComponent<slotData>().getName());
     }
 
     /// <summary>
@@ -233,9 +287,12 @@ public class inventoryUIController : MonoBehaviour
     /// </summary>
     public void initializeUI()
     {
+        _selectedID = -1;
         _itemList = new List<GameObject>();
         _counter = 0;
         _topPanelTexts[0].color = Color.yellow;
+        _slotHolder = _expandedSlotHolder;
+        _grid = _expandedGrid;
         createInventory((itemTypeEnum)0);
     }
 
@@ -262,18 +319,29 @@ public class inventoryUIController : MonoBehaviour
         _backupQuery = config.getInventory().GetComponent<inventoryManager>().getBackUp();
 
         _inventoryQuery.Sort((item1, item2) => item1.getID().CompareTo(item2.getID()));
+        GameObject selectFormer = null;
         //Recorremos el inventario
         for (int i = 0; i < _inventoryQuery.Count; ++i)
         {
             createItem(_inventoryQuery[i], type);
-            
+            if (_inventoryQuery[i].getID() == _selectedID)
+            {
+                selectFormer = _itemList[i];
+            }
         }
-        if (_itemList.Count > 0)
+        if ((_selectedID == -1 || selectFormer == null) && _itemList.Count > 0)
         {
+            Debug.Log(_selectedID + "no entro");
             EventSystem.current.SetSelectedGameObject(_itemList[0]);
+        }
+        else
+        {
+            Debug.Log(_selectedID + "entro");
+            EventSystem.current.SetSelectedGameObject(selectFormer);
         }
 
         //Calculamos la navegación en la UI
+        Debug.Log("hola");
         calculateNavigation();
     }
 
@@ -297,16 +365,18 @@ public class inventoryUIController : MonoBehaviour
                 config.getInventory().GetComponent<weaponInventoryManagement>().equipWeapon();
             });
         }
-        else
+        else if (newItem.GetComponent<slotData>().getTipo() == itemTypeEnum.consumable || newItem.GetComponent<slotData>().getTipo() == itemTypeEnum.refillable)
         {
             newItem.GetComponent<Button>().onClick.AddListener(() => {
                 UIConfig.getController().useEquippingObjectUI();
             });
         }
 
-        if (_backupQuery.Find(itemBackUp => itemBackUp.getTipo() == type && itemBackUp.getID() == item.getID()) != null)
+        lootItem searchedBackup = _backupQuery.Find(itemBackUp => itemBackUp.getTipo() == type && itemBackUp.getID() == item.getID());
+
+        if (searchedBackup != null)
         {
-            newItem.GetComponent<slotData>().setBackUpStock(_backupQuery.Find(itemBackUp => itemBackUp.getInstance()).getQuantity());
+            newItem.GetComponent<slotData>().setBackUpStock(searchedBackup.getQuantity());
         }
         newItem.transform.SetParent(_slotHolder, false);
         _itemList.Add(newItem);
@@ -381,12 +451,12 @@ public class inventoryUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// Getter que devuelve <see cref="_slotHolder"/>.
+    /// Getter que devuelve <see cref="_expandedSlotHolder"/>.
     /// </summary>
     /// <returns>Un objeto de tipo Transform que representa la zona de la UI en la que aparecen los objetos.</returns>
     public Transform getSlotHolder()
     {
-        return _slotHolder;
+        return _expandedSlotHolder;
     }
 
     /// <summary>
@@ -443,5 +513,14 @@ public class inventoryUIController : MonoBehaviour
     public void setDescriptionText(string text)
     {
         _description.text = text;
+    }
+
+    /// <summary>
+    /// Setter que modifica el texto de <see cref="_name"/>.
+    /// </summary>
+    /// <param name="text">El texto a asignar.</param>
+    public void setItemName(string text)
+    {
+        _name.text = text;
     }
 }

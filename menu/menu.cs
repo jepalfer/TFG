@@ -93,8 +93,7 @@ public class menu : MonoBehaviour
 
     public void continueGame()
     {
-        playerData data = saveSystem.loadPlayer();
-
+        lastSceneData data = saveSystem.loadLastSceneData();
         SceneManager.LoadScene(data.getSceneID());
     }
 

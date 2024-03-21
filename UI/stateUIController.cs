@@ -24,8 +24,8 @@ public class stateUIController : MonoBehaviour
 
     public void initializeUI()
     {
-        _HPValue.text = config.getPlayer().GetComponent<statsController>().recalculateHP(0).ToString();
-        _staminaValue.text = config.getPlayer().GetComponent<statsController>().recalculateStamina(0).ToString();
+        _HPValue.text = (int)config.getPlayer().GetComponent<statsController>().getCurrentHP() + "/" + config.getPlayer().GetComponent<statsController>().recalculateHP(0).ToString();
+        _staminaValue.text = (int)config.getPlayer().GetComponent<statsController>().getCurrentStamina() + "/" + config.getPlayer().GetComponent<statsController>().recalculateStamina(0).ToString();
         _primaryDamageValue.text = weaponConfig.getPrimaryWeapon() == null ? "0" : weaponConfig.getPrimaryWeapon().GetComponent<weapon>().getTotalDMG().ToString();
         _secundaryDamageValue.text = weaponConfig.getSecundaryWeapon() == null ? "0" : weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getTotalDMG().ToString();
         int strength = 0, dexterity = 0, precision = 0;
@@ -64,11 +64,16 @@ public class stateUIController : MonoBehaviour
             _precisionValue.text = statSystem.getPrecision().getLevel().ToString() + colorPrecision;
         }
         _agilityValue.text = statSystem.getAgility().getLevel().ToString();
-        float penetrating = 0, bleedDMG = 0, critDMG = 0, bleedingProbability = config.getPlayer().GetComponent<combatController>().getBleedProbability(), critProbability = config.getPlayer().GetComponent<combatController>().getCritProbability();
+        float penetrating = 0, 
+              bleedDMG = 0, 
+              critDMG = 0, 
+              bleedingProbability = config.getPlayer().GetComponent<combatController>().getBleedProbability() + 
+                                    config.getPlayer().GetComponent<combatController>().getExtraBleedingProbability(), 
+              critProbability = config.getPlayer().GetComponent<combatController>().getCritProbability() +
+                                config.getPlayer().GetComponent<combatController>().getExtraCritProbability();
         config.getPlayer().GetComponent<combatController>().calculateExtraDamages(ref penetrating, ref bleedDMG, ref critDMG);
-        Debug.Log(penetrating);
-        config.getPlayer().GetComponent<combatController>().calculateExtraCritDamageProbability(ref critProbability);
-        config.getPlayer().GetComponent<combatController>().calculateExtraBleedingProbability(ref bleedingProbability);
+        config.getPlayer().GetComponent<combatController>().calculateSkillCritDamageProbability(ref critProbability);
+        config.getPlayer().GetComponent<combatController>().calculateSkillBleedingProbability(ref bleedingProbability);
         _armorPenValue.text = penetrating.ToString() + "%";
         _bleedDamageValue.text = bleedDMG.ToString() + "%";
         _bleedProbabilityValue.text = bleedingProbability.ToString() + "%";

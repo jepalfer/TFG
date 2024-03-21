@@ -110,6 +110,7 @@ public class skillTreeUIController : MonoBehaviour
         {
             List<serializedItemData> unlockedWeapons = data.getInventory().FindAll(item => item.getData().getTipo() == itemTypeEnum.weapon);
 
+            unlockedWeapons.Sort((item1, item2) => item1.getData().getID().CompareTo(item2.getData().getID()));
             if (unlockedWeapons.Count > 0)
             {
                 _rightPanel.SetActive(true);

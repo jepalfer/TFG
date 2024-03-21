@@ -48,9 +48,10 @@ public class sceneShopData
     /// Método para la compra de un objeto. Disminuye en 1 el elemento concreto de <see cref="_itemsInShop"/>. 
     /// </summary>
     /// <param name="ID">ID del objeto comprado.</param>
-    public void buyItem(int ID)
+    /// <param name="quantity">Cantidad del objeto comprado.</param>
+    public void buyItem(int ID, int quantity)
     {
-        _itemsInShop[ID] = _itemsInShop[ID] - 1;
+        _itemsInShop[ID] = _itemsInShop[ID] - quantity;
     }
 
     /// <summary>

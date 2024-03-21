@@ -61,6 +61,7 @@ public class skillUIController : MonoBehaviour
         }
         if (index != -1)
         {
+            Destroy(config.getPlayer().GetComponent<skillManager>().getEquippedSkills()[index]);
             config.getPlayer().GetComponent<skillManager>().setEquippedValue(null, index);
             _sprites[index].GetComponent<Image>().sprite = null;
             _sprites[index].SetActive(false);

@@ -60,6 +60,11 @@ public class UIController : MonoBehaviour
     /// </summary>
     private static bool _isInStateUI = false;
 
+    /// <summary>
+    /// Booleano que indica si estamos o no comprando objetos.
+    /// </summary>
+    private static bool _isInBuyingUI = false;
+
 
     /// <summary>
     /// Referencia a la UI del menú de pausa.
@@ -114,6 +119,11 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject _stateUI;
 
     /// <summary>
+    /// Referencia a la UI de seleccionar cantidad de objetos a comprar.
+    /// </summary>
+    [SerializeField] private GameObject _buyItemUI;
+
+    /// <summary>
     /// Referencia al texto que aparece en <see cref="_pauseUI"/> que es el nombre del perfil.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _name;
@@ -134,21 +144,21 @@ public class UIController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _equipText;
 
     /// <summary>
-    /// Referencia al sprite del objeto seleccionado.
+    /// Referencia al sprite del objeto obtenido.
     /// </summary>
     [SerializeField] private Image _selectedObjectSprite;
 
     /// <summary>
-    /// Referencia al nombre del objeto seleccionado.
+    /// Referencia al nombre del objeto obtenido.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _selectedObjectName;
     /// <summary>
-    /// Referencia a la cantidad del objeto seleccionado.
+    /// Referencia a la cantidad del objeto obtenido.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _selectedObjectQuantity;
 
     /// <summary>
-    /// Objeto que estaba seleccionado antes de entrar a la UI de equipar objeto.
+    /// Objeto que estaba seleccionado antes de entrar a la UI de equipar objeto o de comprar objeto.
     /// </summary>
     private GameObject _lastSelectedInInventory;
 
@@ -188,16 +198,6 @@ public class UIController : MonoBehaviour
             }
         }
 
-        //Mostramos la UI de la hoguera
-        if (bonfireBehaviour.getIsInBonfireMenu())
-        {
-            if (inputManager.GetKeyDown(inputEnum.cancel))
-            {
-                UIConfig.getBonfire().useBonfireUI();
-             
-            }
-        }
-
         //Ocultamos la UI de inventario
         if (_isInInventoryUI && !_isInEquippingItemUI)
         {
@@ -209,10 +209,11 @@ public class UIController : MonoBehaviour
         }
 
         //Ocultamos la UI de la hoguera
-        if (bonfireBehaviour.getIsInBonfireMenu())
+        if (bonfireBehaviour.getIsInBonfireMenu() && !bonfireBehaviour.getIsInNoItem() && !bonfireBehaviour.getIsInObtainCharge())
         {
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
+                Debug.Log("hola");
                 UIConfig.getBonfire().useBonfireUI();
             }
         }
@@ -275,7 +276,7 @@ public class UIController : MonoBehaviour
         }
 
         //Ocultamos la UI de comprar en la tienda
-        if (_isInShopUI)
+        if (_isInShopUI && !_isInBuyingUI)
         {
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
@@ -289,6 +290,14 @@ public class UIController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
                 UIConfig.getController().useStateUI();
+            }
+        }
+
+        if (_isInBuyingUI)
+        {
+            if (inputManager.GetKeyDown(inputEnum.cancel))
+            {
+                UIConfig.getController().useBuyItemUI();
             }
         }
 
@@ -312,6 +321,7 @@ public class UIController : MonoBehaviour
     public void quit()
     {
         saveSystem.savePlayer();
+        saveSystem.saveLastScene();
         _isInPauseUI = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
@@ -406,6 +416,15 @@ public class UIController : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="_isInBuyingUI"/>.
+    /// </summary>
+    /// <returns>Un booleano que indica si estamos o no seleccionando la cantidad de compra.</returns>
+    public static bool getIsInBuyingUI()
+    {
+        return _isInBuyingUI;
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_skillsUI"/>.
     /// </summary>
     /// <returns>Un GameObject que representa la UI de adquirir habilidades.</returns>
@@ -486,6 +505,15 @@ public class UIController : MonoBehaviour
     public GameObject getStateUI()
     {
         return _stateUI;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_buyItemUI"/>.
+    /// </summary>
+    /// <returns>Un GameObject que representa la UI de seleccionar cantidad de compra.</returns>
+    public GameObject getBuyObjectUI()
+    {
+        return _buyItemUI;
     }
 
     /// <summary>
@@ -733,6 +761,29 @@ public class UIController : MonoBehaviour
         if (_isInStateUI)
         {
             _stateUI.GetComponent<stateUIController>().initializeUI();
+        }
+    }
+
+    public void useBuyItemUI()
+    {
+        _buyItemUI.SetActive(!_buyItemUI.activeSelf);
+        _isInBuyingUI = !_isInBuyingUI;
+
+        if (_isInBuyingUI)
+        {
+            _lastSelectedInInventory = EventSystem.current.currentSelectedGameObject.transform.parent.gameObject; 
+            int itemIndex = _lastSelectedInInventory.GetComponent<shopItemSlotLogic>().getSlotID();
+            int itemPrice = _shopUI.GetComponent<shopUIController>().getShopItemsList()[itemIndex].getPrice();
+
+            GameObject itemToBuy = _shopUI.GetComponent<shopUIController>().getShopItemsList()[_lastSelectedInInventory.GetComponent<shopItemSlotLogic>().getSlotID()].getItem();
+
+            //generalItem itemToBuy = _shopUI.GetComponent<shopUIController>().getShopItemsList()[_lastSelectedInInventory.GetComponent<shopItemSlotLogic>().getSlotID()].getItem().GetComponent<generalItem>();
+
+            _buyItemUI.GetComponent<buyItemUIController>().initializeUI(itemToBuy, itemPrice, itemIndex);
+        }
+        else
+        {
+            _buyItemUI.GetComponent<buyItemUIController>().setUIOff();
         }
     }
 
