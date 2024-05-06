@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// cameraFollow es una clase que se usa para suavizar el movimiento de la cámara.
+/// cameraController es una clase que se usa para suavizar el movimiento de la cámara.
 /// </summary>
 public class cameraController : MonoBehaviour
 {
