@@ -8,7 +8,7 @@ using UnityEngine;
 public class equippedInventory : MonoBehaviour
 {
     /// <summary>
-    /// Lista con uan referencia a los objetos equipados.
+    /// Lista con una referencia a los objetos equipados.
     /// </summary>
     [SerializeField] private List<GameObject> _equippedItems;
 
@@ -127,6 +127,7 @@ public class equippedInventory : MonoBehaviour
             _equippedItems[searchedIndex] = null;
         }
     }
+
     /// <summary>
     /// Método que se encarga de la lógica de equipar un objeto.
     /// </summary>
@@ -251,7 +252,7 @@ public class equippedInventory : MonoBehaviour
                 {
                     for (int i = (saveSystem.loadEquippedObjectsData().getIndexInEquipped() + 1) % _equippedItems.Count; ; i++)
                     {
-                        i = (i % 6);
+                        i = (i % _equippedItems.Count);
                         if (_equippedItems[i] != null)
                         {
                             saveSystem.saveEquippedObjectsData(saveSystem.loadEquippedObjectsData().getData(), i);
@@ -266,7 +267,7 @@ public class equippedInventory : MonoBehaviour
                     {
                         if (i < 0)
                         {
-                            i = 5;
+                            i = _equippedItems.Count - 1;
                         }
                         if(_equippedItems[i] != null)
                         {
@@ -283,7 +284,10 @@ public class equippedInventory : MonoBehaviour
                     if (_equippedItems[_data.getIndexInEquipped()].GetComponent<generalItem>() as consumableItem != null)
                     {
                         _data = saveSystem.loadEquippedObjectsData();
-                        lootItem inventoryItem = new lootItem(_equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().getData().getData(), config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getID() == _equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().getID()).getQuantity());
+                        lootItem inventoryItem = new lootItem(_equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().getData().getData(), 
+                                                 config.getInventory().GetComponent<inventoryManager>().getInventory().Find
+                                                 (item => item.getID() == _equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().getID()).
+                                                 getQuantity());
                         config.getInventory().GetComponent<inventoryManager>().removeItemFromInventory(inventoryItem, 1);
 
                         _equippedItems[_data.getIndexInEquipped()].GetComponent<consumableItem>().onUse();

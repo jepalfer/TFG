@@ -18,12 +18,26 @@ public class objectSlot : MonoBehaviour
     [SerializeField] private int _slotID;
 
     /// <summary>
+    /// Referencia a la imagen que sirve de overlay.
+    /// </summary>
+    [SerializeField] private GameObject _overlayImage;
+
+    /// <summary>
     /// Getter que devuelve <see cref="_associatedButton"/>.
     /// </summary>
     /// <returns>Un botón que es el asociado al slot.</returns>
     public Button getAssociatedButton()
     {
         return _associatedButton;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_overlayImage"/>.
+    /// </summary>
+    /// <returns>Una <see cref="GameObject"/> que contiene una referencia a la imagen de overlay.</returns>
+    public GameObject getOverlayImage()
+    {
+        return _overlayImage;
     }
 
     /// <summary>

@@ -9,9 +9,28 @@ using UnityEngine;
 [System.Serializable]
 public enum itemTypeEnum
 {
+    /// <summary>
+    /// Tipo de objeto clave.
+    /// </summary>
     keyItem,
+
+    /// <summary>
+    /// Tipo de objeto consumible.
+    /// </summary>
     consumable,
+
+    /// <summary>
+    /// Tipo de objeto arma.
+    /// </summary>
     weapon,
+
+    /// <summary>
+    /// Tipo de objeto material de mejora.
+    /// </summary>
     upgradeMaterial,
+
+    /// <summary>
+    /// Tipo de objeto (consumible) recargable
+    /// </summary>
     refillable,
 }
