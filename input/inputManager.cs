@@ -49,6 +49,9 @@ public class inputManager : MonoBehaviour
         _inputList.Add(inputEnum.previousItem.ToString(), KeyCode.LeftArrow);
         _inputList.Add(inputEnum.nextItem.ToString(), KeyCode.RightArrow);
         _inputList.Add(inputEnum.useItem.ToString(), KeyCode.DownArrow);
+        _inputList.Add(inputEnum.oneMoreItem.ToString(), KeyCode.UpArrow);
+        _inputList.Add(inputEnum.oneLessItem.ToString(), KeyCode.DownArrow);
+        _inputList.Add(inputEnum.buyItem.ToString(), KeyCode.Return);
 
         //Comprueba si hay un gamepad conectado
         if (Gamepad.current != null)
@@ -83,6 +86,9 @@ public class inputManager : MonoBehaviour
         _inputListGamepad.Add(inputEnum.previousItem.ToString(), Gamepad.current.dpad.left);
         _inputListGamepad.Add(inputEnum.nextItem.ToString(), Gamepad.current.dpad.right);
         _inputListGamepad.Add(inputEnum.useItem.ToString(), Gamepad.current.dpad.down);
+        _inputListGamepad.Add(inputEnum.oneMoreItem.ToString(), Gamepad.current.dpad.up);
+        _inputListGamepad.Add(inputEnum.oneLessItem.ToString(), Gamepad.current.dpad.down);
+        _inputListGamepad.Add(inputEnum.buyItem.ToString(), Gamepad.current.buttonSouth);
     }
 
     /// <summary>
@@ -217,6 +223,10 @@ public class inputManager : MonoBehaviour
         return Input.anyKeyDown;
     }
 
+    /// <summary>
+    /// Método auxiliar para comprobar si se ha pulsado algún botón de un mando.
+    /// </summary>
+    /// <returns>Un flag booleano que indica si se ha pulsado un botón de un mando.</returns>
     public static bool getHasPressedButton()
     {
         bool result = false;
