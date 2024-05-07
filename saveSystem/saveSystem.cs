@@ -340,6 +340,9 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de los enemigos.
+    /// </summary>
     public static void saveEnemyData(List<sceneEnemiesState> enemyData)
     {
         //Creamos el formateador binario
@@ -357,6 +360,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de los enemigos.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="enemyStateData"/> que contiene los datos de los enemigos.</returns>
     public static enemyStateData loadEnemyData()
     {
         //Obtenemos la ruta
@@ -379,6 +386,10 @@ public static class saveSystem
             return null;
         }
     }
+
+    /// <summary>
+    /// Método para guardar la información de los objetos looteables.
+    /// </summary>
     public static void saveLootableObjectsData(List<sceneLootableItem> objectsData)
     {
         //Creamos el formateador binario
@@ -396,6 +407,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de los objetos looteables.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="lootableItemData"/> que contiene los objetos looteables.</returns>
     public static lootableItemData loadLootableObjectsData()
     {
         //Obtenemos la ruta
@@ -419,6 +434,10 @@ public static class saveSystem
             return null;
         }
     }
+
+    /// <summary>
+    /// Método para guardar la información de las armas.
+    /// </summary>
     public static void saveWeaponsState(int primary, int secundary, List<int> levels)
     {
         //Creamos el formateador binario
@@ -436,6 +455,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de las armas.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="equippedWeaponsData"/> que contiene los datos de las armas.</returns>
     public static equippedWeaponsData loadWeaponsState()
     {
         //Obtenemos la ruta
@@ -460,6 +483,9 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de las habilidades desbloqueadas.
+    /// </summary>
     public static void saveSkillsState(List<sceneSkillsState> skills)
     {
         //Creamos el formateador binario
@@ -477,6 +503,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de las habilidades desbloqueadas.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="unlockedSkillsData"/> que contiene los datos de las habilidades desbloqueadas.</returns>
     public static unlockedSkillsData loadSkillsState()
     {
         //Obtenemos la ruta
@@ -501,6 +531,11 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de las habilidades equipadas.
+    /// </summary>
+    /// <param name="IDs">Array con los IDs de las habilidades equipadas.</param>
+    /// <param name="types">Array con los tipos de las habilidades equipadas.</param>
     public static void saveEquippedSkillsState(int [] IDs, skillTypeEnum [] types)
     {
         //Creamos el formateador binario
@@ -513,12 +548,16 @@ public static class saveSystem
         FileStream stream = new FileStream(path, FileMode.Create);
 
         //Serializamos el flujo de datos
-        equippedSkillData data = new equippedSkillData(IDs, types);
+        equippedSkillsData data = new equippedSkillsData(IDs, types);
         formatter.Serialize(stream, data);
         stream.Close();
     }
 
-    public static equippedSkillData loadEquippedSkillsState()
+    /// <summary>
+    /// Método para cargar la información de las habilidades equipadas.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="equippedSkillsData"/> que contiene los datos de las habilidades equipadas.</returns>
+    public static equippedSkillsData loadEquippedSkillsState()
     {
         //Obtenemos la ruta
         string path = createPath("equippedSkillsData");
@@ -531,7 +570,7 @@ public static class saveSystem
             FileStream stream = new FileStream(path, FileMode.Open);
 
             //Deserializamos el flujo de datos
-            equippedSkillData data = formatter.Deserialize(stream) as equippedSkillData;
+            equippedSkillsData data = formatter.Deserialize(stream) as equippedSkillsData;
             stream.Close();
             return data;
         }
@@ -542,6 +581,9 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de los obstáculos.
+    /// </summary>
     public static void saveObstaclesData(List<sceneObstaclesData> dataToStore)
     {
         //Creamos el formateador binario
@@ -559,6 +601,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de los obstáculos.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="obstaclesData"/> que contiene los datos de los obstáculos.</returns>
     public static obstaclesData loadObstaclesData()
     {
         //Obtenemos la ruta
@@ -582,6 +628,10 @@ public static class saveSystem
             return null;
         }
     }
+
+    /// <summary>
+    /// Método para guardar la información de los objetos equipados.
+    /// </summary>
     public static void saveEquippedObjectsData(List<newEquippedObjectData> dataToStore, int id)
     {
         //Creamos el formateador binario
@@ -599,6 +649,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de los objetos equipados.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="equippedObjectData"/> que contiene los datos de los objetos equipados.</returns>
     public static equippedObjectData loadEquippedObjectsData()
     {
         //Obtenemos la ruta
@@ -623,6 +677,9 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de las tiendas.
+    /// </summary>
     public static void saveShopData(List<sceneShopData> dataToStore)
     {
         //Creamos el formateador binario
@@ -640,6 +697,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de las tiendas.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="shopData"/> que contiene los datos de las tiendas.</returns>
     public static shopData loadShopData()
     {
         //Obtenemos la ruta
@@ -664,6 +725,9 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de la última hoguera en la que se ha descansado.
+    /// </summary>
     public static void saveLastBonfireData()
     {
         //Creamos el formateador binario
@@ -685,6 +749,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de la última hoguera en la que se ha descansado.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="lastBonfireData"/> que contiene los datos de la última hoguera en la que se ha descansado.</returns>
     public static lastBonfireData loadLastBonfireData()
     {
         //Obtenemos la ruta
@@ -709,6 +777,9 @@ public static class saveSystem
         }
     }
 
+    /// <summary>
+    /// Método para guardar la información de las almas perdidas.
+    /// </summary>
     public static void saveSoulContainerData(bool died)
     {
         //Creamos el formateador binario
@@ -730,6 +801,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de las almas perdidas.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="soulContainerData"/> que contiene la información de las almas perdidas.</returns>
     public static soulContainerData loadSoulContainerData()
     {
         //Obtenemos la ruta
@@ -753,7 +828,9 @@ public static class saveSystem
             return null;
         }
     }
-
+    /// <summary>
+    /// Método para guardar la información de la última escena visitada.
+    /// </summary>
     public static void saveLastScene()
     {
         //Creamos el formateador binario
@@ -770,6 +847,10 @@ public static class saveSystem
         stream.Close();
     }
 
+    /// <summary>
+    /// Método para cargar la información de la última escena visitada.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="lastSceneData"/> que contiene los datos de la última escena visitada.</returns>
     public static lastSceneData loadLastSceneData()
     {
         //Obtenemos la ruta
@@ -794,6 +875,70 @@ public static class saveSystem
         }
     }
 
+
+    /// <summary>
+    /// Método para guardar la información de la configuración de audio.
+    /// </summary>
+    public static void saveAudioSettings(float master, float ost, float sfx)
+    {
+        //Creamos el formateador binario
+        BinaryFormatter formatter = new BinaryFormatter();
+
+        //Obtenemos la ruta
+        string path = createAudioPath();
+        if (File.Exists(path))
+        {
+            //Abrimos el archivo
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            //Creamos un objeto con la configuración buscada
+            audioSettingsData data = new audioSettingsData(master, ost, sfx);
+
+            //Serializamos
+            formatter.Serialize(stream, data);
+            stream.Close();
+        }
+        else
+        {
+            //Abrimos el archivo
+            FileStream stream = new FileStream(path, FileMode.Create);
+            
+            //Creamos los valores por defecto
+            audioSettingsData data = new audioSettingsData();
+
+            //Serializamos
+            formatter.Serialize(stream, data);
+            stream.Close();
+        }
+    }
+
+    /// <summary>
+    /// Método para cargar la información de la configuración de audio.
+    /// </summary>
+    /// <returns>Un objeto de tipo <see cref="audioSettingsData"/> que contiene los datos de la configuración de audio.</returns>
+    public static audioSettingsData loadAudioSettings()
+    {
+        //Obtenemos la ruta
+        string path = createAudioPath();
+        if (File.Exists(path))
+        {
+            //Creamos el formateador binario
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            //Abrimos el archivo
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            //Deserializamos el flujo de datos
+            audioSettingsData data = formatter.Deserialize(stream) as audioSettingsData;
+            stream.Close();
+            return data;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Método que devuelve la ruta al archivo que contiene la última ruta.
     /// </summary>
@@ -810,6 +955,15 @@ public static class saveSystem
     public static string createProfilesPath()
     {
         return Application.persistentDataPath + "/userNames.txt";
+    }
+
+    /// <summary>
+    /// Método que devuelve la ruta al archivo que contiene la configuración de audio, común a todos los perfiles.
+    /// </summary>
+    /// <returns>Un string que contiene la ruta al archivo con la configuración de audio.</returns>
+    public static string createAudioPath()
+    {
+        return Application.persistentDataPath + "/audioSettings.txt";
     }
 
     /// <summary>

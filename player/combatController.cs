@@ -994,6 +994,14 @@ public class combatController : MonoBehaviour
     /// </summary>
     private void die()
     {
+        enemyStateData enemiesData = saveSystem.loadEnemyData();
+
+        foreach(sceneEnemiesState enemy in enemiesData.getEnemyStates())
+        {
+            enemy.setCanRevive(1);
+        }
+        saveSystem.saveEnemyData(enemiesData.getEnemyStates());
+
         _bonfireData = saveSystem.loadLastBonfireData();
         saveSystem.saveSoulContainerData(true);
         setSouls(0);

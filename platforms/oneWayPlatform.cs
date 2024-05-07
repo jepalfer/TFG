@@ -2,29 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// oneWayPlatform es una clase que se encarga de manejar la lógica de las plataformas de tipo "one way".
+/// </summary>
 public class oneWayPlatform : MonoBehaviour
 {
-
+    /// <summary>
+    /// Flag booleano para saber cuándo tenemos que desactivar la Collider.
+    /// </summary>
     [SerializeField] private bool _playerJumpedOff = false;
-    [SerializeField] private float _timer = 0f;
-    [SerializeField] private bool _playerIsOn = false;
 
+    /// <summary>
+    /// Timer para no activar la Collider antes de tiempo.
+    /// </summary>
+    [SerializeField] private float _timer = 0f;
+
+    /// <summary>
+    /// Referencia al Collider de la plataforma.
+    /// </summary>
     [SerializeField] private Collider2D _bc;
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Método que se ejecuta al iniciar el script.
+    /// </summary>
     void Start()
     {
         _bc = GetComponent<Collider2D>();
-        //Physics2D.IgnoreCollision(_bc, Config.getPlayer().GetComponent<BoxCollider2D>());
     }
-
-    // Update is called once per frame
+    
+    /// <summary>
+    /// Método que se ejecuta cada frame para actualizar la lógica
+    /// </summary>
     void Update()
     {
+        //Si aún no hemos saltado
         if (!_playerJumpedOff)
         {
-            if (config.getPlayer().GetComponent<BoxCollider2D>().bounds.min.y >= _bc.bounds.max.y)
+            //Activamos el collider si estamos por encima
+            if (config.getPlayer().GetComponent<BoxCollider2D>().bounds.min.y > _bc.bounds.max.y && 
+               !config.getPlayer().GetComponent<playerMovement>().getIsJumping())
             {
+                Debug.Log("no estoy saltando");
                 _bc.enabled = true;
             }
             else
@@ -32,20 +50,20 @@ public class oneWayPlatform : MonoBehaviour
                 _bc.enabled = false;
             }
         }
-        else
+        else //Comenzamos a contar
         {
             _timer += Time.deltaTime;
         }
 
-        if (_timer >= 0.25f)
+        if (_timer >= 0.25f) //Si ha pasado 1 cuarto de segundo
         {
             _timer = 0;
             _playerJumpedOff = false;
         }
-
-        if (config.getPlayer().GetComponent<collisionController>().getIsOnOneWay() && inputManager.GetKey(inputEnum.down) && inputManager.GetKey(inputEnum.jump))
+        //Se maneja la bajada de la plataforma
+        if (config.getPlayer().GetComponent<collisionController>().getIsOnOneWay() && inputManager.GetKey(inputEnum.down) && 
+            inputManager.GetKey(inputEnum.jump))
         {
-            Debug.Log("salto");
             _bc.enabled = false;
             _playerJumpedOff = true;
             config.getPlayer().GetComponent<playerMovement>().setIsLookingDown(false);

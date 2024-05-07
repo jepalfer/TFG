@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// sceneShopData es una clase que se utiliza para representar los datos sobre la tienda de cada escena.
+/// sceneShopData es una clase auxiliar que se utiliza para representar los datos sobre la tienda de una escena concreta.
 /// </summary>
 [System.Serializable]
 public class sceneShopData

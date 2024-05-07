@@ -16,22 +16,27 @@ public class attributesData
     /// Nivel de vitalidad del jugador.
     /// </summary>
     private int _vitality;
+
     /// <summary>
     /// Nivel de resistencia del jugador.
     /// </summary>
     private int _endurance;
+
     /// <summary>
     /// Nivel de fuerza del jugador.
     /// </summary>
     private int _strength;
+
     /// <summary>
     /// Nivel de destreza del jugador.
     /// </summary>
     private int _dexterity;
+
     /// <summary>
     /// Nivel de agilidad del jugador.
     /// </summary>
     private int _agility;
+
     /// <summary>
     /// Nivel de precisión del jugador.
     /// </summary>

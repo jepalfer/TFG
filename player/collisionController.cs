@@ -240,7 +240,7 @@ public class collisionController : MonoBehaviour
             _slopeNormalPerpendicular = Vector2.Perpendicular(hit.normal).normalized;
             _slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
 
-            if (_slopeDownAngle != _slopeDownAngleOld || _slopeDownAngle == 0.0f) //Es completamente horizontal
+            if (_slopeDownAngle != _slopeDownAngleOld || _slopeDownAngle == 0.0f)
             {
                 _isOnSlope = true;
             }
