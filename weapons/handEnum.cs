@@ -7,6 +7,13 @@ using UnityEngine;
 /// </summary>
 public enum handEnum
 {
+    /// <summary>
+    /// Arma primaria.
+    /// </summary>
     primary,
+
+    /// <summary>
+    /// Arma secundaria.
+    /// </summary>
     secundary
 }

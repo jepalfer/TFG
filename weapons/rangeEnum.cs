@@ -7,6 +7,13 @@ using UnityEngine;
 /// </summary>
 public enum rangeEnum
 {
+    /// <summary>
+    /// Cuerpo a cuerpo.
+    /// </summary>
     melee,
+
+    /// <summary>
+    /// A distancia.
+    /// </summary>
     ranged,
 }

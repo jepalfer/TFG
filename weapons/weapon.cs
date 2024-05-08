@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 
 /// <summary>
-/// weapon es un script que representa internamente las armas.
+/// weapon es una clase que representa internamente las armas.
 /// </summary>
 public class weapon : generalItem
 {
