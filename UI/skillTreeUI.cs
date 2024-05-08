@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// skillTreeUI es una clase que se usa
+/// </summary>
 public class skillTreeUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _skillName;

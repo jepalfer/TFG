@@ -65,6 +65,11 @@ public class UIController : MonoBehaviour
     /// </summary>
     private static bool _isInBuyingUI = false;
 
+    /// <summary>
+    /// Booleano que indica si estamos o no en el menú de opciones.
+    /// </summary>
+    private static bool _isInOptionsUI = false;
+
 
     /// <summary>
     /// Referencia a la UI del menú de pausa.
@@ -124,6 +129,11 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject _buyItemUI;
 
     /// <summary>
+    /// Referencia a la UI del menú de opciones.
+    /// </summary>
+    [SerializeField] private GameObject _optionsUI;
+
+    /// <summary>
     /// Referencia al texto que aparece en <see cref="_pauseUI"/> que es el nombre del perfil.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _name;
@@ -162,6 +172,8 @@ public class UIController : MonoBehaviour
     /// </summary>
     private GameObject _lastSelectedInInventory;
 
+    [SerializeField] private Button _optionsButton;
+
     /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// Asigna la variable estática correspondiente de <see cref="UIConfig"/>.
@@ -181,14 +193,14 @@ public class UIController : MonoBehaviour
         //Pausamos si no estamos en pausa
         if (!_isInPauseUI)
         {
-            if (inputManager.GetKeyDown(inputEnum.pause) && !bonfireBehaviour.getIsInBonfireMenu() && !_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI)
+            if (inputManager.GetKeyDown(inputEnum.pause) && !bonfireBehaviour.getIsInBonfireMenu() && !_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI && !_isInOptionsUI)
             {
                 UIConfig.getController().usePauseUI();
             }
         }
         else //Quitamos la pausa
         {
-            if ((!_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI && !bonfireBehaviour.getIsInBonfireMenu()))
+            if ((!_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI && !bonfireBehaviour.getIsInBonfireMenu() && !_isInOptionsUI))
             {
                 if (inputManager.GetKeyDown(inputEnum.pause))
                 {
@@ -416,6 +428,15 @@ public class UIController : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="_isInOptionsUI"/>.
+    /// </summary>
+    /// <returns>Un booleano que indica si estamos o no en el menú de opciones.</returns>
+    public static bool getIsInOptionsUI()
+    {
+        return _isInOptionsUI;
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_isInBuyingUI"/>.
     /// </summary>
     /// <returns>Un booleano que indica si estamos o no seleccionando la cantidad de compra.</returns>
@@ -514,6 +535,15 @@ public class UIController : MonoBehaviour
     public GameObject getBuyObjectUI()
     {
         return _buyItemUI;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_optionsUI"/>.
+    /// </summary>
+    /// <returns>Un GameObject que representa la UI del menú de pausa.</returns>
+    public GameObject getOptionsUI()
+    {
+        return _optionsUI;
     }
 
     /// <summary>
@@ -764,6 +794,9 @@ public class UIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que activa o desactiva <see cref="_buyItemUI"/>.
+    /// </summary>
     public void useBuyItemUI()
     {
         _buyItemUI.SetActive(!_buyItemUI.activeSelf);
@@ -787,6 +820,23 @@ public class UIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que activa o desactiva <see cref="_optionsUI"/>.
+    /// </summary>
+    public void useOptionsUI()
+    {
+        _optionsUI.SetActive(!_optionsUI.activeSelf);
+        _isInOptionsUI = !_isInOptionsUI;
+
+        if (_isInOptionsUI)
+        {
+            _optionsUI.GetComponent<optionsManager>().initializeUI();
+        }
+        else
+        {
+            EventSystem.current.SetSelectedGameObject(_optionsButton.gameObject);
+        }
+    }
 
     /// <summary>
     /// Setter que modifica el sprite de <see cref="_selectedObjectSprite"/>.

@@ -19,6 +19,11 @@ public static class config
     private static GameObject _inventory;
 
     /// <summary>
+    /// Referencia al gestor de audio.
+    /// </summary>
+    private static GameObject _audioManager;
+
+    /// <summary>
     /// Setter que modifica <see cref="_player"/>.
     /// </summary>
     /// <param name="player">El GameObject a asignar.</param>
@@ -53,5 +58,25 @@ public static class config
     public static GameObject getInventory()
     {
         return _inventory;
+    }
+
+
+    /// <summary>
+    /// Setter que modifica <see cref="_inventory"/>.
+    /// </summary>
+    /// <param name="inventory">El GameObject a asignar.</param>
+    public static void setAudioManager(GameObject audioManager)
+    {
+        _audioManager = audioManager;
+    }
+
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_inventory"/>.
+    /// </summary>
+    /// <returns>Un GameObject que contiene la referencia al gestor de audio.</returns>
+    public static GameObject getAudioManager()
+    {
+        return _audioManager;
     }
 }

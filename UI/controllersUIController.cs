@@ -4,50 +4,107 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+
+/// <summary>
+/// controllersUIController es una clase que se encarga de mostrar la imagen correspondiente al (des)enchufar un mando.
+/// </summary>
 public class controllersUIController: MonoBehaviour
 {
+    /// <summary>
+    /// Referencia a la imagen cuando se conecta un mando default.
+    /// </summary>
     [SerializeField] private Image _blackPS;
+
+    /// <summary>
+    /// Referencia a la imagen cuando se desconecta un mando default.
+    /// </summary>
     [SerializeField] private Image _whitePS;
+
+    /// <summary>
+    /// Referencia a la imagen cuando se conecta un mando de nintendo.
+    /// </summary>
     [SerializeField] private Image _blackNS;
+
+    /// <summary>
+    /// Referencia a la imagen cuando se desconecta un mando de nintendo.
+    /// </summary>
     [SerializeField] private Image _whiteNS;
+
+    /// <summary>
+    /// Referencia a la imagen cuando se conecta un mando de xbox.
+    /// </summary>
     [SerializeField] private Image _blackXB;
+
+    /// <summary>
+    /// Referencia a la imagen cuando se desconecta un mando de xbox.
+    /// </summary>
     [SerializeField] private Image _whiteXB;
 
-    private Dictionary<controllerID, Image> _blackImages;
-    private Dictionary<controllerID, Image> _whiteImages;
+    /// <summary>
+    /// Diccionario para mostrar de una forma más simple las imágenes de conexión.
+    /// </summary>
+    private Dictionary<controllerIDEnum, Image> _blackImages;
 
+    /// <summary>
+    /// Diccionario para most4rar de una forma más simple las imágenes de desconexión.
+    /// </summary>
+    private Dictionary<controllerIDEnum, Image> _whiteImages;
+
+    /// <summary>
+    /// Tiempo que dura la imagen en pantalla.
+    /// </summary>
     private float _showTime = 0.75f;
 
+    /// <summary>
+    /// Número total de mandos conectados.
+    /// </summary>
     private static int _connectedControllers = 0;
 
+    /// <summary>
+    /// Método que se ejecuta al inicio del script.
+    /// </summary>
     private void Start()
     {
-        _blackImages = new Dictionary<controllerID, Image>();
-        _whiteImages = new Dictionary<controllerID, Image>();
+        //Inicializamos y rellenamos los diccionarios
+        _blackImages = new Dictionary<controllerIDEnum, Image>();
+        _whiteImages = new Dictionary<controllerIDEnum, Image>();
 
-        _blackImages[controllerID.PS] = _blackPS;
-        _blackImages[controllerID.XBOX] = _blackXB;
-        _blackImages[controllerID.NINTENDO] = _blackNS;
+        _blackImages[controllerIDEnum.PS] = _blackPS;
+        _blackImages[controllerIDEnum.XBOX] = _blackXB;
+        _blackImages[controllerIDEnum.NINTENDO] = _blackNS;
 
-        _whiteImages[controllerID.PS] = _whitePS;
-        _whiteImages[controllerID.XBOX]= _whiteXB;
-        _whiteImages[controllerID.NINTENDO] = _whiteNS;
+        _whiteImages[controllerIDEnum.PS] = _whitePS;
+        _whiteImages[controllerIDEnum.XBOX]= _whiteXB;
+        _whiteImages[controllerIDEnum.NINTENDO] = _whiteNS;
     }
 
+    /// <summary>
+    /// Método que se ejecuta al conectar un mando.
+    /// </summary>
     private void OnEnable()
     {
         InputSystem.onDeviceChange += detectController;
     }
 
+    /// <summary>
+    /// Método que se ejecuta al desconectar un mando.
+    /// </summary>
     private void OnDisable()
     {
         InputSystem.onDeviceChange -= detectController;
     }
 
+    /// <summary>
+    /// Método que se ejecuta al detectar un cambio de cambio de dispositivo.
+    /// </summary>
+    /// <param name="device">Dispositivo (des)conectado.</param>
+    /// <param name="deviceChange">Cambio en el dispositivo.</param>
     private void detectController(InputDevice device, InputDeviceChange deviceChange)
     {
+        //Si se ha añadido
         if (deviceChange == InputDeviceChange.Added)
         {
+            //Aumentamos en 1 los mandos conectados
             _connectedControllers++;
 
             if (!inputManager.getDeviceConnected())
@@ -56,20 +113,21 @@ public class controllersUIController: MonoBehaviour
                 //Se cargaria un archivo para ver que configuracion hay que usar
                 inputManager.createGamepadDefaultInputs();
             }
+            //Comprobación de nombres para mostrar la imagen
             if (device.name.Contains("Xbox"))
             {
-                StartCoroutine(showImage(controllerID.XBOX, true));
+                StartCoroutine(showImage(controllerIDEnum.XBOX, true));
             }
             else if (device.name.Contains("Switch"))
             {
-                StartCoroutine(showImage(controllerID.NINTENDO, true));
+                StartCoroutine(showImage(controllerIDEnum.NINTENDO, true));
             }
             else
             {
-                StartCoroutine(showImage(controllerID.PS, true));
+                StartCoroutine(showImage(controllerIDEnum.PS, true));
             }
         }
-        else if (deviceChange == InputDeviceChange.Reconnected)
+        else if (deviceChange == InputDeviceChange.Reconnected) //Se ha reconectado
         {
             _connectedControllers++;
 
@@ -79,47 +137,54 @@ public class controllersUIController: MonoBehaviour
                 //Se cargaria un archivo para ver que configuracion hay que usar
                 inputManager.createGamepadDefaultInputs();
             }
+
+            //Comprobación de nombres para mostrar la imagen
             if (device.name.Contains("Xbox"))
             {
-                StartCoroutine(showImage(controllerID.XBOX, true));
+                StartCoroutine(showImage(controllerIDEnum.XBOX, true));
             }
             else if (device.name.Contains("Switch"))
             {
-                StartCoroutine(showImage(controllerID.NINTENDO, true));
+                StartCoroutine(showImage(controllerIDEnum.NINTENDO, true));
             }
             else
             {
-                StartCoroutine(showImage(controllerID.PS, true));
+                StartCoroutine(showImage(controllerIDEnum.PS, true));
             }
         }
-        else if (deviceChange == InputDeviceChange.Disconnected || deviceChange == InputDeviceChange.Removed)
+        else if (deviceChange == InputDeviceChange.Disconnected || deviceChange == InputDeviceChange.Removed) //Se ha desconectado
         {
             _connectedControllers--;
             if (_connectedControllers == 0)
             {
                 inputManager.changeDeviceConnected();
             }
+
+            //Comprobación de nombres para mostrar la imagen
             if (device.name.Contains("Xbox"))
             {
-                StartCoroutine(showImage(controllerID.XBOX, false));
+                StartCoroutine(showImage(controllerIDEnum.XBOX, false));
             }
             else if (device.name.Contains("Switch"))
             {
-                StartCoroutine(showImage(controllerID.NINTENDO, false));
+                StartCoroutine(showImage(controllerIDEnum.NINTENDO, false));
             }
             else
             {
-                StartCoroutine(showImage(controllerID.PS, false));
+                StartCoroutine(showImage(controllerIDEnum.PS, false));
             }
         }
     }
 
-    public static int getDevicesConnected()
+    /// <summary>
+    /// Corrutina para mostrar la imagen correspondiente.
+    /// </summary>
+    /// <param name="controller">Tipo de mando conectado.</param>
+    /// <param name="shouldBeBlack">Flag booleano para indicar si la imagen es negra (true) o blanca (false).</param>
+    /// <returns></returns>
+    private IEnumerator showImage(controllerIDEnum controller, bool shouldBeBlack)
     {
-        return _connectedControllers;
-    }
-    private IEnumerator showImage(controllerID controller, bool shouldBeBlack)
-    {
+        //Asignación de imagen que corresponde
         Image showImage;
         if (shouldBeBlack)
         {
@@ -132,6 +197,8 @@ public class controllersUIController: MonoBehaviour
         }
 
         showImage.enabled = true;
+
+        //Esperamos el tiempo correspondiente
         yield return new WaitForSeconds(_showTime);
         showImage.enabled = false;
     }

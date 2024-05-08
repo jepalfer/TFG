@@ -83,6 +83,11 @@ public class bonfireBehaviour : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _resumeText;
 
     /// <summary>
+    /// Referencia al texto del botón para usar un objeto clave.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _useKeyItemText;
+
+    /// <summary>
     /// Referencia a los datos de los enemigos.
     /// </summary>
     private enemyStateData _enemiesData;
@@ -372,6 +377,7 @@ public class bonfireBehaviour : MonoBehaviour
             _resumeText.color = Color.white;
             _levelUpWeaponText.color = Color.white;
             _unlockSkillsText.color = Color.white;
+            _useKeyItemText.color = Color.white;
             
             EventSystem.current.SetSelectedGameObject(null);
         }

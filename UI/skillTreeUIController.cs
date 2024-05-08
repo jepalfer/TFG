@@ -5,29 +5,92 @@ using TMPro;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
+/// <summary>
+/// skillTreeUIController es una clase que se usa para controlar la UI de los árboles de habilidad.
+/// </summary>
 public class skillTreeUIController : MonoBehaviour
 {
+    /// <summary>
+    /// Referencia al panel derecho (de información)
+    /// </summary>
     [SerializeField] private GameObject _rightPanel;
+
+    /// <summary>
+    /// Referencia al arma de la que estamos obteniendo la habilidad.
+    /// </summary>
     private GameObject _instantiatedWeapon;
+
+    /// <summary>
+    /// Entero que representa el índice dentro de la lista de árboles.
+    /// </summary>
     private int _indexInList;
+
+    /// <summary>
+    /// Referencia al arma al cual se le va a otorgar la habilidad.
+    /// </summary>
     private GameObject _weaponToGiveSkill;
 
+    /// <summary>
+    /// Lista con todas las armas instanciadas.
+    /// </summary>
     [SerializeField] private List<GameObject> _prefabs;
+
+    /// <summary>
+    /// Lista con todos los árboles de habilidad instanciados.
+    /// </summary>
     [SerializeField] private List<GameObject> _instantiatedTreesPrefabs;
+
+    /// <summary>
+    /// Lista con los nombres de los árboles de habilidad.
+    /// </summary>
     [SerializeField] private List<TextMeshProUGUI> _menusNames;
+
+    /// <summary>
+    /// Referencia al panel de la UI donde aparecen los árboles de habilidad.
+    /// </summary>
     [SerializeField] private RectTransform _skillTreeContent;
+
+    /// <summary>
+    /// Referencia a la imagen del botón para navegar hacia la izquierda entre las armas.
+    /// </summary>
     [SerializeField] private Image _leftButtonImage;
+
+    /// <summary>
+    /// Referencia a la imagen del botón para navegar hacia la derecha entre las armas.
+    /// </summary>
     [SerializeField] private Image _rightButtonImage;
+
+    /// <summary>
+    /// Referencia a la imagen de la habilidad en el panel derecho.
+    /// </summary>
     [SerializeField] private Image _skillSprite;
+
+    /// <summary>
+    /// Referencia al campo de texto del nombre de la habilidad en el panel derecho.
+    /// </summary>
     [SerializeField] private TextMeshProUGUI _skillName;
+
+    /// <summary>
+    /// Referencia al campo de texto de la descripción de la habilidad en el panel derecho.
+    /// </summary>
     [SerializeField] private TextMeshProUGUI _skillDesc;
+
+    /// <summary>
+    /// Referencia al campo de texto del precio de la habilidad en el panel derecho.
+    /// </summary>
     [SerializeField] private TextMeshProUGUI _skillPrice;
+
+    /// <summary>
+    /// Referencia al último gameObject seleccionado.
+    /// </summary>
     private GameObject _formerEventSystemSelected = null;
 
-    // Update is called once per frame
+    /// <summary>
+    /// Método que se ejecuta cada frame para actualizar la lógica.
+    /// </summary>
     void Update()
     {
+        
         if (_indexInList < (_instantiatedTreesPrefabs.Count - 1) && inputManager.GetKeyDown(inputEnum.next)) 
         {
             _menusNames[_indexInList].color = Color.white;
@@ -77,6 +140,9 @@ public class skillTreeUIController : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Método que modifica la información mostrada en el panel de la derecha.
+    /// </summary>
     private void modifyRightPanel()
     {
         _skillSprite.sprite = _formerEventSystemSelected.GetComponent<skill>().getSkillSprite();
@@ -94,6 +160,9 @@ public class skillTreeUIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que se ejecuta al hacer visible la UI y que la inicializa.
+    /// </summary>
     public void initializeUI()
     {
         _instantiatedTreesPrefabs = new List<GameObject>();
@@ -147,6 +216,9 @@ public class skillTreeUIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que maneja la lógica de desbloquear una habilidad.
+    /// </summary>
     public void manageUpgradeSkillLogic()
     {
         lootItem selectedWeapon = config.getInventory().GetComponent<inventoryManager>().getInventory().Find(item => item.getTipo() == itemTypeEnum.weapon && item.getID() == _instantiatedTreesPrefabs[_indexInList].GetComponent<generalItem>().getID());
@@ -180,6 +252,10 @@ public class skillTreeUIController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Método que desbloquea una habilidad dada.
+    /// </summary>
+    /// <param name="skill">Habilidad a desbloquear.</param>
     public void unlockSkill(skill skill)
     {
        //_weaponToGiveSkill.GetComponent<Weapon>().addSkill(skill);
@@ -226,6 +302,9 @@ public class skillTreeUIController : MonoBehaviour
         _skillPrice.color = Color.red;
     }
 
+    /// <summary>
+    /// Método que se ejecuta al ocultar la UI.
+    /// </summary>
     public void setUIOff()
     {
         _menusNames[_indexInList].color = Color.white;
@@ -244,11 +323,10 @@ public class skillTreeUIController : MonoBehaviour
         _instantiatedTreesPrefabs.Clear();
     }
 
-    public GameObject getCurrentUI()
-    {
-        return _instantiatedTreesPrefabs[_indexInList];
-    }
-
+    /// <summary>
+    /// Getter que devuelve <see cref="_instantiatedTreesPrefabs"/>.
+    /// </summary>
+    /// <returns><see cref="_instantiatedTreesPrefabs"/>.</returns>
     public List<GameObject> getAllUIs()
     {
         return _instantiatedTreesPrefabs;
