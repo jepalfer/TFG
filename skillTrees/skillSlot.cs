@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// skillSlot es una clase que se usa para representar internamente las habilidades de la UI que se modifica en <see cref="selectSkillUIController"/>.
+/// skillSlot es una clase que se usa para representar internamente las habilidades de la UI que se modifica en 
+/// <see cref="selectSkillUIController"/>.
 /// </summary>
 public class skillSlot : MonoBehaviour
 {
