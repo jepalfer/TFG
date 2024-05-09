@@ -521,7 +521,7 @@ public class combatController : MonoBehaviour
     public void receiveSouls(long souls)
     {
         _souls += souls;
-        changeUIs();
+        changeUI();
     }
 
     /// <summary>
@@ -531,7 +531,7 @@ public class combatController : MonoBehaviour
     public void setSouls(long souls)
     {
         _souls = souls;
-        changeUIs();
+        changeUI();
     }
 
     /// <summary>
@@ -541,22 +541,16 @@ public class combatController : MonoBehaviour
     public void useSouls(long souls)
     {
         _souls -= souls;
-        changeUIs();
+        changeUI();
     }
 
     /// <summary>
-    /// Método auxiliar para modificar ciertas UIs.
+    /// Método auxiliar para modificar el campo de texto de almas de la UI general.
     /// </summary>
-    private void changeUIs()
+    private void changeUI()
     {
-        //Obtenemos el campo estático y lo modificamos
-        TextMeshProUGUI field = levelUpUIConfiguration.getSoulsValue();
-        levelUpUIController.updateUI(ref field, _souls.ToString());
-
-        //Obtenemos el campo estático y lo modificamos
-        field = generalUIConfiguration.getSouls();
-        generalUIController.updateSoulsUI(ref field, _souls.ToString());
-
+        UIConfig.getController().getGeneralUI().GetComponent<generalUIController>().getSouls().text = _souls.ToString();
+        
         //Guardamos la información
         saveSystem.saveSouls();
     }
