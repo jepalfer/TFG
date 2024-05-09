@@ -167,23 +167,12 @@ public class levelUpUIController : MonoBehaviour
         _agilityLevel.text = statSystem.getAgility().getLevel().ToString();
         _precisionLevel.text = statSystem.getPrecision().getLevel().ToString();
         _buttonText.color = Color.white;
-
+        _soulsValue.text = config.getPlayer().GetComponent<combatController>().getSouls().ToString();
         //Guardamos atributos
         saveSystem.saveAttributes();
 
         _maxHP.text = config.getPlayer().GetComponent<statsController>().getMaxHP().ToString();
         _maxStamina.text = config.getPlayer().GetComponent<statsController>().getMaxStamina().ToString();
-
-        levelUpUIConfiguration.setLevelValue(_levelValue);
-        levelUpUIConfiguration.setRequiredSoulsValue(_requiredSoulsValue);
-        levelUpUIConfiguration.setVitalityValue(_vitalityLevel);
-        levelUpUIConfiguration.setEnduranceValue(_enduranceLevel);
-        levelUpUIConfiguration.setStrengthValue(_strengthLevel);
-        levelUpUIConfiguration.setDexterityValue(_dexterityLevel);
-        levelUpUIConfiguration.setAgilityValue(_agilityLevel);
-        levelUpUIConfiguration.setPrecisionValue(_precisionLevel);
-        levelUpUIConfiguration.setMaxHPValue(_maxHP);
-        levelUpUIConfiguration.setMaxStaminaValue(_maxStamina);
 
         if (weaponConfig.getPrimaryWeapon() != null)
         {
@@ -202,8 +191,6 @@ public class levelUpUIController : MonoBehaviour
         {
             _secundaryDMG.text = "0";
         }
-        levelUpUIConfiguration.setPrimaryDMGValue(_primaryDMG);
-        levelUpUIConfiguration.setSecundaryDMGValue(_secundaryDMG);
 
         saveSystem.saveStats();
         EventSystem.current.SetSelectedGameObject(_vitalityController);
@@ -679,12 +666,12 @@ public class levelUpUIController : MonoBehaviour
             statSystem.getAgility().setLevel(statSystem.getAgility().getLevel() + _agilityLevels);
             statSystem.getPrecision().setLevel(statSystem.getPrecision().getLevel() + _precisionLevels);
 
-            levelUpUIConfiguration.getVitalityValue().text = statSystem.getVitality().getLevel().ToString();
-            levelUpUIConfiguration.getEnduranceValue().text = statSystem.getEndurance().getLevel().ToString();
-            levelUpUIConfiguration.getStrengthValue().text = statSystem.getStrength().getLevel().ToString();
-            levelUpUIConfiguration.getDexterityValue().text = statSystem.getDexterity().getLevel().ToString();
-            levelUpUIConfiguration.getAgilityValue().text = statSystem.getAgility().getLevel().ToString();
-            levelUpUIConfiguration.getPrecisionValue().text = statSystem.getPrecision().getLevel().ToString();
+            _vitalityLevel.text = statSystem.getVitality().getLevel().ToString();
+            _enduranceLevel.text = statSystem.getEndurance().getLevel().ToString();
+            _strengthLevel.text = statSystem.getStrength().getLevel().ToString();
+            _dexterityLevel.text = statSystem.getDexterity().getLevel().ToString();
+            _agilityLevel.text = statSystem.getAgility().getLevel().ToString();
+            _precisionLevel.text = statSystem.getPrecision().getLevel().ToString();
 
             config.getPlayer().GetComponent<combatController>().useSouls(_souls);
             _souls = 0;
@@ -704,7 +691,6 @@ public class levelUpUIController : MonoBehaviour
                 weapon.setBaseDMG(weapon.calculateBaseDMG());
                 weapon.setTotalDMG(weapon.calculateDMG(statSystem.getStrength().getLevel(), statSystem.getDexterity().getLevel(), statSystem.getPrecision().getLevel()));
                 _primaryDMG.text = weapon.getTotalDMG().ToString();
-                levelUpUIConfiguration.setPrimaryDMGValue(_primaryDMG);
             }
 
             if (weaponConfig.getSecundaryWeapon() != null)
@@ -713,7 +699,6 @@ public class levelUpUIController : MonoBehaviour
                 weapon.setBaseDMG(weapon.calculateBaseDMG());
                 weapon.setTotalDMG(weapon.calculateDMG(statSystem.getStrength().getLevel(), statSystem.getDexterity().getLevel(), statSystem.getPrecision().getLevel()));
                 _secundaryDMG.text = weapon.getTotalDMG().ToString();
-                levelUpUIConfiguration.setSecundaryDMGValue(_secundaryDMG);
             }
             saveSystem.saveAttributes();
             //Calculamos vida y stamina maximas

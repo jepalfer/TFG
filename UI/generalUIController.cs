@@ -95,36 +95,19 @@ public class generalUIController : MonoBehaviour
 
         //Cargamos la información de las almas
         _data = saveSystem.loadSouls();
-        TextMeshProUGUI _LUAlmas = UIConfig.getController().getLevelUpUI().GetComponent<levelUpUIController>().getSoulsValue();
 
         //Modificamos los campos según corresponda
         if (_data == null)
         {
             _souls.text = "0";
-            _LUAlmas.text = "0";
         }
         else
         {
             _souls.text = _data.getSouls().ToString();
-            _LUAlmas.text = _data.getSouls().ToString();
         }
 
-        //Establecemos variables estáticas y guardamos datos
-        generalUIConfiguration.setSouls(_souls);
-        levelUpUIConfiguration.setSoulsValue(_LUAlmas);
+        config.getPlayer().GetComponent<combatController>().setSouls(_data.getSouls());
         saveSystem.saveSouls();
-
-        //Establecemos el valor de las almas del combatController del jugador
-        long souls;
-        if (long.TryParse(_souls.text, out souls))
-        {
-        }
-        else
-        {
-            // No se pudo convertir el texto a int para 'level'
-            Debug.LogError("Error al convertir almas a long");
-        }
-        config.getPlayer().GetComponent<combatController>().setSouls(souls);
     }
 
     /// <summary>
