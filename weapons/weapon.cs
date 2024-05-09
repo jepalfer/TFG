@@ -119,19 +119,11 @@ public class weapon : generalItem
         if (_hand == handEnum.primary)
         {
             config.getPlayer().GetComponent<combatController>().assignPrimaryWeapon(gameObject);
-            if (levelUpUIConfiguration.getPrimaryDMGValue() != null)
-            {
-                levelUpUIConfiguration.getPrimaryDMGValue().text = getTotalDMG().ToString();
-            }
 
         }
         else
         {
             config.getPlayer().GetComponent<combatController>().assignSecundaryWeapon(gameObject);
-            if (levelUpUIConfiguration.getSecundaryDMGValue() != null)
-            {
-                levelUpUIConfiguration.getSecundaryDMGValue().text = getTotalDMG().ToString();
-            }
         }
 
         //Cargamos la información sobre las habilidades desbloqueadas
