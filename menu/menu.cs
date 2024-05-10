@@ -50,7 +50,7 @@ public class menu : MonoBehaviour
     /// <summary>
     /// Referencia al dropdown de resoluciones.
     /// </summary>
-    private TMP_Dropdown _resolutionDropdown;
+    [SerializeField] private TMP_Dropdown _resolutionDropdown;
 
     /// <summary>
     /// Referencia al dropdown de visualización.
@@ -143,7 +143,6 @@ public class menu : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-
         //Asignamos variables
         _timer = 0.0f;
         _canCount = false;
@@ -218,7 +217,6 @@ public class menu : MonoBehaviour
     private void Start()
     {
         _audioSettings = saveSystem.loadAudioSettings();
-        _resolutionDropdown = GetComponent<resolutionController>().getResolutionDropdown();
     }
 
     /// <summary>
@@ -265,8 +263,12 @@ public class menu : MonoBehaviour
             //Cargamos la configuración de audio
             _audioSettings = saveSystem.loadAudioSettings();
 
-            //EventSystem.current.SetSelectedGameObject(_resolutionDropdown.gameObject);
-            EventSystem.current.SetSelectedGameObject(_masterSlider.gameObject);
+            EventSystem.current.SetSelectedGameObject(_resolutionDropdown.gameObject);
+            _resolutionDropdown.gameObject.transform.parent.gameObject.GetComponent<resolutionController>().initializeOptions();
+
+            //EventSystem.current.SetSelectedGameObject(_displayDropdown.gameObject);
+            _displayDropdown.gameObject.transform.parent.gameObject.GetComponent<displayController>().initializeOptions();
+            //EventSystem.current.SetSelectedGameObject(_masterSlider.gameObject);
 
             //Modificamos el valor de cada slider
             _masterSlider.value = _audioSettings.getMasterVolume();

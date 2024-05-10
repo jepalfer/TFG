@@ -41,6 +41,16 @@ public class optionsManager : MonoBehaviour
     [SerializeField] private Button _cancelButton;
 
     /// <summary>
+    /// Referencia al dropdown de resoluciones.
+    /// </summary>
+    [SerializeField] private TMP_Dropdown _resDropdown;
+
+    /// <summary>
+    /// Referencia al dropdown de displays.
+    /// </summary>
+    [SerializeField] private TMP_Dropdown _displayDropdown;
+
+    /// <summary>
     /// Referencia al texto que indica que es el volumen master.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _masterText;
@@ -54,6 +64,16 @@ public class optionsManager : MonoBehaviour
     /// Referencia al texto que indica que es el volumen de SFX.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _SFXText;
+
+    /// <summary>
+    /// Referencia al texto que indica que es el dropdown de resoluciones.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _resText;
+
+    /// <summary>
+    /// Referencia al texto que indica que es el dropdown de display.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _displayText;
 
 
     /// <summary>
@@ -89,7 +109,12 @@ public class optionsManager : MonoBehaviour
         _audioSettings = saveSystem.loadAudioSettings();
 
         //Modificamos los valores
-        EventSystem.current.SetSelectedGameObject(_masterSlider.gameObject);
+        //EventSystem.current.SetSelectedGameObject(_masterSlider.gameObject);
+
+        _resDropdown.gameObject.transform.parent.GetComponent<resolutionController>().initializeOptions();
+        _displayDropdown.gameObject.transform.parent.GetComponent<displayController>().initializeOptions();
+
+        EventSystem.current.SetSelectedGameObject(_resDropdown.gameObject);
         _masterSlider.value = _audioSettings.getMasterVolume();
         _OSTSlider.value = _audioSettings.getOSTVolume();
         _SFXSlider.value = _audioSettings.getSFXVolume();
@@ -198,15 +223,27 @@ public class optionsManager : MonoBehaviour
         }
 
         //Modificación de color de los textos
-        if (EventSystem.current.currentSelectedGameObject == _masterSlider.gameObject)
+        if (EventSystem.current.currentSelectedGameObject == _resDropdown.gameObject)
+        {
+            _resText.color = Color.yellow;
+            _masterText.color = Color.white;
+            _displayText.color = Color.white;
+        }
+        else if (EventSystem.current.currentSelectedGameObject == _displayDropdown.gameObject)
+        {
+            _displayText.color = Color.yellow;
+            _resText.color = Color.white;
+            _masterText.color = Color.white;
+        }
+        else if (EventSystem.current.currentSelectedGameObject == _masterSlider.gameObject)
         {
             _masterText.color = Color.yellow;
+            _resText.color = Color.white;
+            _displayText.color = Color.white;
             _OSTText.color = Color.white;
-            _SFXText.color = Color.white;
         }
         else if (EventSystem.current.currentSelectedGameObject == _OSTSlider.gameObject)
         {
-
             _masterText.color = Color.white;
             _OSTText.color = Color.yellow;
             _SFXText.color = Color.white;
@@ -222,6 +259,8 @@ public class optionsManager : MonoBehaviour
             _masterText.color = Color.white;
             _OSTText.color = Color.white;
             _SFXText.color = Color.white;
+            _displayText.color = Color.white;
+            _resText.color = Color.white;
         }
     }
 }
