@@ -100,14 +100,15 @@ public class generalUIController : MonoBehaviour
         if (_data == null)
         {
             _souls.text = "0";
+            config.getPlayer().GetComponent<combatController>().setSouls(0);
+            saveSystem.saveSouls();
         }
         else
         {
             _souls.text = _data.getSouls().ToString();
+            config.getPlayer().GetComponent<combatController>().setSouls(_data.getSouls());
         }
 
-        config.getPlayer().GetComponent<combatController>().setSouls(_data.getSouls());
-        saveSystem.saveSouls();
     }
 
     /// <summary>
@@ -223,6 +224,6 @@ public class generalUIController : MonoBehaviour
         newSlot.GetComponent<lootSlot>().setText(item.getName());
         newSlot.GetComponent<lootSlot>().setLootQuantity(item.getQuantity());
 
-        newSlot.transform.SetParent(_lootGrid);
+        newSlot.transform.SetParent(_lootGrid, false);
     }
 }
