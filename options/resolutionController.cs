@@ -35,9 +35,9 @@ public class resolutionController : MonoBehaviour
     [SerializeField] private TMP_Dropdown _resolutionDropdown;
 
     /// <summary>
-    /// Método que se ejecuta al inicio del script.
+    /// Método que se ejecuta al hacer visible la UI del menú de opciones.
     /// </summary>
-    void Start()
+    public void initializeOptions()
     {
         //Obtenemos todas las resoluciones
         _resolutions = Screen.resolutions;
@@ -83,7 +83,7 @@ public class resolutionController : MonoBehaviour
     public void setResolution(int resolutionIndex)
     {
         Resolution res = _filteredResolutions[resolutionIndex];
-        Screen.SetResolution(res.width, res.height, GetComponent<displayController>().getScreenMode());
+        Screen.SetResolution(res.width, res.height, Screen.fullScreenMode);
     }
 
     /// <summary>

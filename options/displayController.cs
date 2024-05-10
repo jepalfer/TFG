@@ -18,28 +18,12 @@ public class displayController : MonoBehaviour
     /// <summary>
     /// Dropdown con todas las opciones de visualización.
     /// </summary>
-    private TMP_Dropdown _displayDropDown;
+    [SerializeField] private TMP_Dropdown _displayDropDown;
 
     /// <summary>
     /// Diccionario para almacenar el índice en la lista junto a su opción de visualizado correspondiente.
     /// </summary>
     private Dictionary<int, FullScreenMode> _displayDictionary;
-
-    /// <summary>
-    /// Método que se ejecuta al inicio del script.
-    /// </summary>
-    void Start()
-    {
-        
-    }
-
-    /// <summary>
-    /// Método que se ejecuta cada frame para actualizar la lógica.
-    /// </summary>
-    void Update()
-    {
-        
-    }
 
     /// <summary>
     /// Método que se ejecuta al hacer visible la UI del menú de opciones.
@@ -70,17 +54,25 @@ public class displayController : MonoBehaviour
     /// <param name="index">Índice del modo de visualización de la lista </param>
     public void setDisplayMode(int index)
     {
-        if (_displayDictionary[index] != Screen.fullScreenMode)
+        if (_displayDictionary[index] == FullScreenMode.FullScreenWindow)
         {
-            if (_displayDictionary[index] == FullScreenMode.FullScreenWindow)
-            {
-                Screen.SetResolution(Screen.width * 2, Screen.height * 2, true);
-            }
-            else
-            {
-                Screen.SetResolution(Screen.width / 2, Screen.height / 2, false);
-            }
+            Screen.fullScreen = true;
         }
+        else
+        {
+            Screen.fullScreen = false;
+        }
+        //if (_displayDictionary[index] != Screen.fullScreenMode)
+        //{
+        //    if (_displayDictionary[index] == FullScreenMode.FullScreenWindow)
+        //    {
+        //        Screen.SetResolution(Screen.width * 2, Screen.height * 2, true);
+        //    }
+        //    else
+        //    {
+        //        Screen.SetResolution(Screen.width / 2, Screen.height / 2, false);
+        //    }
+        //}
     }
 
     /// <summary>
