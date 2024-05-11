@@ -58,6 +58,11 @@ public class menu : MonoBehaviour
     [SerializeField] private TMP_Dropdown _displayDropdown;
 
     /// <summary>
+    /// Referencia al dropdown de calidades.
+    /// </summary>
+    [SerializeField] private TMP_Dropdown _qualityDropdown;
+
+    /// <summary>
     /// Referencia al slider de volumen master.
     /// </summary>
     [SerializeField] private Slider _masterSlider;
@@ -91,6 +96,11 @@ public class menu : MonoBehaviour
     /// Referencia al texto de la opción de visualización.
     /// </summary>
     [SerializeField] private TextMeshProUGUI _displayText;
+
+    /// <summary>
+    /// Referencia al texto de la opción de calidad.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _qualityText;
 
     /// <summary>
     /// Referencia al texto del slider de volumen master.
@@ -265,9 +275,10 @@ public class menu : MonoBehaviour
 
             EventSystem.current.SetSelectedGameObject(_resolutionDropdown.gameObject);
             _resolutionDropdown.gameObject.transform.parent.gameObject.GetComponent<resolutionController>().initializeOptions();
+            _displayDropdown.gameObject.transform.parent.gameObject.GetComponent<displayController>().initializeOptions();
+            _qualityDropdown.gameObject.transform.parent.gameObject.GetComponent<qualityController>().initializeOptions();
 
             //EventSystem.current.SetSelectedGameObject(_displayDropdown.gameObject);
-            _displayDropdown.gameObject.transform.parent.gameObject.GetComponent<displayController>().initializeOptions();
             //EventSystem.current.SetSelectedGameObject(_masterSlider.gameObject);
 
             //Modificamos el valor de cada slider
@@ -398,49 +409,43 @@ public class menu : MonoBehaviour
             if (EventSystem.current.currentSelectedGameObject == _resolutionDropdown.gameObject)
             {
                 _resolutionText.color = Color.yellow;
-                _displayText.color = Color.white;
+                _qualityText.color = Color.white;
                 _masterText.color = Color.white;
-                _OSTText.color = Color.white;
-                _SFXText.color = Color.white;
             }
             else if (EventSystem.current.currentSelectedGameObject == _displayDropdown.gameObject)
             {
-                _resolutionText.color = Color.white;
+                _qualityText.color = Color.white;
                 _displayText.color = Color.yellow;
                 _masterText.color = Color.white;
-                _OSTText.color = Color.white;
-                _SFXText.color = Color.white;
+            }
+            else if (EventSystem.current.currentSelectedGameObject == _qualityDropdown.gameObject)
+            {
+                _resolutionText.color = Color.white;
+                _qualityText.color = Color.yellow;
+                _displayText.color = Color.white;
+                _masterText.color = Color.white;
             }
             else if (EventSystem.current.currentSelectedGameObject == _masterSlider.gameObject)
             {
                 _resolutionText.color = Color.white;
                 _displayText.color = Color.white;
+                _qualityText.color = Color.white;
                 _masterText.color = Color.yellow;
                 _OSTText.color = Color.white;
-                _SFXText.color = Color.white;
             }
             else if (EventSystem.current.currentSelectedGameObject == _OSTSlider.gameObject)
             {
-                _resolutionText.color = Color.white;
-                _displayText.color = Color.white;
                 _masterText.color = Color.white;
                 _OSTText.color = Color.yellow;
                 _SFXText.color = Color.white;
             }
             else if (EventSystem.current.currentSelectedGameObject == _SFXSlider.gameObject)
             {
-                _resolutionText.color = Color.white;
-                _displayText.color = Color.white;
-                _masterText.color = Color.white;
                 _OSTText.color = Color.white;
                 _SFXText.color = Color.yellow;
             }
             else
             {
-                _resolutionText.color = Color.white;
-                _displayText.color = Color.white;
-                _masterText.color = Color.white;
-                _OSTText.color = Color.white;
                 _SFXText.color = Color.white;
             }
 

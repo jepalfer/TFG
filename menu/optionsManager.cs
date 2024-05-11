@@ -49,6 +49,11 @@ public class optionsManager : MonoBehaviour
     /// Referencia al dropdown de displays.
     /// </summary>
     [SerializeField] private TMP_Dropdown _displayDropdown;
+    
+    /// <summary>
+    /// Referencia al dropdown de calidades.
+    /// </summary>
+    [SerializeField] private TMP_Dropdown _qualityDropdown;
 
     /// <summary>
     /// Referencia al texto que indica que es el volumen master.
@@ -75,6 +80,10 @@ public class optionsManager : MonoBehaviour
     /// </summary>
     [SerializeField] private TextMeshProUGUI _displayText;
 
+    /// <summary>
+    /// Referencia al texto que indica que es el dropdown de calidades.
+    /// </summary>
+    [SerializeField] private TextMeshProUGUI _qualityText;
 
     /// <summary>
     /// Referencia al texto de <see cref="_acceptButton"/>.
@@ -113,7 +122,7 @@ public class optionsManager : MonoBehaviour
 
         _resDropdown.gameObject.transform.parent.GetComponent<resolutionController>().initializeOptions();
         _displayDropdown.gameObject.transform.parent.GetComponent<displayController>().initializeOptions();
-
+        _qualityDropdown.gameObject.transform.parent.GetComponent<qualityController>().initializeOptions();
         EventSystem.current.SetSelectedGameObject(_resDropdown.gameObject);
         _masterSlider.value = _audioSettings.getMasterVolume();
         _OSTSlider.value = _audioSettings.getOSTVolume();
@@ -227,6 +236,13 @@ public class optionsManager : MonoBehaviour
         {
             _resText.color = Color.yellow;
             _masterText.color = Color.white;
+            _qualityText.color = Color.white;
+        }
+        else if (EventSystem.current.currentSelectedGameObject == _qualityDropdown.gameObject)
+        {
+            _resText.color = Color.white;
+            _masterText.color = Color.white;
+            _qualityText.color = Color.yellow;
             _displayText.color = Color.white;
         }
         else if (EventSystem.current.currentSelectedGameObject == _displayDropdown.gameObject)
@@ -241,6 +257,7 @@ public class optionsManager : MonoBehaviour
             _resText.color = Color.white;
             _displayText.color = Color.white;
             _OSTText.color = Color.white;
+            _qualityText.color = Color.white;
         }
         else if (EventSystem.current.currentSelectedGameObject == _OSTSlider.gameObject)
         {
