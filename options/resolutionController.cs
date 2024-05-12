@@ -41,6 +41,9 @@ public class resolutionController : MonoBehaviour
     {
         //Obtenemos todas las resoluciones
         _resolutions = Screen.resolutions;
+        
+
+
         _filteredResolutions = new List<Resolution>();
 
         _resolutionDropdown.ClearOptions();
@@ -56,13 +59,14 @@ public class resolutionController : MonoBehaviour
                 _filteredResolutions.Add(_resolutions[i]);
             }
         }
-
+        _filteredResolutions.Reverse();
         //Creamos las opciones
         List<string> options = new List<string>();
 
         for (int i = 0; i < _filteredResolutions.Count; ++i)
         {
-            string resolutionOption = _filteredResolutions[i].width + "x" + _filteredResolutions[i].height + " - " + _filteredResolutions[i].refreshRate + "Hz";
+            string resolutionOption = _filteredResolutions[i].width + "x" + _filteredResolutions[i].height + "px @ " + 
+                                      _filteredResolutions[i].refreshRate + "Hz";
             options.Add(resolutionOption);
             if (_filteredResolutions[i].width == Screen.width && _filteredResolutions[i].height == Screen.height)
             {
