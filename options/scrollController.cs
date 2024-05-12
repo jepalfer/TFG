@@ -44,20 +44,21 @@ public class scrollController : MonoBehaviour
             {
                 scrollToSelected(false);
             }
-
-            if (inputManager.GetKeyDown(inputEnum.down))
+            else if (inputManager.GetKeyDown(inputEnum.down))
             {
                 scrollToSelected(false);
             }
-
-            if (inputManager.GetKeyDown(inputEnum.useItem))
+            else if (inputManager.GetKeyDown(inputEnum.useItem))
             {
                 scrollToSelected(false);
             }
-
-            if (inputManager.GetKeyDown(inputEnum.oneMoreItem))
+            else if (inputManager.GetKeyDown(inputEnum.oneMoreItem))
             {
                 scrollToSelected(false);
+            }
+            else
+            {
+                scrollToSelected(true);
             }
         }
     }
@@ -83,14 +84,16 @@ public class scrollController : MonoBehaviour
                 _mScrollRect.normalizedPosition = new Vector2(0, 1 - (selectedIndex / ((float)_mSelectables.Count - 1)));
                 //Debug.Log("_mScrollRect.normalizedPosition: " + _mScrollRect.normalizedPosition);
                 _mNextScrollPosition = _mScrollRect.normalizedPosition;
+                Debug.Log("True ==> Selected Index: " + selectedIndex + " || Speed: " + _scrollSpeed + " || _mNextScrollPosition: " + _mNextScrollPosition + " || _mScrollRect.normalizedPosition: " + _mScrollRect.normalizedPosition +
+                    " || Lerp: " + Vector2.Lerp(_mScrollRect.normalizedPosition, _mNextScrollPosition, _scrollSpeed * Time.deltaTime));
             }
             else
             {
                 _mNextScrollPosition = new Vector2(0, 1 - (selectedIndex / ((float)_mSelectables.Count - 1)));
+                Debug.Log("False ==> Selected Index: " + selectedIndex + " || Speed: " + _scrollSpeed + " || _mNextScrollPosition: " + _mNextScrollPosition + " || _mScrollRect.normalizedPosition: " + _mScrollRect.normalizedPosition +
+                    " || Lerp: " + Vector2.Lerp(_mScrollRect.normalizedPosition, _mNextScrollPosition, _scrollSpeed * Time.deltaTime));
             }
         }
-        Debug.Log("Selected Index: " + selectedIndex + " || Speed: " + _scrollSpeed + " || _mNextScrollPosition: " + _mNextScrollPosition + " || _mScrollRect.normalizedPosition: " + _mScrollRect.normalizedPosition +
-            " || Lerp: " + Vector2.Lerp(_mScrollRect.normalizedPosition, _mNextScrollPosition, _scrollSpeed * Time.deltaTime));
     }
     //public void OnPointerEnter(PointerEventData eventData)
     //{
