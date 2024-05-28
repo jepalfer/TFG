@@ -24,6 +24,16 @@ public class audioManager : MonoBehaviour
     [SerializeField] private AudioClip _initialAudio;
 
     /// <summary>
+    /// Referencia al GameObject que contiene el <see cref="audioSource"/> para ost.
+    /// </summary>
+    [SerializeField] private GameObject _ost;
+
+    /// <summary>
+    /// Referencia al GameObject que contiene el <see cref="audioSource"/> para sfx generales.
+    /// </summary>
+    [SerializeField] private GameObject _sfx;
+
+    /// <summary>
     /// Referencia a la instancia del <see cref="audioManager"/> para manejarlo entre escenas.
     /// </summary>
     public static audioManager _instance;
@@ -48,10 +58,10 @@ public class audioManager : MonoBehaviour
         config.setAudioManager(_instance.gameObject);
 
         //Comprobamos en caso de que no sea la OST del menú
-        if (_instance.gameObject.GetComponent<AudioSource>().clip != _initialAudio)
+        if (_instance._ost.GetComponent<AudioSource>().clip != _initialAudio)
         {
-            _instance.gameObject.GetComponent<AudioSource>().clip = _initialAudio;
-            _instance.gameObject.GetComponent<AudioSource>().Play();
+            _instance._ost.GetComponent<AudioSource>().clip = _initialAudio;
+            _instance._ost.GetComponent<AudioSource>().Play();
         }
     }
 
@@ -70,7 +80,7 @@ public class audioManager : MonoBehaviour
         }
 
         //Iniciamos la OST
-        GetComponent<AudioSource>().Play();
+        _ost.GetComponent<AudioSource>().Play();
 
         //Modificamos los volúmenes de audio
         setAudio(audioSettingsEnum.masterVolume.ToString(), _audioSettings.getMasterVolume());
@@ -86,5 +96,23 @@ public class audioManager : MonoBehaviour
     public void setAudio(string name, float value)
     {
         _mixer.SetFloat(name, 20 * Mathf.Log10(value));
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_ost"/>.
+    /// </summary>
+    /// <returns><see cref="_ost"/>.</returns>
+    public GameObject getOSTPlayer()
+    {
+        return _ost;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_sfx"/>.
+    /// </summary>
+    /// <returns><see cref="_sfx"/>.</returns>
+    public GameObject getSFXPlayer()
+    {
+        return _sfx;
     }
 }
