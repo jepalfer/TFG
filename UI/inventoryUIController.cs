@@ -130,7 +130,6 @@ public class inventoryUIController : MonoBehaviour
     {
         if (EventSystem.current.currentSelectedGameObject != null && !UIController.getIsEquippingObjectUI())
         {
-            Debug.Log("hola");
             _selectedID = EventSystem.current.currentSelectedGameObject.gameObject.GetComponent<slotData>().getID();
         }
         //Comprobamos que no estemos equipando un objeto
@@ -153,6 +152,7 @@ public class inventoryUIController : MonoBehaviour
                     createInventory((itemTypeEnum)_counter);
 
                     _topPanelTexts[_counter + 1].color = Color.white;
+                    config.getAudioManager().GetComponent<menuSFXController>().playTabSFX();
                 }
                 if (EventSystem.current.currentSelectedGameObject == null)
                 {
@@ -171,6 +171,7 @@ public class inventoryUIController : MonoBehaviour
             {
                 if (_counter < 3)
                 {
+                    config.getAudioManager().GetComponent<menuSFXController>().playTabSFX();
                     //Cambiamos la información que se ve en la UI
                     _counter++;
                     _topPanelTexts[_counter - 1].color = Color.white;

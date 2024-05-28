@@ -91,8 +91,9 @@ public class skillTreeUIController : MonoBehaviour
     void Update()
     {
         
-        if (_indexInList < (_instantiatedTreesPrefabs.Count - 1) && inputManager.GetKeyDown(inputEnum.next)) 
+        if (_indexInList < (_instantiatedTreesPrefabs.Count - 1) && inputManager.GetKeyDown(inputEnum.next))
         {
+            config.getAudioManager().GetComponent<menuSFXController>().playTabSFX();
             _menusNames[_indexInList].color = Color.white;
             _instantiatedTreesPrefabs[_indexInList].SetActive(false);
 
@@ -113,6 +114,7 @@ public class skillTreeUIController : MonoBehaviour
 
         if (_indexInList > 0 && inputManager.GetKeyDown(inputEnum.previous))
         {
+            config.getAudioManager().GetComponent<menuSFXController>().playTabSFX();
             _menusNames[_indexInList].color = Color.white;
             _instantiatedTreesPrefabs[_indexInList].SetActive(false);
 
