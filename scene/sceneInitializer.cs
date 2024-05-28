@@ -131,10 +131,10 @@ public class sceneInitializer : MonoBehaviour
         saveSystem.savePlayer();
 
         //Comprobación de la ost para que si es distinta se reproduzca desde el inicio
-        if (config.getAudioManager().GetComponent<AudioSource>().clip != _ost)
+        if (config.getAudioManager().GetComponent<audioManager>().getOSTPlayer().GetComponent<AudioSource>().clip != _ost)
         {
-            config.getAudioManager().GetComponent<AudioSource>().clip = _ost;
-            config.getAudioManager().GetComponent<AudioSource>().Play();
+            config.getAudioManager().GetComponent<audioManager>().getOSTPlayer().GetComponent<AudioSource>().clip = _ost;
+            config.getAudioManager().GetComponent<audioManager>().getOSTPlayer().GetComponent<AudioSource>().Play();
         }
     }
 }
