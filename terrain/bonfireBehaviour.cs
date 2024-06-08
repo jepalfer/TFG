@@ -118,6 +118,11 @@ public class bonfireBehaviour : MonoBehaviour
     private static bool _isInObtainChargeUI;
 
     /// <summary>
+    /// Referencia al último objeto seleccionado.
+    /// </summary>
+    private GameObject _formerEventSystemSelected = null;
+
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// Asigna algunas variables, entre ellas la estática correspondiente.
     /// </summary>
@@ -155,9 +160,26 @@ public class bonfireBehaviour : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if ((inputManager.GetKeyDown(inputEnum.interact) && _playerIsOn && !UIController.getIsInPauseUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI()))
+        if ((inputManager.GetKeyDown(inputEnum.interact) && _playerIsOn && !UIController.getIsInPauseUI() && 
+            !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && !UIController.getIsInLevelUpWeaponUI() && 
+            !UIController.getIsInInventoryUI() && config.getPlayer().GetComponent<collisionController>().getIsOnPlatform()))
         {
             useBonfireUI();
+        }
+
+        if (_isInBonfireMenu)
+        {
+            GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+            //Debug.Log(currentSelected);
+            if (currentSelected != _formerEventSystemSelected && currentSelected != null)
+            {
+                if (_formerEventSystemSelected != null)
+                {
+                    //config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+                }
+            }
+            _formerEventSystemSelected = currentSelected;
+
         }
     }
 
@@ -198,6 +220,7 @@ public class bonfireBehaviour : MonoBehaviour
         //Cargamos la escena en la que nos encontramos
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         //Salimos de la UI
         useBonfireUI();
     }
@@ -281,6 +304,7 @@ public class bonfireBehaviour : MonoBehaviour
     /// </summary>
     public void useKeyItem()
     {
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         inventoryData loadedInventory = saveSystem.loadInventory();
 
         if (loadedInventory != null)
@@ -363,15 +387,21 @@ public class bonfireBehaviour : MonoBehaviour
         _isInBonfireMenu = !_isInBonfireMenu;
 
         //Hacemos que no pase el tiempo
-        Time.timeScale = _isInBonfireMenu ? 0f : 1f;
+        //Time.timeScale = _isInBonfireMenu ? 0f : 1f;
 
         //Si entramos modificamos el objeto seleccionado en el EventSystem
+        animatorEnum direction = config.getPlayer().GetComponent<playerMovement>().getIsFacingLeft() ? animatorEnum.front : animatorEnum.back;
+
         if (_isInBonfireMenu)
         {
+            Debug.Log(direction.ToString());
+            config.getPlayer().GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, direction);
+            _formerEventSystemSelected = null;
             EventSystem.current.SetSelectedGameObject(_restButton.gameObject);
         }
         else //Si no la ponemos a defaul con todos los textos a blanco para dar coherencia visual
         {
+            config.getPlayer().GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_get_up, direction);
             _restText.color = Color.white;
             _levelUpText.color = Color.white;
             _resumeText.color = Color.white;
@@ -380,6 +410,7 @@ public class bonfireBehaviour : MonoBehaviour
             _useKeyItemText.color = Color.white;
             
             EventSystem.current.SetSelectedGameObject(null);
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         }
     }
 }
