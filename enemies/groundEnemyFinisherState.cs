@@ -5,17 +5,17 @@ using UnityEngine;
 /// <summary>
 /// groundEnemyFinisherState es una clase que representa el estado del último golpe de un combo de un enemigo.
 /// </summary>
-public class groundEnemyFinisherState : enemyBaseState
+public class groundEnemyFinisherState : enemyBaseCombatState
 {
     /// <summary>
     /// Constructor con parámetros de la clase que asigna un tiempo y contador.
     /// </summary>
-    /// <param name="time">El tiempo asignado a <see cref="enemyBaseState._attackTime"/>.</param>
-    /// <param name="counter">El contador asignado a <see cref="enemyBaseState._attackCounter"/></param>
+    /// <param name="time">El tiempo asignado a <see cref="enemyBaseCombatState._attackTime"/>.</param>
+    /// <param name="counter">El contador asignado a <see cref="enemyBaseCombatState._attackCounter"/></param>
     public groundEnemyFinisherState(float time, int counter) : base(time, counter) { }
 
     /// <summary>
-    /// Método que termina de implementar <see cref="enemyBaseState.onEnter(enemyStateMachine)"/>.
+    /// Método que termina de implementar <see cref="enemyBaseCombatState.onEnter(enemyStateMachine)"/>.
     /// </summary>
     /// <param name="_stateMachine">La máquina de estados actual.</param>
     public override void onEnter(enemyStateMachine _stateMachine)
@@ -27,7 +27,7 @@ public class groundEnemyFinisherState : enemyBaseState
     }
 
     /// <summary>
-    /// Método que termina de implementar <see cref="enemyBaseState.onUpdate()"/>.
+    /// Método que termina de implementar <see cref="enemyBaseCombatState.onUpdate()"/>.
     /// Si estamos fuera del rango de ataque cambia de estado, si no se queda quieto. Ver <see cref="enemyChaseState"/> y <see cref="idleEnemyState"/> para más información.
     /// </summary>
     public override void onUpdate()

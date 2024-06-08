@@ -74,6 +74,11 @@ public class baseEnemy : ScriptableObject
     /// </summary>
     [SerializeField] private List<float> _attacksTimes = new List<float>();
 
+    /// <summary>
+    /// Flag booleano que indica si un enemigo lleva o no armadura.
+    /// </summary>
+    [SerializeField] private bool _isArmored;
+
 
     /// <summary>
     /// Getter que devuelve <see cref="_enemyName"/>.
@@ -185,6 +190,15 @@ public class baseEnemy : ScriptableObject
     public List<float> getTimes()
     {
         return _attacksTimes;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_isArmored"/>.
+    /// </summary>
+    /// <returns><see cref="_isArmored"/>.</returns>
+    public bool getIsArmored()
+    {
+        return _isArmored;
     }
 
 }

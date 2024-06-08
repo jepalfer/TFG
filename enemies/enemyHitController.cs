@@ -21,6 +21,7 @@ public class enemyHitController : MonoBehaviour
         if (collision.CompareTag("playerHurtbox"))
         {
             config.getPlayer().GetComponent<statsController>().receiveDMG(_enemy.GetComponent<enemy>().getDamage());
+            config.getPlayer().GetComponent<characterSFXController>().playHurtSFX();
         }
     }
 

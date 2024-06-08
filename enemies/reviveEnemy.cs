@@ -46,29 +46,20 @@ public class reviveEnemy : MonoBehaviour
         {
             //Obtenemos el índice en el que está guardado
             int index = _data.getEnemyStates().IndexOf(foundEnemy);
-            
-            //Hacemos comprobaciones
-            if (foundEnemy.getIsAlive() == 0)
+            if (foundEnemy.getIsAlive() == 1 || foundEnemy.getCanRevive() == 1)
             {
-                if (foundEnemy.getCanRevive() == 0)
-                {
-                    _enemy.SetActive(false);
-                }
-                else
-                {
-                    foundEnemy.setCanRevive(0);
-                    foundEnemy.setIsAlive(1);
+                foundEnemy.setCanRevive(0);
+                foundEnemy.setIsAlive(1);
 
-                    _data.getEnemyStates()[index] = foundEnemy;
+                _data.getEnemyStates()[index] = foundEnemy;
 
-                    //Guardamos la modificación
-                    saveSystem.saveEnemyData(_data.getEnemyStates());
-                    _enemy.SetActive(true);
-                }
+                //Guardamos la modificación
+                saveSystem.saveEnemyData(_data.getEnemyStates());
+                _enemy.SetActive(true);
             }
             else
             {
-                _enemy.SetActive(true);
+                _enemy.SetActive(false);
             }
         }
     }
