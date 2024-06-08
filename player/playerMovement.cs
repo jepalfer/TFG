@@ -24,12 +24,6 @@ public class playerMovement : MonoBehaviour
     /// Referencia a la BoxCollider del jugador.
     /// </summary>
     [SerializeField] private BoxCollider2D _bc;
-
-    /// <summary>
-    /// Referencia al Animator del jugador.
-    /// </summary>
-    [Header("Animation")]
-    [SerializeField] private Animator _animator;
     //----------------------------------------------------------------------------------------------------------------------
     
     /// <summary>
@@ -159,7 +153,7 @@ public class playerMovement : MonoBehaviour
     /// <summary>
     /// Flag booleano para saber a qué lado está mirando el personaje.
     /// </summary>
-    [SerializeField] private bool _facingRight = true;
+    [SerializeField] private bool _facingLeft = true;
 
     /// <summary>
     /// Flag booleano para saber si estamos sin hacer nada.
@@ -200,7 +194,6 @@ public class playerMovement : MonoBehaviour
     /// Valor que almacena el ratio en el que aumenta la velocidad de esquiva al subir 10 niveles.
     /// </summary>
     [SerializeField] private float _dashTimeMultiplier;
-
     /// <summary>
     /// Primer método que se ejecuta al iniciar el script.
     /// </summary>
@@ -208,18 +201,36 @@ public class playerMovement : MonoBehaviour
     {
         //Obtenemos la referencia al RigidBody y el Animator
         _rb = GetComponent<Rigidbody2D>();
-        _animator = GetComponent<Animator>();
 
         //Obtenemos la referencia al collider que no es trigger
-        BoxCollider2D[] colliders = GetComponentsInChildren<BoxCollider2D>();
-        _bc =  colliders[0];
+        _bc =  GetComponent<BoxCollider2D>();
 
         //Configuramos algunas variables
         _g0 = _rb.gravityScale;
         _dashTimeMultiplier = 5f;
         config.setPlayer(gameObject);
-    }    
+    }
 
+    /// <summary>
+    /// Método que se ejecuta al inicio tras <see cref="Awake"/>.
+    /// </summary>
+    private void Start()
+    {
+        //if (!_facingLeft)
+        //{
+        //    GetComponent<SpriteRenderer>().flipX = true;
+        //}
+
+        if (_facingLeft)
+        {
+            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.front);
+        }
+        else
+        {
+            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.back);
+        }
+
+    }
 
     /// <summary>
     /// Método que se ejecuta cada frame para actualizar la lógica.
@@ -232,6 +243,7 @@ public class playerMovement : MonoBehaviour
             _distanceJumped = _JUMP_HEIGHT;
         }
 
+        AnimatorStateInfo stateInfo = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
         //Mientras no estemos en ningún menú del juego
         if (!UIController.getIsInPauseUI() && !UIController.getIsInEquippingSkillUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
             !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu() &&
@@ -260,12 +272,155 @@ public class playerMovement : MonoBehaviour
                 _idle = _HSpeed == 0;
 
                 //Damos la vuelta si estábamos mirando hacia derecha y vamos a izquierda o viceversa
-                if (((_HSpeed > 0 && !_facingRight) || (_HSpeed < 0 && _facingRight)) && _canMove)
+                if (((_HSpeed < 0 && !_facingLeft) || (_HSpeed > 0 && _facingLeft)) && _canMove)
                 {
                     flip();
                 }
+                if (_idle && GetComponent<collisionController>().getIsOnPlatform() && !bonfireBehaviour.getIsInBonfireMenu())
+                {
+                    if (_facingLeft)
+                    {
+                        if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 0, animatorEnum.front)))
+                        {
+                            if (stateInfo.normalizedTime >= 1.0f)
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, animatorEnum.front);
+                            }
+                            else
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.front);
+                            }
+                        }
+                        else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 1, animatorEnum.front)))
+                        {
+                            if (stateInfo.normalizedTime >= 1.0f)
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.front);
+                            }
+                            else
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, animatorEnum.front);
+                            }
+                        }
+                        else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 2, animatorEnum.front)))
+                        {
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.front);
+                        }
+                        else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_get_up, animatorEnum.front)))
+                        {
+                            if (stateInfo.normalizedTime >= 1.0f)
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.front);
+                            }
+                            else
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_get_up, animatorEnum.front);
+                            }
+                        }
+                        else if (GetComponent<collisionController>().getIsOnPlatform())
+                        {
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.front);
+                        }
+                    }
+                    else
+                    {
+                        if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 0, animatorEnum.back)))
+                        {
+                            if (stateInfo.normalizedTime >= 1.0f)
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, animatorEnum.back);
+                            }
+                            else
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.back);
+                            }
+                        }
+                        else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 1, animatorEnum.back)))
+                        {
+                            if (stateInfo.normalizedTime >= 1.0f)
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.back);
+                            }
+                            else
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, animatorEnum.back);
+                            }
+                        }
+                        else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 2, animatorEnum.back)))
+                        {
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.back);
+                        }
+                        else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_get_up, animatorEnum.back)))
+                        {
+                            if (stateInfo.normalizedTime >= 1.0f)
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.back);
+                            }
+                            else
+                            {
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_get_up, animatorEnum.back);
+                            }
+                        }
+                        else if (GetComponent<collisionController>().getIsOnPlatform())
+                        {
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 0, animatorEnum.back);
+                        }
+                    }
+                }
+                
+                if (_canClimb)
+                {
+                    if (!GetComponent<collisionController>().getIsOnPlatform())
+                    {
+                        if (inputManager.GetKey(inputEnum.up))
+                        {
+                            if (!stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_climb, animatorEnum.up)))
+                            {
+                                GetComponent<Animator>().speed = 1;
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_climb, animatorEnum.up);
+                            }
+                        }
+                        if (inputManager.GetKeyUp(inputEnum.up))
+                        {
+                            GetComponent<Animator>().speed = 0;
+                        }
 
-                //Calculamos la velocidad vertical para las escaleras
+                        if (inputManager.GetKey(inputEnum.down))
+                        {
+                            if (!stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_climb, animatorEnum.down)))
+                            {
+                                GetComponent<Animator>().speed = 1;
+                                GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_climb, animatorEnum.down);
+                            }
+                        }
+                        if (inputManager.GetKeyUp(inputEnum.down))
+                        {
+                            GetComponent<Animator>().speed = 0;
+                        }
+                    }
+                }
+                
+                if (!_idle && GetComponent<collisionController>().getIsOnPlatform())
+                {
+                    if (!_isJumping) //Estamos cayendo
+                    {
+                        if (_facingLeft)
+                        {
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_run, animatorEnum.front);
+                        }
+                        else
+                        {
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_run, animatorEnum.back);
+                        }
+                    }
+                    else //Estamos saltando
+                    {
+                        
+                    }
+                }
+                
+
+                    //Calculamos la velocidad vertical para las escaleras
                 if (Input.GetAxisRaw("Vertical") < 0)
                 {
                     _direction = -1;
@@ -280,6 +435,7 @@ public class playerMovement : MonoBehaviour
                 }
                 _VSpeed = _direction * _climbingSpeed;
             }
+            
 
             //Podemos esquivar si no hemos esquivado y además no estamos tocando plataforma
             if (!_hasRolled && !GetComponent<collisionController>().getIsOnPlatform())
@@ -421,6 +577,45 @@ public class playerMovement : MonoBehaviour
             if (_canRoll && inputManager.GetKeyDown(inputEnum.roll))
             {
                 StartCoroutine(manageRoll());
+            }
+        }
+        if (bonfireBehaviour.getIsInBonfireMenu())
+        {
+            if (_facingLeft)
+            {
+                if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 1, animatorEnum.front)))
+                {
+                    if (stateInfo.normalizedTime >= 1.0f)
+                    {
+                        GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.front);
+                    }
+                    else
+                    {
+                        GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, animatorEnum.front);
+                    }
+                }
+                else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 2, animatorEnum.front)))
+                {
+                    GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.front);
+                }
+            }
+            else
+            {
+                if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 1, animatorEnum.back)))
+                {
+                    if (stateInfo.normalizedTime >= 1.0f)
+                    {
+                        GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.back);
+                    }
+                    else
+                    {
+                        GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, animatorEnum.back);
+                    }
+                }
+                else if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 2, animatorEnum.back)))
+                {
+                    GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 2, animatorEnum.back);
+                }
             }
         }
     }
@@ -666,10 +861,14 @@ public class playerMovement : MonoBehaviour
     /// </summary>
     void flip()
     {
-        Vector3 currentScale = gameObject.transform.localScale;
-        currentScale.x *= -1;
-        gameObject.transform.localScale = currentScale;
-        _facingRight = !_facingRight;
+        Debug.Log("flip");
+        //Vector3 currentScale = gameObject.transform.localScale;
+        //currentScale.x *= -1;
+        //gameObject.transform.localScale = currentScale;
+        _facingLeft = !_facingLeft;
+
+        //if (_facingLeft) GetComponent<SpriteRenderer>().flipX = false;
+        //else GetComponent<SpriteRenderer>().flipX = true;
     }
 
     /// <summary>
@@ -692,7 +891,7 @@ public class playerMovement : MonoBehaviour
         //Modificamos el tiempo y distancia de esquiva según si estamos o no quietos
         if (_idle)
         {
-            if (_facingRight)
+            if (!_facingLeft)
             {
                 _rollDistance = -1.0f * _roll;
             }
@@ -704,7 +903,7 @@ public class playerMovement : MonoBehaviour
         }
         else
         {
-            if (_facingRight)
+            if (!_facingLeft)
             {
                 _rollDistance = 2.0f * _roll;
             }
@@ -791,12 +990,12 @@ public class playerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Setter que modifica <see cref="_facingRight"/>.
+    /// Setter que modifica <see cref="_facingLeft"/>.
     /// </summary>
     /// <param name="value">El valor a asignar.</param>
-    public void setFacingRight(bool value)
+    public void setFacingLeft(bool value)
     {
-        _facingRight = value;
+        _facingLeft = value;
     }
 
     /// <summary>
@@ -908,6 +1107,15 @@ public class playerMovement : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve un flag booleano para saber cuándo se puede reproducir el SFX de caminar.
+    /// </summary>
+    /// <returns>Flag booleano que indica si se puede o no reproducir el SFX de caminar.</returns>
+    public bool getPlayWalkingSFX()
+    {
+        return !_idle && config.getPlayer().GetComponent<collisionController>().getIsOnPlatform();
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_isDodging"/>
     /// </summary>
     /// <returns>Un flag booleano que indica si podemos esquivar.</returns>
@@ -962,12 +1170,12 @@ public class playerMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Getter que devuelve <see cref="_facingRight"/>
+    /// Getter que devuelve <see cref="_facingLeft"/>
     /// </summary>
     /// <returns>Un flag booleano que indica a qué lado estamos mirando.</returns>
-    public bool getIsFacingRight()
+    public bool getIsFacingLeft()
     {
-        return _facingRight;
+        return _facingLeft;
     }
 
     /// <summary>
