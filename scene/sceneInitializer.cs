@@ -48,13 +48,6 @@ public class sceneInitializer : MonoBehaviour
         Instantiate(_inputControllerPrefab);
         Instantiate(_playerPrefab);
         Instantiate(_UIPrefab);
-    }
-
-    /// <summary>
-    /// Método que se ejecuta al inicio del script tras el <see cref="Awake()"/>.
-    /// </summary>
-    private void Start()
-    {
         //Cargamos los datos del jugador
         playerData data = saveSystem.loadPlayer();
 
@@ -64,15 +57,7 @@ public class sceneInitializer : MonoBehaviour
             if (saveSystem.loadLastSceneData().getSceneID() == SceneManager.GetActiveScene().buildIndex)
             {
                 Vector3 pos = new Vector3(data.getX(), data.getY(), data.getZ());
-                config.getPlayer().GetComponent<playerMovement>().setFacingRight(data.getIsFacingRight());
-
-                if (!config.getPlayer().GetComponent<playerMovement>().getIsFacingRight())
-                {
-                    Vector3 currentScale = config.getPlayer().gameObject.transform.localScale;
-                    currentScale.x *= -1;
-                    config.getPlayer().gameObject.transform.localScale = currentScale;
-                }
-
+                config.getPlayer().GetComponent<playerMovement>().setFacingLeft(data.getIsFacingRight());
                 config.getPlayer().transform.position = pos;
             }
             else
@@ -82,7 +67,7 @@ public class sceneInitializer : MonoBehaviour
                     List<float> coordinates = GetComponent<sceneSwitch>().getTopCoordinates();
 
                     Vector3 pos = new Vector3(coordinates[0], coordinates[1], coordinates[2]);
-                    config.getPlayer().GetComponent<playerMovement>().setFacingRight(true);
+                    config.getPlayer().GetComponent<playerMovement>().setFacingLeft(true);
                     config.getPlayer().transform.position = pos;
                 }
                 else if (saveSystem.loadLastSceneData().getSceneID() == GetComponent<sceneSwitch>().getRightID())
@@ -90,7 +75,7 @@ public class sceneInitializer : MonoBehaviour
                     List<float> coordinates = GetComponent<sceneSwitch>().getRightCoordinates();
 
                     Vector3 pos = new Vector3(coordinates[0], coordinates[1], coordinates[2]);
-                    config.getPlayer().GetComponent<playerMovement>().setFacingRight(false);
+                    config.getPlayer().GetComponent<playerMovement>().setFacingLeft(false);
 
                     Vector3 currentScale = config.getPlayer().gameObject.transform.localScale;
                     currentScale.x *= -1;
@@ -103,7 +88,7 @@ public class sceneInitializer : MonoBehaviour
                     List<float> coordinates = GetComponent<sceneSwitch>().getBottomCoordinates();
 
                     Vector3 pos = new Vector3(coordinates[0], coordinates[1], coordinates[2]);
-                    config.getPlayer().GetComponent<playerMovement>().setFacingRight(true);
+                    config.getPlayer().GetComponent<playerMovement>().setFacingLeft(true);
                     config.getPlayer().transform.position = pos;
                 }
                 else if (saveSystem.loadLastSceneData().getSceneID() == GetComponent<sceneSwitch>().getLeftID())
@@ -111,7 +96,7 @@ public class sceneInitializer : MonoBehaviour
                     List<float> coordinates = GetComponent<sceneSwitch>().getLeftCoordinates();
 
                     Vector3 pos = new Vector3(coordinates[0], coordinates[1], coordinates[2]);
-                    config.getPlayer().GetComponent<playerMovement>().setFacingRight(true);
+                    config.getPlayer().GetComponent<playerMovement>().setFacingLeft(true);
                     config.getPlayer().transform.position = pos;
                 }
             }
@@ -129,6 +114,13 @@ public class sceneInitializer : MonoBehaviour
         //Guardamos esta escena como la última y la posición del jugador
         saveSystem.saveLastScene();
         saveSystem.savePlayer();
+    }
+
+    /// <summary>
+    /// Método que se ejecuta al inicio del script tras el <see cref="Awake()"/>.
+    /// </summary>
+    private void Start()
+    {
 
         //Comprobación de la ost para que si es distinta se reproduzca desde el inicio
         if (config.getAudioManager().GetComponent<audioManager>().getOSTPlayer().GetComponent<AudioSource>().clip != _ost)
