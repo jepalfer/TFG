@@ -13,10 +13,6 @@ public class enemyStateMachine : MonoBehaviour
     [SerializeField] protected string _name;
 
     /// <summary>
-    /// El animator para las animaciones de ataques.
-    /// </summary>
-    [SerializeField] protected Animator _animator;
-    /// <summary>
     /// El estado principal.
     /// </summary>
     protected enemyState _mainStateType;
@@ -155,14 +151,5 @@ public class enemyStateMachine : MonoBehaviour
     public enemyState getNextState()
     {
         return _nextState;
-    }
-
-    /// <summary>
-    /// Getter que devuelve <see cref="_animator"/>.
-    /// </summary>
-    /// <returns>El animator de la máquina de estados.</returns>
-    public Animator getAnimator()
-    {
-        return _animator;
     }
 }

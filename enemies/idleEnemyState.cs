@@ -36,26 +36,37 @@ public class idleEnemyState : enemyState
                 if (_currentStateMachine.GetComponent<enemy>().getIsLookingRight())
                 {
                     position.x += _currentStateMachine.GetComponent<enemyController>().getSpeed() * Time.deltaTime;
+                    _currentStateMachine.GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_move, 0, animatorEnum.back); 
+                    
+                    //Debug.Log("h");
                 }
                 else
                 {
                     position.x -= _currentStateMachine.GetComponent<enemyController>().getSpeed() * Time.deltaTime;
+                    _currentStateMachine.GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_move, 0, animatorEnum.front);
+                    //Debug.Log("J");
                 }
             }
 
             //Si llega al punto de la izquierda
-            if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().transform.position, 
-                                 _currentStateMachine.GetComponent<enemy>().getPointA().transform.position) <= 0.5f && 
-                                 !_currentStateMachine.GetComponent<enemy>().getIsLookingRight() && !_currentStateMachine.GetComponent<enemy>().getIsFlipping())
+            if (Mathf.Abs(_currentStateMachine.GetComponent<enemy>().transform.position.x -
+                          _currentStateMachine.GetComponent<enemy>().getPointA().transform.position.x) <= 0.5f &&
+                          !_currentStateMachine.GetComponent<enemy>().getIsLookingRight() && !_currentStateMachine.GetComponent<enemy>().getIsFlipping())
+            //if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().transform.position, 
+            //                     _currentStateMachine.GetComponent<enemy>().getPointA().transform.position) <= 0.5f && 
+            //                     !_currentStateMachine.GetComponent<enemy>().getIsLookingRight() && !_currentStateMachine.GetComponent<enemy>().getIsFlipping())
             {
                 _currentStateMachine.GetComponent<enemy>().flipInTime(1f);
 
             }
 
             //Si llega al punto de la derecha
-            if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().transform.position, 
-                                 _currentStateMachine.GetComponent<enemy>().getPointB().transform.position) <= 0.5f &&
-                                 _currentStateMachine.GetComponent<enemy>().getIsLookingRight() && !_currentStateMachine.GetComponent<enemy>().getIsFlipping())
+            if (Mathf.Abs(_currentStateMachine.GetComponent<enemy>().transform.position.x - 
+                          _currentStateMachine.GetComponent<enemy>().getPointB().transform.position.x) <= 0.5f &&
+                          _currentStateMachine.GetComponent<enemy>().getIsLookingRight() && !_currentStateMachine.GetComponent<enemy>().getIsFlipping())
+            //if (Vector3.Distance(_currentStateMachine.GetComponent<enemy>().transform.position, 
+            //                     _currentStateMachine.GetComponent<enemy>().getPointB().transform.position) <= 0.5f &&
+            //                     _currentStateMachine.GetComponent<enemy>().getIsLookingRight() && !_currentStateMachine.GetComponent<enemy>().getIsFlipping())
             {
                 _currentStateMachine.GetComponent<enemy>().flipInTime(1f);
             }

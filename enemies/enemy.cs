@@ -311,6 +311,15 @@ public class enemy : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="baseEnemy.getIsArmored()"/>.
+    /// </summary>
+    /// <returns>Flag booleano que indica si un enemigo tiene o no armadura.</returns>
+    public bool getIsArmored()
+    {
+        return _enemy.getIsArmored();
+    }
+
+    /// <summary>
     /// Getter que devuelve <see cref="_enemy"/>.
     /// </summary>
     /// <returns>Devuelve un objeto de tipo <see cref="baseEnemy"/> que contiene la información del enemigo base.</returns>
@@ -361,9 +370,9 @@ public class enemy : MonoBehaviour
     /// </summary>
     public void flip()
     {
-        Vector3 currentScale = gameObject.transform.localScale;
-        currentScale.x *= -1;
-        gameObject.transform.localScale = currentScale;
+        //Vector3 currentScale = gameObject.transform.localScale;
+        //currentScale.x *= -1;
+        //gameObject.transform.localScale = currentScale;
         _isLookingRight = !_isLookingRight;
         _isFlipping = false;
     }
