@@ -35,6 +35,7 @@ public class buttonModifier : MonoBehaviour, ISelectHandler, IDeselectHandler
         setColor(Color.yellow);
         _isSelected = true;
         _selected = gameObject.transform.GetComponent<Button>();
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
     }
 
 
@@ -55,6 +56,9 @@ public class buttonModifier : MonoBehaviour, ISelectHandler, IDeselectHandler
     /// <param name="color">Color del texto a asignar.</param>
     private void setColor(Color color)
     {
-        _buttonText.color = color;
+        if (_buttonText != null)
+        {
+            _buttonText.color = color;
+        }
     }
 }
