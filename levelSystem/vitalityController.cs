@@ -8,7 +8,7 @@ using TMPro;
 /// vitalityController es una clase utilizada para controlar el texto relacionado con la vitalidad en la UI de
 /// subir de nivel y los niveles que se van subiendo.
 /// </summary>
-public class vitalityController : MonoBehaviour
+public class vitalityController : MonoBehaviour, ISelectHandler
 {
     /// <summary>
     /// Referencia al texto a modificar.
@@ -20,6 +20,18 @@ public class vitalityController : MonoBehaviour
     /// </summary>
     void Update()
     {
+        //if (EventSystem.current.currentSelectedGameObject == gameObject)
+        //{
+        //    if (inputManager.GetKeyDown(inputEnum.up))
+        //    {
+        //        config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        //    }
+
+        //    if (inputManager.GetKeyDown(inputEnum.oneMoreItem))
+        //    {
+        //        config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        //    }
+        //}
         //Comprobamos que esté seleccionado el gameObject que tiene este script
         if (EventSystem.current.currentSelectedGameObject == gameObject)
         {
@@ -58,11 +70,21 @@ public class vitalityController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.accept))
             {
                 EventSystem.current.SetSelectedGameObject(UIConfig.getController().getLevelUpUI().GetComponent<levelUpUIController>().getLevelUpButton().gameObject);
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
         else //No está seleccionado
         {
             _text.color = Color.white;
         }
+    }
+
+    /// <summary>
+    /// Método que sobreescribe el método OnSelect de <see cref="ISelectHandler"/>.
+    /// </summary>
+    /// <param name="eventData">Evento que ocurre.</param>
+    public void OnSelect(BaseEventData eventData)
+    {
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
     }
 }

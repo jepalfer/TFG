@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 /// strengthController es una clase utilizada para controlar el texto relacionado con la fuerza en la UI de
 /// subir de nivel y los niveles que se van subiendo.
 /// </summary>
-public class strengthController : MonoBehaviour
+public class strengthController : MonoBehaviour, ISelectHandler
 {
     /// <summary>
     /// Referencia al texto a modificar.
@@ -23,6 +23,25 @@ public class strengthController : MonoBehaviour
         //Comprobamos que el objeto seleccionado es el que tiene asociado este script
         if (EventSystem.current.currentSelectedGameObject == gameObject)
         {
+            //if (inputManager.GetKeyDown(inputEnum.down))
+            //{
+            //    config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            //}
+
+            //if (inputManager.GetKeyDown(inputEnum.up))
+            //{
+            //    config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            //}
+
+            //if (inputManager.GetKeyDown(inputEnum.oneLessItem))
+            //{
+            //    config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            //}
+
+            //if (inputManager.GetKeyDown(inputEnum.oneMoreItem))
+            //{
+            //    config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            //}
             //Modificamos el color del texto a uno distintivo
             _text.color = Color.cyan;
 
@@ -65,11 +84,22 @@ public class strengthController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.accept))
             {
                 EventSystem.current.SetSelectedGameObject(UIConfig.getController().getLevelUpUI().GetComponent<levelUpUIController>().getLevelUpButton().gameObject);
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
+
         }
         else //No está seleccionado
         {
-            _text.color = Color.white;
+            _text.color = Color.white; 
+            
         }
+    }
+    /// <summary>
+    /// Método que sobreescribe el método OnSelect de <see cref="ISelectHandler"/>.
+    /// </summary>
+    /// <param name="eventData">Evento que ocurre.</param>
+    public void OnSelect(BaseEventData eventData)
+    {
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
     }
 }
