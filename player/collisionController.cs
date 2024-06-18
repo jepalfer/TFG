@@ -138,7 +138,7 @@ public class collisionController : MonoBehaviour
     void Awake()
     {
         //Calculamos los vectores para el tamaño
-        _ground = new Vector2(GetComponent<BoxCollider2D>().size.x, 0.1f);
+        _ground = new Vector2(_groundCheckCollider.GetComponent<BoxCollider2D>().size.x, 0.1f);
         _side = new Vector2(0.1f, GetComponent<BoxCollider2D>().size.y - 0.4f);
 
         //Asignamos variables

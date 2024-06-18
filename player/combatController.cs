@@ -261,11 +261,10 @@ public class combatController : MonoBehaviour
 
         if (_bonfireData == null)
         {
-            saveSystem.saveLastBonfireData();
+            saveSystem.saveLastBonfireData(false);
         }
 
         _soulContainerData = saveSystem.loadSoulContainerData();
-
         if (_soulContainerData != null && _soulContainerData.getPlayerDied() && _soulContainerData.getSceneID() == SceneManager.GetActiveScene().buildIndex)
         {
             Instantiate(_soulContainerPrefab);
@@ -301,6 +300,7 @@ public class combatController : MonoBehaviour
             statSystem.getAgility().setLevel(_attributesData.getAgility());
             statSystem.getPrecision().setLevel(_attributesData.getPrecision());
         }
+        config.setPlayer(gameObject);
     }
     //SETTERS
 
@@ -499,7 +499,7 @@ public class combatController : MonoBehaviour
     {
         Vector3 bulletPos;
 
-        if (GetComponent<playerMovement>().getIsFacingRight())
+        if (GetComponent<playerMovement>().getIsFacingLeft())
         {
             //Situamos la bala a la derecha del jugador
             bulletPos = new Vector2(transform.position.x + (GetComponent<BoxCollider2D>().size.x / 2) + 0.01f, transform.position.y);
@@ -799,18 +799,6 @@ public class combatController : MonoBehaviour
         {
             if (equippedSkills[i] != null && equippedSkills[i].GetComponent<regenUpgradeSkill>() != null)
             {
-                /*
-                regenUpgradeSkillData skillData = equippedSkills[i].GetComponent<skill>().getData() as regenUpgradeSkillData;
-
-                if (skillData.getUpgradeType() == upgradeTypeEnum.HP)
-                {
-                    HP += skillData.getUpgradeAmount();
-                }
-                else
-                {
-                    stamina += skillData.getUpgradeAmount();
-                }
-                */
                 HP += equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.HPUpgrade];
                 stamina += equippedSkills[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.staminaUpgrade];
             }
@@ -833,11 +821,6 @@ public class combatController : MonoBehaviour
         {
             if (equipped[i] != null && equipped[i].GetComponent<statusSkill>() != null)
             {
-                /*
-                statusSkillData skillData = equipped[i].GetComponent<statusSkill>().getData() as statusSkillData;
-                bleeding += skillData.getBleedingDamage() * 100;
-                penetrating += skillData.getPenetrationDamage() * 100;
-                crit += skillData.getCritDamage() * 100;*/
                 penetrating += equipped[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.penetrationDamage] * 100;
                 bleeding += equipped[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.bleedingDamage] * 100;
                 crit += equipped[i].GetComponent<skill>().getSkillValues()[skillValuesEnum.critDamage] * 100;
@@ -860,8 +843,9 @@ public class combatController : MonoBehaviour
             receiveSouls(10000);
         }
         //Si no estamos en ningún menú
-        if (!UIController.getIsInPauseUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() && 
-            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() &&
+        if (!UIController.getIsInPauseUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInAdquireSkillUI() &&
+            !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInEquippingSkillUI() &&
+            !UIController.getIsInStateUI() && !UIController.getIsInOptionsUI() &&
             !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu() && !inputManager.GetKey(inputEnum.down) && !inputManager.GetKey(inputEnum.up) &&
             !GetComponent<downWardBlowController>().getIsInDownWardBlow())
         {
@@ -938,6 +922,8 @@ public class combatController : MonoBehaviour
                 }
             }
 
+            animatorEnum attackDirection = GetComponent<playerMovement>().getIsFacingLeft() ? animatorEnum.front : animatorEnum.back;
+
             //Comprobamos arma primaria
             if (_primary != null)
             {
@@ -946,6 +932,7 @@ public class combatController : MonoBehaviour
                     //Golpeamos con el arma
                     if (inputManager.GetKeyDown(inputEnum.primaryAttack) && _stateMachine.getCurrentState().GetType() == typeof(idleCombatState))
                     {
+                        GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_attack, _primary.GetComponent<weapon>().getID(), 0, attackDirection);
                         _stateMachine.setNextState(new entryState(true));
                     }
                 }
@@ -959,6 +946,7 @@ public class combatController : MonoBehaviour
                     //Golpeamos con el arma
                     if (inputManager.GetKeyDown(inputEnum.secundaryAttack) && _stateMachine.getCurrentState().GetType() == typeof(idleCombatState))
                     {
+                        GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_attack, _primary.GetComponent<weapon>().getID(), 0, attackDirection);
                         _stateMachine.setNextState(new entryState(false));
                     }
                 }
@@ -974,20 +962,37 @@ public class combatController : MonoBehaviour
                 GetComponent<statsController>().restoreStamina(_staminaRestore + (_staminaRestore * staminaUpgrade));
             }
         }
+        AnimatorStateInfo stateInfo = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+        animatorEnum direction = GetComponent<playerMovement>().getIsFacingLeft() ? animatorEnum.front : animatorEnum.back;
         if (GetComponent<statsController>().getCurrentHP() <= 0 && !_isDying)
         {
             _isDying = true;
             GetComponent<playerMovement>().enabled = false;
             GetComponent<stateMachine>().enabled = false;
-            Invoke("die", 2f);
+            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_death, direction);
+            Debug.Log("hola");
+        }
+
+        if (stateInfo.IsName(GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_death, direction)))
+        {
+            if (stateInfo.normalizedTime >= 1.0f)
+            {
+                config.getDeathScreen().GetComponent<deathScreen>().playAnimation();
+                //Invoke("die", 2f);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            GetComponent<statsController>().receiveDMG(GetComponent<statsController>().getMaxHP());
         }
     }
-
     /// <summary>
     /// Método auxiliar que maneja la muerte del jugador.
     /// </summary>
-    private void die()
+    public void die()
     {
+        config.getEnemiesList().Clear();
         enemyStateData enemiesData = saveSystem.loadEnemyData();
 
         foreach(sceneEnemiesState enemy in enemiesData.getEnemyStates())
@@ -998,6 +1003,7 @@ public class combatController : MonoBehaviour
 
         _bonfireData = saveSystem.loadLastBonfireData();
         saveSystem.saveSoulContainerData(true);
+        Debug.Log("hola");
         setSouls(0);
         if (_bonfireData != null)
         {

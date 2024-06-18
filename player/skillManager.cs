@@ -110,12 +110,23 @@ public class skillManager : MonoBehaviour
                         UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].GetComponent<Image>().sprite = _equippedSkills[i].GetComponent<skill>().getSkillSprite();
                         
                         UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSprites()[i].SetActive(true);
+
+                        UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getBackgroundImages()[i].gameObject.SetActive(true);
+                        
+                        if (_equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.combo)
+                        {
+                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getBackgroundImages()[i].sprite = UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getComboColor();
+                        }
+                        else if (_equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.status)
+                        {
+                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getBackgroundImages()[i].sprite = UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getStatusColor();
+                        }
                     }
                 }
             }
         }
 
-        //Cargamos las habilidad desbloqueadas
+        //Cargamos las habilidades desbloqueadas
         unlockedSkillsData data = saveSystem.loadSkillsState();
         if (data != null)
         {
