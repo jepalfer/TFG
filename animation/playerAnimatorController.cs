@@ -41,6 +41,7 @@ public class playerAnimatorController : MonoBehaviour
         if (_currentAction == newAction) return;
 
         _animator.Play(newAction);
+        _animator.Update(0);
         _currentAction = newAction;
     }
 
@@ -54,9 +55,10 @@ public class playerAnimatorController : MonoBehaviour
     {
         GetComponent<Animator>().speed = 1;
         string newAction = action.ToString() + "_" + animationID.ToString() + "_" + facing.ToString();
-        Debug.Log(newAction);
         if (_currentAction == newAction) return;
+        //Debug.Log(newAction);
         _animator.Play(newAction);
+        _animator.Update(0);
         _currentAction = newAction;
     }
 
@@ -68,10 +70,14 @@ public class playerAnimatorController : MonoBehaviour
     public void playAnimation(animatorEnum action, animatorEnum facing)
     {
         GetComponent<Animator>().speed = 1;
+        if (action == animatorEnum.player_get_up)
+        {
+            GetComponent<Animator>().speed = 2;
+        }
         string newAction = action.ToString() + "_" + facing.ToString();
-        Debug.Log(newAction);
         if (_currentAction == newAction) return;
         _animator.Play(newAction);
+        _animator.Update(0);
         _currentAction = newAction;
     }
 

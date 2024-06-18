@@ -31,19 +31,54 @@ public class enemyAnimatorController : MonoBehaviour
     /// <param name="action">Acción que se anima.</param>
     /// <param name="animationID">ID de la animación.</param>
     /// <param name="facing">El lado hacia el que mira el personaje.</param>
-    public void playAnimation(animatorEnum action, int animationID, animatorEnum facing)
+    public void playAnimation(animatorEnum action, string enemyName, int animationID, animatorEnum facing)
     {
-        string newAction = "";
-        switch (action)
-        {
-            case animatorEnum.enemy_move:
-                newAction = action.ToString() + "_" + facing.ToString();
-                //Debug.Log(newAction);
-                if (_currentAction == newAction) return;
-                _animator.Play(newAction);
-                _currentAction = newAction;
-                break;
+        string newAction = action.ToString() + "_" + enemyName + "_" + animationID.ToString() + "_" + facing.ToString();
+        //Debug.Log(newAction);
+        if (_currentAction == newAction) return;
+        _animator.Play(newAction);
+        _animator.Update(0);
+        _currentAction = newAction;
+    }
 
-        }
+    /// <summary>
+    /// Método que se encarga de reproducir la animación correspondiente.
+    /// </summary>
+    /// <param name="action">Acción a reproducir.</param>
+    /// <param name="facing">El lado al que está mirando el personaje.</param>
+    public void playAnimation(animatorEnum action, string enemyName, animatorEnum facing)
+    {
+        //Debug.Log(enemyName);
+        GetComponent<Animator>().speed = 1;
+        string newAction = action.ToString() + "_" + enemyName + "_" + facing.ToString();
+        //Debug.Log(newAction);
+        if (_currentAction == newAction) return;
+        _animator.Play(newAction);
+        _animator.Update(0);
+        _currentAction = newAction;
+    }
+
+
+    /// <summary>
+    /// Método auxiliar para obtener el nombre de la animación.
+    /// </summary>
+    /// <param name="action">Acción a reproducir.</param>
+    /// <param name="animationID">ID de la animación.</param>
+    /// <param name="facing">El lado al que está mirando el personaje.</param>
+    /// <returns>Nombre de la animación.</returns>
+    public string getAnimationName(animatorEnum action, string enemyName, int animationID, animatorEnum facing)
+    {
+        return action.ToString() + "_" + enemyName + "_" + animationID.ToString() + "_" + facing.ToString();
+    }
+
+    /// <summary>
+    /// Método auxiliar para obtener el nombre de la animación.
+    /// </summary>
+    /// <param name="action">Acción a reproducir.</param>
+    /// <param name="facing">El lado al que está mirando el personaje.</param>
+    /// <returns>Nombre de la animación.</returns>
+    public string getAnimationName(animatorEnum action, string enemyName, animatorEnum facing)
+    {
+        return action.ToString() + "_" + enemyName + "_" + facing.ToString();
     }
 }

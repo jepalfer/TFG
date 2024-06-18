@@ -103,8 +103,23 @@ public enum animatorEnum
     enemy_death,
 
     /// <summary>
+    /// Animación idle de los enemigos.
+    /// </summary>
+    enemy_idle,
+
+    /// <summary>
     /// Animación de muerte del jugador.
     /// </summary>
     player_death,
+
+    /// <summary>
+    /// Animación de envainado.
+    /// </summary>
+    enemy_seath,
+
+    /// <summary>
+    /// Animación de desenvainado.
+    /// </summary>
+    enemy_unseath,
 
 }
