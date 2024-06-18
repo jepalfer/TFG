@@ -308,7 +308,7 @@ public class weapon : generalItem
     {
         int extraStrength = 0, extraDexterity = 0, extraPrecision = 0;
         config.getPlayer().GetComponent<combatController>().calculateAttributesLevelUp(ref extraStrength, ref extraDexterity, ref extraPrecision);
-        Debug.Log(extraStrength + " " + extraDexterity + " " + extraPrecision);
+        //Debug.Log(extraStrength + " " + extraDexterity + " " + extraPrecision);
         return _baseDamage + calculateStrengthDMG(strengthLVL + extraStrength) + calculateDexterityDMG(dexterityLVL + extraDexterity) + calculatePrecisionDMG(precisionLVL + extraPrecision);
     }
 
