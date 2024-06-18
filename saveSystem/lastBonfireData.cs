@@ -20,14 +20,20 @@ public class lastBonfireData
     [SerializeField] private int _sceneID;
 
     /// <summary>
+    /// Flag booleano que indica si hemos o no descansado en la hoguera.
+    /// </summary>
+    [SerializeField] private bool _hasRested;
+
+    /// <summary>
     /// Constructor de la clase.
     /// </summary>
     /// <param name="coordinates">Coordenadas de la hoguera.</param>
     /// <param name="scene">ID de la escena.</param>
-    public lastBonfireData(float[] coordinates, int scene)
+    public lastBonfireData(float[] coordinates, int scene, bool rest)
     {
         _bonfireCoordinates = coordinates;
         _sceneID = scene;
+        _hasRested = rest;
     }
 
     /// <summary>
@@ -46,5 +52,14 @@ public class lastBonfireData
     public int getSceneID()
     {
         return _sceneID;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_hasRested"/>.
+    /// </summary>
+    /// <returns><see cref="_hasRested"/>.</returns>
+    public bool getHasRested()
+    {
+        return _hasRested;
     }
 }

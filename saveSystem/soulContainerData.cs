@@ -39,7 +39,7 @@ public class soulContainerData
     /// <param name="died">booleano para controlar que el objeto aparece.</param>
     public soulContainerData(long souls, float[] position, int sceneID, bool died)
     {
-        Debug.Log(souls);
+        //Debug.Log(souls);
         _souls = souls;
         _position = position;
         _sceneID = sceneID;

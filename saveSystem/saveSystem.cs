@@ -728,7 +728,7 @@ public static class saveSystem
     /// <summary>
     /// Método para guardar la información de la última hoguera en la que se ha descansado.
     /// </summary>
-    public static void saveLastBonfireData()
+    public static void saveLastBonfireData(bool rest)
     {
         //Creamos el formateador binario
         BinaryFormatter formatter = new BinaryFormatter();
@@ -744,7 +744,7 @@ public static class saveSystem
         playerPosition[0] = config.getPlayer().transform.position.x;
         playerPosition[1] = config.getPlayer().transform.position.y;
         playerPosition[2] = config.getPlayer().transform.position.z;
-        lastBonfireData data = new lastBonfireData(playerPosition, SceneManager.GetActiveScene().buildIndex);
+        lastBonfireData data = new lastBonfireData(playerPosition, SceneManager.GetActiveScene().buildIndex, rest);
         formatter.Serialize(stream, data);
         stream.Close();
     }
@@ -877,8 +877,11 @@ public static class saveSystem
 
 
     /// <summary>
-    /// Método para guardar la información de la configuración de audio.
+    /// Método para serializar la configuración de audio.
     /// </summary>
+    /// <param name="master">Volumen master.</param>
+    /// <param name="ost">Volumen de las OST.</param>
+    /// <param name="sfx">Volumen de los SFX.</param>
     public static void saveAudioSettings(float master, float ost, float sfx)
     {
         //Creamos el formateador binario
@@ -946,6 +949,15 @@ public static class saveSystem
     public static string createRoutePath()
     {
         return Application.persistentDataPath + "/route.txt";
+    }
+
+    /// <summary>
+    /// Método que devuelve la ruta al archivo que contiene la configuración de pantalla, común a todos los perfiles.
+    /// </summary>
+    /// <returns>Un string que contiene la ruta al archivo con la configuración de pantalla.</returns>
+    public static string createScreenPath()
+    {
+        return Application.persistentDataPath + "/screenOptions.txt";
     }
 
     /// <summary>

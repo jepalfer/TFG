@@ -32,7 +32,7 @@ public class playerData
         _position[2] = config.getPlayer().transform.position.z;
 
         //Asigamos si el jugador miraba hacia la derecha
-        _isFacingRight = config.getPlayer().GetComponent<playerMovement>().getIsFacingRight();
+        _isFacingRight = config.getPlayer().GetComponent<playerMovement>().getIsFacingLeft();
     }
 
     /// <summary>
