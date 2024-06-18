@@ -23,6 +23,7 @@ public class sceneLoader : MonoBehaviour
         //Comprobamos que sea el jugador
         if (collision.gameObject.GetComponent<playerMovement>() != null)
         {
+            config.getEnemiesList().Clear();
             saveSystem.saveLastScene();
             SceneManager.LoadScene(_nextScene);
         }

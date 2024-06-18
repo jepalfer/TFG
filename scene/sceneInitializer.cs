@@ -39,6 +39,15 @@ public class sceneInitializer : MonoBehaviour
     [SerializeField] private AudioClip _ost;
 
     /// <summary>
+    /// Referencia a la pantalla de muerte.
+    /// </summary>
+    [SerializeField] private GameObject _deathScreen;
+
+    /// <summary>
+    /// Referencia a la pantalla de carga.
+    /// </summary>
+    [SerializeField] private GameObject _loadingScreen;
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// </summary>
     private void Awake()
@@ -48,6 +57,21 @@ public class sceneInitializer : MonoBehaviour
         Instantiate(_inputControllerPrefab);
         Instantiate(_playerPrefab);
         Instantiate(_UIPrefab);
+        Instantiate(_deathScreen);
+
+        lastBonfireData bonfData = saveSystem.loadLastBonfireData();
+
+        if (bonfData != null)
+        {
+            if (!bonfData.getHasRested())
+            {
+                Instantiate(_loadingScreen);
+            }
+        }
+        else
+        {
+            Instantiate(_loadingScreen);
+        }
         //Cargamos los datos del jugador
         playerData data = saveSystem.loadPlayer();
 
