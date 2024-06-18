@@ -37,6 +37,15 @@ public class equippedInventory : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="_allItems"/>.
+    /// </summary>
+    /// <returns><see cref="_allItems"/>.</returns>
+    public List<GameObject> getAllItems()
+    {
+        return _allItems;
+    }
+
+    /// <summary>
     /// Método que se ejecuta al iniciar el script.
     /// Instancia los objetos equipados según la información serializada.
     /// </summary>
