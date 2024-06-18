@@ -86,6 +86,26 @@ public class skillTreeUIController : MonoBehaviour
     private GameObject _formerEventSystemSelected = null;
 
     /// <summary>
+    /// Referencia a la imagen de fondo.
+    /// </summary>
+    [SerializeField] private Image _skillBackground;
+
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad de status.
+    /// </summary>
+    [SerializeField] private Sprite _statusColor;
+
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad de combo.
+    /// </summary>
+    [SerializeField] private Sprite _comboColor;
+
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad pasiva.
+    /// </summary>
+    [SerializeField] private Sprite _passiveColor;
+
+    /// <summary>
     /// Método que se ejecuta cada frame para actualizar la lógica.
     /// </summary>
     void Update()
@@ -136,6 +156,7 @@ public class skillTreeUIController : MonoBehaviour
 
         if (currentSelected != _formerEventSystemSelected)
         {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
             _formerEventSystemSelected = currentSelected;
             modifyRightPanel();
         }
@@ -155,10 +176,27 @@ public class skillTreeUIController : MonoBehaviour
         if (!_formerEventSystemSelected.GetComponent<skill>().isUnlockable())
         {
             _skillPrice.color = Color.red;
+            _skillPrice.text = "Adquirida.";
         }
         else
         {
             _skillPrice.color = Color.black;
+        }
+
+        if (_formerEventSystemSelected.GetComponent<skill>().getData().getEquipType() == equipEnum.onWeapon)
+        {
+            _skillBackground.sprite = _passiveColor;
+        }
+        else
+        {
+            if (_formerEventSystemSelected.GetComponent<skill>().getData().getType() == skillTypeEnum.combo)
+            {
+                _skillBackground.sprite = _comboColor;
+            }
+            else if (_formerEventSystemSelected.GetComponent<skill>().getData().getType() == skillTypeEnum.status)
+            {
+                _skillBackground.sprite = _statusColor;
+            }
         }
     }
 

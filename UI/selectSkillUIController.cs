@@ -57,6 +57,22 @@ public class selectSkillUIController : MonoBehaviour
     private List<GameObject> _skills;
 
     /// <summary>
+    /// Referencia a la imagen de fondo de la habilidad en el panel derecho.
+    /// </summary>
+    [SerializeField] private Image _backgroundImage;
+
+    /// <summary>
+    /// Referencia al sprite para el color de habilidad de combo.
+    /// </summary>
+    [SerializeField] private Sprite _comboColor;
+
+
+    /// <summary>
+    /// Referencia al sprite para el color de habilidad de status.
+    /// </summary>
+    [SerializeField] private Sprite _statusColor;
+
+    /// <summary>
     /// Método que instancia todas las habilidades que se ven en la UI.
     /// </summary>
     /// <param name="data">Objeto de tipo <see cref="unlockedSkillsData"/> que contiene una referencia a los datos cargados.</param>
@@ -104,16 +120,27 @@ public class selectSkillUIController : MonoBehaviour
     {
         //Instanciamos y asignamos algunas variables y creamos un listener para el botón
         GameObject newSkill = Instantiate(_skillPrefab);
-        skillData _skillData = data.getUnlockedSkills()[index].getAssociatedSkill();
+        skillData skillData = data.getUnlockedSkills()[index].getAssociatedSkill();
 
         newSkill.GetComponent<Button>().onClick.RemoveAllListeners();
         newSkill.GetComponent<Button>().onClick.AddListener(() =>
         {
-            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().equipSkill(_skillData);
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
+            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().equipSkill(skillData);
             // UIConfig.getController().useSelectSkillUI();
         });
-        newSkill.GetComponent<skillSlot>().setData(_skillData);
-        newSkill.GetComponent<skillSlotLogic>().setSkillSprite(_skillData.getSkillSprite());
+        newSkill.GetComponent<skillSlot>().setData(skillData);
+        newSkill.GetComponent<skillSlotLogic>().setSkillSprite(skillData.getSkillSprite());
+
+        if (skillData.getType() == skillTypeEnum.combo)
+        {
+            newSkill.GetComponent<skillSlotLogic>().setBackgroundColor(_comboColor);
+        }
+        else if (skillData.getType() == skillTypeEnum.status)
+        {
+            newSkill.GetComponent<skillSlotLogic>().setBackgroundColor(_statusColor);
+        }
+
         newSkill.transform.SetParent(_skillHolder, false);
         _skills.Add(newSkill);
     }
@@ -202,6 +229,7 @@ public class selectSkillUIController : MonoBehaviour
             }
             _skills.Clear();
         }
+        _formerEventSystemSelected = null;
     }
 
     /// <summary>
@@ -214,6 +242,10 @@ public class selectSkillUIController : MonoBehaviour
         
         if (currentSelected != _formerEventSystemSelected && currentSelected != null)
         {
+            if (_formerEventSystemSelected != null)
+            {
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            }
             _formerEventSystemSelected = currentSelected;
             changeInformationPanel();
         }
@@ -230,6 +262,15 @@ public class selectSkillUIController : MonoBehaviour
             _skillSprite.sprite = EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getSkillSprite();
             _skillName.text = EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getSkillName();
             _skillDescription.text = EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getSkillDescription();
+            
+            if (EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getType() == skillTypeEnum.combo)
+            {
+                _backgroundImage.sprite = _comboColor;
+            }
+            else if (EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getType() == skillTypeEnum.status)
+            {
+                _backgroundImage.sprite = _statusColor;
+            }
         }
     }
 }

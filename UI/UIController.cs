@@ -175,6 +175,11 @@ public class UIController : MonoBehaviour
     [SerializeField] private Button _optionsButton;
 
     /// <summary>
+    /// Referencia al último objeto seleccionado.
+    /// </summary>
+    private GameObject _formerEventSystemSelected = null;
+
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// Asigna la variable estática correspondiente de <see cref="UIConfig"/>.
     /// </summary>
@@ -193,18 +198,23 @@ public class UIController : MonoBehaviour
         //Pausamos si no estamos en pausa
         if (!_isInPauseUI)
         {
-            if (inputManager.GetKeyDown(inputEnum.pause) && !bonfireBehaviour.getIsInBonfireMenu() && !_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI && !_isInOptionsUI)
+            if (inputManager.GetKeyDown(inputEnum.pause) && !bonfireBehaviour.getIsInBonfireMenu() && 
+                !_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && 
+                !_isInInventoryUI && !_isInOptionsUI && !_isInShopUI && !_isInStateUI)
             {
                 UIConfig.getController().usePauseUI();
             }
         }
         else //Quitamos la pausa
         {
-            if ((!_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && !_isInInventoryUI && !_isInShopUI && !bonfireBehaviour.getIsInBonfireMenu() && !_isInOptionsUI))
+            if ((!_isInLevelUpUI && !_isInEquippingSkillUI && !_IsInAdquireSkillUI && !_isInLevelUpWeaponUI && 
+                 !_isInInventoryUI && !bonfireBehaviour.getIsInBonfireMenu() && !_isInOptionsUI && !_isInShopUI && !_isInStateUI))
             {
                 if (inputManager.GetKeyDown(inputEnum.pause))
                 {
                     UIConfig.getController().usePauseUI();
+                    _formerEventSystemSelected = null;
+                    config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
                 }
 
             }
@@ -217,6 +227,8 @@ public class UIController : MonoBehaviour
             {
                 UIConfig.getController().useInventoryUI();
                 UIConfig.getController().usePauseUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -225,7 +237,7 @@ public class UIController : MonoBehaviour
         {
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
-                Debug.Log("hola");
+                Debug.Log("bonf");
                 UIConfig.getBonfire().useBonfireUI();
             }
         }
@@ -237,6 +249,8 @@ public class UIController : MonoBehaviour
             {
                 UIConfig.getController().useEquipSkillsUI();
                 UIConfig.getController().usePauseUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -247,6 +261,8 @@ public class UIController : MonoBehaviour
             {
                 UIConfig.getController().useLevelUpUI();
                 UIConfig.getBonfire().useBonfireUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -257,6 +273,8 @@ public class UIController : MonoBehaviour
             {
                 UIConfig.getController().useWeaponUI();
                 UIConfig.getBonfire().useBonfireUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -266,6 +284,8 @@ public class UIController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
                 UIConfig.getController().useSelectSkillUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -276,6 +296,8 @@ public class UIController : MonoBehaviour
             {
                 UIConfig.getController().useSkillsUI();
                 UIConfig.getBonfire().useBonfireUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
         //Ocultamos la UI de equipar un objeto
@@ -284,6 +306,8 @@ public class UIController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
                 UIConfig.getController().useEquippingObjectUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -293,6 +317,8 @@ public class UIController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
                 UIConfig.getController().useShopUI(UIConfig.getController().getShopUI().GetComponent<shopUIController>().getShopItemsList());
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -302,6 +328,9 @@ public class UIController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
                 UIConfig.getController().useStateUI();
+                UIConfig.getController().usePauseUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
@@ -310,9 +339,26 @@ public class UIController : MonoBehaviour
             if (inputManager.GetKeyDown(inputEnum.cancel))
             {
                 UIConfig.getController().useBuyItemUI();
+                _formerEventSystemSelected = null;
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
         }
 
+        //if (_isInPauseUI)
+        //{
+
+        //    GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+
+        //    if (currentSelected != _formerEventSystemSelected && currentSelected != null)
+        //    {
+        //        if (_formerEventSystemSelected != null)
+        //        {
+        //            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        //        }
+        //        _formerEventSystemSelected = currentSelected;
+        //    }
+
+        //}
     }
 
 
@@ -325,6 +371,7 @@ public class UIController : MonoBehaviour
         //gameObject.SetActive(false);
         Time.timeScale = 1f;
         _isInPauseUI = false;
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
     }
 
     /// <summary>
@@ -335,8 +382,10 @@ public class UIController : MonoBehaviour
         saveSystem.savePlayer();
         saveSystem.saveLastScene();
         _isInPauseUI = false;
+        config.getEnemiesList().Clear();
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
     }
 
     /// <summary>
@@ -591,12 +640,16 @@ public class UIController : MonoBehaviour
         //Activamos o desactivamos
         _pauseUI.SetActive(!_pauseUI.activeSelf);
         _isInPauseUI = !_isInPauseUI;
-        Time.timeScale = _isInPauseUI ? 0f : 1f;
 
         //El elemento seleccionado es el boton de continuar
         if (_isInPauseUI)
         {
+            Time.timeScale = 0f;
             EventSystem.current.SetSelectedGameObject(_resumeButton.gameObject);
+        }
+        else
+        {
+            Time.timeScale = 1f;
         }
     }
     /// <summary>
@@ -607,10 +660,10 @@ public class UIController : MonoBehaviour
         //Activamos o desactivamos
         _skillsUI.SetActive(!_skillsUI.activeSelf);
         _IsInAdquireSkillUI = !_IsInAdquireSkillUI;
-        Time.timeScale = _IsInAdquireSkillUI ? 0f : 1f;
         if (_IsInAdquireSkillUI)
         {
             //Si entramos inicializamos la UI
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _skillsUI.GetComponent<skillTreeUIController>().initializeUI();
         }
         else
@@ -627,11 +680,12 @@ public class UIController : MonoBehaviour
         //Activamos o desactivamos
         _statsUI.SetActive(!_statsUI.activeSelf);
         _isInLevelUpUI = !_isInLevelUpUI;
-        Time.timeScale = _isInLevelUpUI ? 0f : 1f;
+        //Time.timeScale = _isInLevelUpUI ? 0f : 1f;
 
         if (_isInLevelUpUI)
         {
             //Si entramos inicializamo la UI
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _statsUI.GetComponent<levelUpUIController>().initializeUI();
         }
         else
@@ -650,11 +704,11 @@ public class UIController : MonoBehaviour
         //Activamos o desactivamos
         _weaponUI.SetActive(!_weaponUI.activeSelf);
         _isInLevelUpWeaponUI = !_isInLevelUpWeaponUI;
-        Time.timeScale = _isInLevelUpWeaponUI ? 0f : 1f;
 
         if (_isInLevelUpWeaponUI)
         {
             //Si entramos inicializamos la UI
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _weaponUI.GetComponent<levelUpWeaponUIController>().initializeUI();
         }
         else
@@ -672,15 +726,16 @@ public class UIController : MonoBehaviour
         //Activamos o desactivamos
         _equipSkillsUI.SetActive(!_equipSkillsUI.activeSelf);
         _isInEquippingSkillUI = !_isInEquippingSkillUI;
-        Time.timeScale = _isInEquippingSkillUI ? 0f : 1f;
 
         if (_isInEquippingSkillUI)
         {
             //Si entramos quitamos el menú de pausa y inicializamos algunos datos
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             UIConfig.getController().usePauseUI();
             _equipSkillsUI.GetComponent<skillUIController>().setID(0);
             EventSystem.current.SetSelectedGameObject(_equipSkillsUI.GetComponent<skillUIController>().getSlots()[0]);
-            _equipSkillsUI.GetComponent<skillUIController>().getSlots()[0].SetActive(true); 
+            _equipSkillsUI.GetComponent<skillUIController>().getSlots()[0].SetActive(true);
+            Time.timeScale = 0f;
         }
         else
         {
@@ -699,14 +754,15 @@ public class UIController : MonoBehaviour
         //Activamos o desactivamos
         _inventoryUI.SetActive(!_inventoryUI.activeSelf);
         _isInInventoryUI = !_isInInventoryUI;
-        Time.timeScale = _isInInventoryUI ? 0f : 1f;
 
         if (_isInInventoryUI)
         {
             //Si entramos inicializamos la UI
             _inventoryText.color = Color.white;
             UIConfig.getController().usePauseUI();
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _inventoryUI.GetComponent<inventoryUIController>().initializeUI();
+            Time.timeScale = 0f;
         }
         else
         {
@@ -729,6 +785,7 @@ public class UIController : MonoBehaviour
         if (_isInSelectingSkillUI)
         {
             //Si entramos inicializamos la UI
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             unlockedSkillsData data = saveSystem.loadSkillsState();
 
             if (data != null)
@@ -753,6 +810,7 @@ public class UIController : MonoBehaviour
 
         if (_isInEquippingItemUI)
         {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _lastSelectedInInventory = EventSystem.current.currentSelectedGameObject;
             _equipItemUI.GetComponent<equipItemsUIController>().initializeUI();
         }
@@ -773,11 +831,14 @@ public class UIController : MonoBehaviour
 
         if (_isInShopUI)
         {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _shopUI.GetComponent<shopUIController>().initializeUI(shopItemsList);
+            Time.timeScale = 0f;
         }
         else
         {
             _shopUI.GetComponent<shopUIController>().setUIOff();
+            Time.timeScale = 1f;
         }
     }
     /// <summary>
@@ -790,7 +851,10 @@ public class UIController : MonoBehaviour
 
         if (_isInStateUI)
         {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX(); 
+            UIConfig.getController().usePauseUI();
             _stateUI.GetComponent<stateUIController>().initializeUI();
+            Time.timeScale = 0f;
         }
     }
 
@@ -807,6 +871,7 @@ public class UIController : MonoBehaviour
             _lastSelectedInInventory = EventSystem.current.currentSelectedGameObject.transform.parent.gameObject; 
             int itemIndex = _lastSelectedInInventory.GetComponent<shopItemSlotLogic>().getSlotID();
             int itemPrice = _shopUI.GetComponent<shopUIController>().getShopItemsList()[itemIndex].getPrice();
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
 
             GameObject itemToBuy = _shopUI.GetComponent<shopUIController>().getShopItemsList()[_lastSelectedInInventory.GetComponent<shopItemSlotLogic>().getSlotID()].getItem();
 
@@ -830,10 +895,16 @@ public class UIController : MonoBehaviour
 
         if (_isInOptionsUI)
         {
+            UIConfig.getController().usePauseUI();
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             _optionsUI.GetComponent<optionsManager>().initializeUI();
+            Time.timeScale = 0f;
         }
         else
         {
+            UIConfig.getController().usePauseUI();
+            _formerEventSystemSelected = null;
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             EventSystem.current.SetSelectedGameObject(_optionsButton.gameObject);
         }
     }

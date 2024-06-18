@@ -450,6 +450,7 @@ public class levelUpUIController : MonoBehaviour
                 }
 
                 _requiredSoulsValue.text = requiredTotal.ToString();
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
             }
         }
 
@@ -599,6 +600,7 @@ public class levelUpUIController : MonoBehaviour
             textField.text = (atribute.getLevel() + statLevel).ToString();
             level--;
             _levelValue.text = level.ToString();
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
         }
     }
 
@@ -730,6 +732,7 @@ public class levelUpUIController : MonoBehaviour
                     _hasUpgradedEndurance = false;
                 }
                 saveSystem.saveStats();
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
             }
 
         }

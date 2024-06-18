@@ -24,6 +24,26 @@ public class skillUIController : MonoBehaviour
     [SerializeField] private List<GameObject> _sprites;
 
     /// <summary>
+    /// Lista con los fondos de las habilidades.
+    /// </summary>
+    [SerializeField] private List<Image> _backgroundImages;
+
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad de status.
+    /// </summary>
+    [SerializeField] private Sprite _statusColor;
+
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad de combo.
+    /// </summary>
+    [SerializeField] private Sprite _comboColor;
+
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad pasiva.
+    /// </summary>
+    [SerializeField] private Sprite _passiveColor;
+
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// </summary>
     void Start()
@@ -56,6 +76,42 @@ public class skillUIController : MonoBehaviour
     public List<GameObject> getSlots()
     {
         return _slots;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_backgroundImages"/>.
+    /// </summary>
+    /// <returns><see cref="_backgroundImages"/>.</returns>
+    public List<Image> getBackgroundImages()
+    {
+        return _backgroundImages;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_statusColor"/>.
+    /// </summary>
+    /// <returns><see cref="_statusColor"/>.</returns>
+    public Sprite getStatusColor()
+    {
+        return _statusColor;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_comboColor"/>.
+    /// </summary>
+    /// <returns><see cref="_comboColor"/>.</returns>
+    public Sprite getComboColor()
+    {
+        return _comboColor;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_passiveColor"/>.
+    /// </summary>
+    /// <returns><see cref="_passiveColor"/>.</returns>
+    public Sprite getFunctionalityColor()
+    {
+        return _passiveColor;
     }
 
     /// <summary>
@@ -103,6 +159,7 @@ public class skillUIController : MonoBehaviour
             _sprites[index].SetActive(false);
 
             IDs[index] = -1;
+            _backgroundImages[index].gameObject.SetActive(false);
 
         }
 
@@ -112,6 +169,16 @@ public class skillUIController : MonoBehaviour
         //Modificamos el sprite del slot donde hemos equipado el arma
         _sprites[_currentID].SetActive(true);
         _sprites[_currentID].GetComponent<Image>().sprite = skill.getSkillSprite();
+
+        _backgroundImages[_currentID].gameObject.SetActive(true);
+        if (skill.getType() == skillTypeEnum.combo)
+        {
+            _backgroundImages[_currentID].sprite = _comboColor;
+        }
+        else if (skill.getType() == skillTypeEnum.status)
+        {
+            _backgroundImages[_currentID].sprite = _statusColor;
+        }
 
         IDs[_currentID] = skill.getSkillID();
         types[_currentID] = skill.getType();
@@ -163,6 +230,7 @@ public class skillUIController : MonoBehaviour
             //Comprobación de límites hacia la izquierda
             if (inputManager.GetKeyDown(inputEnum.left) && _currentID > 0)
             {
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
                 _slots[_currentID].SetActive(false);
                 _currentID--;
                 _slots[_currentID].SetActive(true);
@@ -170,6 +238,7 @@ public class skillUIController : MonoBehaviour
             //Comprobación de límites hacia la derecha
             if (inputManager.GetKeyDown(inputEnum.right) && _currentID < (_slots.Count - 1))
             {
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
                 _slots[_currentID].SetActive(false);
                 _currentID++;
                 _slots[_currentID].SetActive(true);
@@ -178,6 +247,7 @@ public class skillUIController : MonoBehaviour
             //Si hemos pulsado el botón asignado a la acción de entrar a equipar
             if (inputManager.GetKeyDown(inputEnum.enterEquip))
             {
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
                 UIConfig.getController().useSelectSkillUI();
             }
         }
@@ -186,6 +256,7 @@ public class skillUIController : MonoBehaviour
             //Salimos de la UI de seleccionar habilidad
             if (inputManager.GetKeyDown(inputEnum.enterEquip))
             {
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
                 UIConfig.getController().useSelectSkillUI();
             }
         }
