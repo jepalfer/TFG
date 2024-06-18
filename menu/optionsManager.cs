@@ -106,6 +106,21 @@ public class optionsManager : MonoBehaviour
     private audioSettingsData _audioSettings;
 
     /// <summary>
+    /// Referencia al último objeto seleccionado.
+    /// </summary>
+    private GameObject _formerEventSystemSelected = null;
+
+    /// <summary>
+    /// Referencia al menú de controles.
+    /// </summary>
+    [SerializeField] private GameObject _inputsMenu;
+
+    /// <summary>
+    /// Referencia al contenido del menú de opciones.
+    /// </summary>
+    [SerializeField] private GameObject _optionsContent;
+
+    /// <summary>
     /// Método que se encarga de inicializar la UI.
     /// </summary>
     public void initializeUI()
@@ -132,6 +147,7 @@ public class optionsManager : MonoBehaviour
         changeMasterVolume();
         changeOSTVolume();
         changeSFXVolume();
+        _formerEventSystemSelected = null;
     }
 
     /// <summary>
@@ -163,6 +179,7 @@ public class optionsManager : MonoBehaviour
         {
             //Mostramos la UI 
             _confirmUI.SetActive(!_confirmUI.activeSelf);
+            _formerEventSystemSelected = null;
             _confirmUI.GetComponent<confirmOptionsChange>().startUI();
         }
         else
@@ -187,6 +204,10 @@ public class optionsManager : MonoBehaviour
     {
         config.getAudioManager().GetComponent<audioManager>().setAudio(audioSettingsEnum.masterVolume.ToString(), 
                                                                        _masterSlider.value);
+        if (_formerEventSystemSelected == _masterSlider.gameObject)
+        {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        }
     }
 
     /// <summary>
@@ -196,6 +217,10 @@ public class optionsManager : MonoBehaviour
     {
         config.getAudioManager().GetComponent<audioManager>().setAudio(audioSettingsEnum.OSTVolume.ToString(),
                                                                        _OSTSlider.value);
+        if (_formerEventSystemSelected == _OSTSlider.gameObject)
+        {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        }
     }
 
     /// <summary>
@@ -205,6 +230,19 @@ public class optionsManager : MonoBehaviour
     {
         config.getAudioManager().GetComponent<audioManager>().setAudio(audioSettingsEnum.SFXVolume.ToString(),
                                                                        _SFXSlider.value);
+        if (_formerEventSystemSelected == _SFXSlider.gameObject)
+        {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        }
+    }
+
+    /// <summary>
+    /// Método para mostrar el menú de controles.
+    /// </summary>
+    public void showInputs()
+    {
+        _inputsMenu.GetComponent<inputMenuController>().initializeUI();
+        _optionsContent.SetActive(false);
     }
 
     /// <summary>
@@ -212,10 +250,31 @@ public class optionsManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        //Se ha pulsado el botón de cancelar
-        if (inputManager.GetKeyDown(inputEnum.cancel))
+        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+
+        if (currentSelected != _formerEventSystemSelected)
         {
+            if (_formerEventSystemSelected != null)
+            {
+                Debug.Log("he");
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            }
+            _formerEventSystemSelected = currentSelected;
+        }
+
+        //Se ha pulsado el botón de cancelar
+        if (inputManager.GetKeyDown(inputEnum.cancel) && !_resDropdown.IsExpanded &&
+            !_qualityDropdown.IsExpanded && !_displayDropdown.IsExpanded && !_inputsMenu.active)
+        {
+            Debug.Log("hh");
             cancelChanges();
+        }
+
+        if (_inputsMenu.active && inputManager.GetKeyDown(inputEnum.cancel))
+        {
+            _optionsContent.SetActive(true);
+            _inputsMenu.SetActive(false);
+            EventSystem.current.SetSelectedGameObject(_inputButton.gameObject);
         }
 
         //Se ha pulsado el botón de aceptar
@@ -248,7 +307,7 @@ public class optionsManager : MonoBehaviour
         else if (EventSystem.current.currentSelectedGameObject == _displayDropdown.gameObject)
         {
             _displayText.color = Color.yellow;
-            _resText.color = Color.white;
+            _qualityText.color = Color.white;
             _masterText.color = Color.white;
         }
         else if (EventSystem.current.currentSelectedGameObject == _masterSlider.gameObject)
@@ -279,5 +338,6 @@ public class optionsManager : MonoBehaviour
             _displayText.color = Color.white;
             _resText.color = Color.white;
         }
+
     }
 }

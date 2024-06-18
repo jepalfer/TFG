@@ -128,6 +128,11 @@ public class menu : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _cancelText;
 
     /// <summary>
+    /// Referencia al menú de controles.
+    /// </summary>
+    [SerializeField] private GameObject _inputsMenu;
+
+    /// <summary>
     /// Timer para controlar el tiempo que ha pasado desde que hemos entrado al menú de opciones
     /// para que no se seleccione el botón de aceptar.
     /// </summary>
@@ -149,6 +154,20 @@ public class menu : MonoBehaviour
     [SerializeField] private GameObject _confirmChangesUI;
 
     /// <summary>
+    /// Referencia al último objeto seleccionado.
+    /// </summary>
+    private GameObject _formerEventSystemSelected;
+
+    /// <summary>
+    /// Flag booleano para indicar si venimos del menú de opciones o no.
+    /// </summary>
+    private bool _comeFromOptions = false;
+
+    /// <summary>
+    /// Referencia al contenido del menú de opciones.
+    /// </summary>
+    [SerializeField] private GameObject _optionsContent;
+    /// <summary>
     /// Método que se ejecuta al inicio del script.
     /// </summary>
     private void Awake()
@@ -158,17 +177,15 @@ public class menu : MonoBehaviour
         _canCount = false;
 
         //Bloqueamos el cursor
-        /*Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;*/
-        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+
+        EventSystem.current.SetSelectedGameObject(null);
+
         //Cargamos los datos
         profileData data = saveSystem.loadProfiles();
 
-        if (data == null)
-        {
-
-        }
-        else
+        if (data != null)
         {
             //Cargamos los perfiles
             profileIndex.setNames(data.getUserNames());
@@ -234,6 +251,7 @@ public class menu : MonoBehaviour
     /// </summary>
     public void createGame()
     {
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         SceneManager.LoadScene("newGame");
     }
 
@@ -242,6 +260,7 @@ public class menu : MonoBehaviour
     /// </summary>
     public void loadGame()
     {
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         SceneManager.LoadScene("loadGame");
     }
 
@@ -250,7 +269,28 @@ public class menu : MonoBehaviour
     /// </summary>
     public void quitGame()
     {
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         Application.Quit();
+    }
+
+    /// <summary>
+    /// Método para mostrar los inputs.
+    /// </summary>
+    public void showInputs()
+    {
+        _inputsMenu.SetActive(true);
+        _optionsContent.SetActive(false);
+        _inputsMenu.GetComponent<inputMenuController>().initializeUI();
+    }
+
+    /// <summary>
+    /// Método para ocultar los inputs.
+    /// </summary>
+    public void hideInputs()
+    {
+        _inputsMenu.SetActive(false);
+        _optionsContent.SetActive(true);
+        EventSystem.current.SetSelectedGameObject(_inputButton.gameObject);
     }
 
     /// <summary>
@@ -285,10 +325,14 @@ public class menu : MonoBehaviour
             _masterSlider.value = _audioSettings.getMasterVolume();
             _OSTSlider.value = _audioSettings.getOSTVolume();
             _SFXSlider.value = _audioSettings.getSFXVolume();
+            _formerEventSystemSelected = null;
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         }
         else
         {
+            _comeFromOptions = true;
             EventSystem.current.SetSelectedGameObject(_optionsButton.gameObject);
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         }
     }
 
@@ -326,6 +370,11 @@ public class menu : MonoBehaviour
     {
         config.getAudioManager().GetComponent<audioManager>().setAudio(audioSettingsEnum.masterVolume.ToString(),
                                                                        _masterSlider.value);
+
+        if (_formerEventSystemSelected == _masterSlider.gameObject)
+        {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        }
     }
 
     /// <summary>
@@ -335,6 +384,10 @@ public class menu : MonoBehaviour
     {
         config.getAudioManager().GetComponent<audioManager>().setAudio(audioSettingsEnum.OSTVolume.ToString(),
                                                                        _OSTSlider.value);
+        if (_formerEventSystemSelected == _OSTSlider.gameObject)
+        {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        }
     }
 
     /// <summary>
@@ -344,6 +397,10 @@ public class menu : MonoBehaviour
     {
         config.getAudioManager().GetComponent<audioManager>().setAudio(audioSettingsEnum.SFXVolume.ToString(),
                                                                        _SFXSlider.value);
+        if (_formerEventSystemSelected == _SFXSlider.gameObject)
+        {
+            config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+        }
     }
 
     /// <summary>
@@ -366,6 +423,7 @@ public class menu : MonoBehaviour
     public void continueGame()
     {
         lastSceneData data = saveSystem.loadLastSceneData();
+        config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         SceneManager.LoadScene(data.getSceneID());
     }
 
@@ -388,9 +446,15 @@ public class menu : MonoBehaviour
         if (_optionsMenu.activeSelf && !_confirmChangesUI.activeSelf)
         {
             //Si pulsamos el botón de cancelar
-            if (inputManager.GetKeyDown(inputEnum.cancel))
+            if (inputManager.GetKeyDown(inputEnum.cancel) && !_resolutionDropdown.IsExpanded && 
+                !_qualityDropdown.IsExpanded && !_displayDropdown.IsExpanded && !_inputsMenu.active)
             {
                 cancelOptions();
+            }
+
+            if (inputManager.GetKeyDown(inputEnum.cancel) && _inputsMenu.active)
+            {
+                hideInputs();
             }
 
             //Si pulsamos el botón de aceptar y además el timer ha pasado un umbral
@@ -450,6 +514,22 @@ public class menu : MonoBehaviour
             }
 
         }
+
+        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+
+        if (currentSelected != _formerEventSystemSelected && currentSelected != null)
+        {
+            if (_formerEventSystemSelected != null && !_comeFromOptions)
+            {
+                config.getAudioManager().GetComponent<menuSFXController>().playMenuNavigationSFX();
+            }
+            if (_comeFromOptions)
+            {
+                _comeFromOptions = false;
+            }
+            _formerEventSystemSelected = currentSelected;
+        }
+
     }
 
 }
