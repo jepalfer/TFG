@@ -36,7 +36,7 @@ public class audioManager : MonoBehaviour
     /// <summary>
     /// Referencia a la instancia del <see cref="audioManager"/> para manejarlo entre escenas.
     /// </summary>
-    public static audioManager _instance;
+    private static audioManager _instance;
 
     /// <summary>
     /// Método que se ejecuta al iniciar el script.
@@ -80,7 +80,7 @@ public class audioManager : MonoBehaviour
         }
 
         //Iniciamos la OST
-        _ost.GetComponent<AudioSource>().Play();
+        //_ost.GetComponent<AudioSource>().Play();
 
         //Modificamos los volúmenes de audio
         setAudio(audioSettingsEnum.masterVolume.ToString(), _audioSettings.getMasterVolume());
@@ -96,6 +96,15 @@ public class audioManager : MonoBehaviour
     public void setAudio(string name, float value)
     {
         _mixer.SetFloat(name, 20 * Mathf.Log10(value));
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_instance"/>.
+    /// </summary>
+    /// <returns><see cref="_instance"/>.</returns>
+    public static audioManager getInstance()
+    {
+        return _instance;
     }
 
     /// <summary>
