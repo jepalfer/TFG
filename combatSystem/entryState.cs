@@ -22,15 +22,20 @@ public class entryState : baseState
         base.onEnter(_stateMachine);
 
         //Attack
-        _timeNextAttack = 1.5f;
+        _timeNextAttack = 0.75f;
         //_animator.SetTrigger("Attack" + _attackIndex);
+
+        AnimatorClipInfo[] clipInfo = config.getPlayer().GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
+        //Debug.Log(stateInfo[0].clip.IsName(config.getPlayer().GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_attack, 0, 1, animatorEnum.front)));
+        GetComponent<Animator>().SetFloat("attackSpeed", clipInfo[0].clip.length / (_timeNextAttack - _timeNextAttack / 6));
 
         if (_isPrimary)
         {
             GetComponent<combatController>().getHitbox().GetComponent<playerHitController>().setPrimary(true);
             GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCurrentAttack(baseState.getAttackIndex());
             GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setIsAttacking(true);
-            GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = true;
+            //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = true;
+            weaponConfig.getPrimaryWeapon().GetComponent<weaponSFXController>().playAttackSFX();
         }
         else
         {
@@ -39,12 +44,13 @@ public class entryState : baseState
             GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setIsAttacking(true);
             if (GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getRange() == rangeEnum.melee)
             {
-                GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = true;
+                //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = true;
             }
             else
             {
                 GetComponent<combatController>().createBullet();
             }
+            weaponConfig.getSecundaryWeapon().GetComponent<weaponSFXController>().playAttackSFX();
         }
         //Debug.Log(weapon + "fired attack n" + MeleeBaseState._attackIndex);
     }
@@ -74,7 +80,7 @@ public class entryState : baseState
             if (!inputManager.GetKey(inputEnum.down) && !inputManager.GetKey(inputEnum.up))
             {
                 int primaryAttack = 0, secundaryAttack = 0;
-
+                animatorEnum attackDirection = config.getPlayer().GetComponent<playerMovement>().getIsFacingLeft() ? animatorEnum.front : animatorEnum.back;
                 config.getPlayer().GetComponent<combatController>().calculateExtraComboHits(ref primaryAttack, ref secundaryAttack);
                 if (GetComponent<combatController>().getPrimaryWeapon() != null)
                 {
@@ -83,7 +89,8 @@ public class entryState : baseState
                         if (baseState.getAttackIndex() < (GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getNumberOfAttacks() + primaryAttack))
                         {
                             baseState.incrementAttackIndex();
-                            GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_attack, weaponConfig.getPrimaryWeapon().GetComponent<weapon>().getID(), baseState.getAttackIndex(), attackDirection);
                             _currentStateMachine.setNextState(new comboState(true));
                         }
                     }
@@ -95,7 +102,8 @@ public class entryState : baseState
                         if (baseState.getAttackIndex() < (GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getNumberOfAttacks() + secundaryAttack))
                         {
                             baseState.incrementAttackIndex();
-                            GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_attack, weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getID(), baseState.getAttackIndex(), attackDirection);
                             _currentStateMachine.setNextState(new comboState(false));
                         }
                     }

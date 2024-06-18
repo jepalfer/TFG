@@ -61,7 +61,7 @@ public class bulletController : MonoBehaviour
     private void Start()
     {
         _travelledDistance = 0f;
-        if (!config.getPlayer().GetComponent<playerMovement>().getIsFacingRight())
+        if (!config.getPlayer().GetComponent<playerMovement>().getIsFacingLeft())
         {
             _travelVelocity *= -1;
         }
