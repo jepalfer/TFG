@@ -116,6 +116,21 @@ public class enemy : MonoBehaviour
     /// Flag booleano para saber cuando se puede dar la vuelta al llegar a <see cref="_pointA"/> o <see cref="_pointB"/>.
     /// </summary>
     [SerializeField] private bool _isFlipping;
+
+    /// <summary>
+    /// Flag booleano para controlar la muerte del enemigo.
+    /// </summary>
+    private bool _isDying = false;
+
+    /// <summary>
+    /// Referencia al clip de idle para calcular la velocidad.
+    /// </summary>
+    [SerializeField] private AnimationClip _idleAnim;
+
+    /// <summary>
+    /// Capa de la hurtbox a atacar.
+    /// </summary>
+    [SerializeField] private LayerMask _hurtboxLayer;
     /// <summary>
     /// Método que se ejecuta al iniciar el script y que asigna todas las variables y carga la información acerca de los enemigos.
     /// </summary>
@@ -168,6 +183,8 @@ public class enemy : MonoBehaviour
             state.incrementSize(_enemyData);
             saveSystem.saveEnemyData(state.getEnemyStates());
         }
+
+        config.addEnemy(gameObject);
     }
 
     /// <summary>
@@ -366,6 +383,24 @@ public class enemy : MonoBehaviour
     }
 
     /// <summary>
+    /// Getter que devuelve <see cref="_idleAnim"/>.
+    /// </summary>
+    /// <returns><see cref="_idleAnim"/>.</returns>
+    public AnimationClip getIdleAnim()
+    {
+        return _idleAnim;
+    }
+
+    /// <summary>
+    /// Getter que devuelve <see cref="_hurtboxLayer"/>.
+    /// </summary>
+    /// <returns><see cref="_hurtboxLayer"/>.</returns>
+    public LayerMask getHurtboxLayer()
+    {
+        return _hurtboxLayer;
+    }
+
+    /// <summary>
     /// Método que voltea el sprite del enemigo.
     /// </summary>
     public void flip()
@@ -402,7 +437,7 @@ public class enemy : MonoBehaviour
 
         config.getPlayer().GetComponent<combatController>().calculateSkillCritDamageProbability(ref critProbability);
 
-        Debug.Log(critProbability);
+        //Debug.Log(critProbability);
         if ((float)critValue <= critProbability)
         {
             critDealt = critDamage;
@@ -419,7 +454,7 @@ public class enemy : MonoBehaviour
             received += (_enemy.getHealth() * bleedingDamage);
         }
 
-        Debug.Log(received);
+        //Debug.Log(received);
         return received;
     }
 
@@ -446,11 +481,15 @@ public class enemy : MonoBehaviour
                 }
             }
         }
-
-        if (_health <= 0)
+        animatorEnum direction = _isLookingRight ? animatorEnum.back : animatorEnum.front;
+        if (_health <= 0 && !_isDying && GetComponent<enemyController>().enabled)
         {
-            die();
+            _isDying = true;
+            GetComponent<enemyController>().enabled = false;
+            GetComponent<enemyStateMachine>().enabled = false;
+            GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_death, getEnemyName(), direction);
         }
+        
     }
 
     /// <summary>
@@ -458,6 +497,7 @@ public class enemy : MonoBehaviour
     /// </summary>
     public void die()
     {
+        Debug.Log("activo?");
         //Si tiene loot
         if (_loot.Length > 0)
         {
@@ -520,5 +560,23 @@ public class enemy : MonoBehaviour
     {
         _isFlipping = true;
         Invoke("flip", time);
+    }
+
+    /// <summary>
+    /// Método que se ejecuta cada frame para actualizar la lógica.
+    /// </summary>
+    private void Update()
+    {
+        animatorEnum direction = _isLookingRight ? animatorEnum.back : animatorEnum.front;
+        AnimatorStateInfo stateInfo = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+        //Debug.Log(_health);
+
+        if (stateInfo.IsName(GetComponent<enemyAnimatorController>().getAnimationName(animatorEnum.enemy_death, getEnemyName(), direction)))
+        {
+            if (stateInfo.normalizedTime >= 1.0f)
+            {
+                die();
+            }
+        }
     }
 }

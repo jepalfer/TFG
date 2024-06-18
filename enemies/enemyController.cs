@@ -41,6 +41,7 @@ public class enemyController : MonoBehaviour
 
         //Ignoramos colisiones
         Physics2D.IgnoreCollision(config.getPlayer().GetComponent<BoxCollider2D>(), GetComponent<BoxCollider2D>());
+        _stateMachine.setNextState(new idleEnemyState());
     }
 
     /// <summary>
@@ -50,24 +51,25 @@ public class enemyController : MonoBehaviour
     {
         
         //Si estamos en rango de visionado y fuera del rango de ataque
-        if (Vector3.Distance(transform.position, config.getPlayer().transform.position) <= _sightDistance && Vector3.Distance(transform.position, config.getPlayer().transform.position) >= GetComponent<enemy>().getAttackRange())
-        {
-            /*
-            //Perseguimos al jugador
-            if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState) || _stateMachine.getCurrentState().GetType() == typeof(idleEnemyState))
-            {
-                _stateMachine.setNextState(new enemyChaseState());
-            }*/
-        }
-        //Si estamos en rango de ataque
-        else if (Vector3.Distance(transform.position, config.getPlayer().transform.position) <= GetComponent<enemy>().getAttackRange())
-        {
-            //Atacamos
-            if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState) || _stateMachine.getCurrentState().GetType() == typeof(idleEnemyState))
-            {
-                _stateMachine.setNextState(new groundEnemyEntryState(GetComponent<enemy>().getTimes()[0], 0));
-            }
-        }
+        //if (Vector3.Distance(transform.position, config.getPlayer().transform.position) <= _sightDistance && Vector3.Distance(transform.position, config.getPlayer().transform.position) >= GetComponent<enemy>().getAttackRange())
+        //{
+        //    /*
+        //    //Perseguimos al jugador
+        //    if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState) || _stateMachine.getCurrentState().GetType() == typeof(idleEnemyState))
+        //    {
+        //        _stateMachine.setNextState(new enemyChaseState());
+        //    }*/
+        //}
+        ////Si estamos en rango de ataque
+        //else if (Vector3.Distance(transform.position, config.getPlayer().transform.position) <= GetComponent<enemy>().getAttackRange())
+        //{
+        //    //Atacamos
+        //    if (_stateMachine.getCurrentState().GetType() == typeof(enemyChaseState) || _stateMachine.getCurrentState().GetType() == typeof(idleEnemyState))
+        //    {
+        //        Debug.Log("entro en ataque");
+        //        _stateMachine.setNextState(new groundEnemyEntryState(GetComponent<enemy>().getTimes()[0], 0));
+        //    }
+        //}
         
     }
 
