@@ -189,7 +189,7 @@ public class bonfireBehaviour : MonoBehaviour
     /// </summary>
     public void rest()
     {
-        saveSystem.saveLastBonfireData();
+        saveSystem.saveLastBonfireData(true);
         //Cargamos los datos de los enemigos
         _enemiesData = saveSystem.loadEnemyData();
 
@@ -231,8 +231,8 @@ public class bonfireBehaviour : MonoBehaviour
     /// </summary>
     public void levelUp()
     {
-        useBonfireUI();
         UIConfig.getController().useLevelUpUI();
+        useBonfireUI();
     }
 
     /// <summary>
@@ -241,8 +241,8 @@ public class bonfireBehaviour : MonoBehaviour
     /// </summary>
     public void levelUpWeapon()
     {
-        useBonfireUI();
         UIConfig.getController().useWeaponUI();
+        useBonfireUI();
     }
 
     /// <summary>
@@ -251,8 +251,8 @@ public class bonfireBehaviour : MonoBehaviour
     /// </summary>
     public void unlockSkills()
     {
-        useBonfireUI();
         UIConfig.getController().useSkillsUI();
+        useBonfireUI();
     }
 
     /// <summary>
@@ -394,14 +394,22 @@ public class bonfireBehaviour : MonoBehaviour
 
         if (_isInBonfireMenu)
         {
-            Debug.Log(direction.ToString());
-            config.getPlayer().GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, direction);
+            if (config.getPlayer().GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.name != 
+                config.getPlayer().GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 1, direction) && 
+                config.getPlayer().GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.name !=
+                config.getPlayer().GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_idle, 2, direction))
+            {
+                config.getPlayer().GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_idle, 1, direction);
+            }
             _formerEventSystemSelected = null;
             EventSystem.current.SetSelectedGameObject(_restButton.gameObject);
         }
-        else //Si no la ponemos a defaul con todos los textos a blanco para dar coherencia visual
+        else //Si no la ponemos a default con todos los textos a blanco para dar coherencia visual
         {
-            config.getPlayer().GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_get_up, direction);
+            if (!UIController.getIsInAdquireSkillUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInLevelUpWeaponUI())
+            {
+                config.getPlayer().GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_get_up, direction);
+            }
             _restText.color = Color.white;
             _levelUpText.color = Color.white;
             _resumeText.color = Color.white;
@@ -409,7 +417,7 @@ public class bonfireBehaviour : MonoBehaviour
             _unlockSkillsText.color = Color.white;
             _useKeyItemText.color = Color.white;
             
-            EventSystem.current.SetSelectedGameObject(null);
+            //EventSystem.current.SetSelectedGameObject(null);
             config.getAudioManager().GetComponent<menuSFXController>().playMenuAcceptSFX();
         }
     }
