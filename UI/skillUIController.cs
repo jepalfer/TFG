@@ -42,6 +42,10 @@ public class skillUIController : MonoBehaviour
     /// Referencia a la imagen de fondo cuando es una habilidad pasiva.
     /// </summary>
     [SerializeField] private Sprite _passiveColor;
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad de almas.
+    /// </summary>
+    [SerializeField] private Sprite _soulsColor;
 
     /// <summary>
     /// Método que se ejecuta al inicio del script.
@@ -106,13 +110,14 @@ public class skillUIController : MonoBehaviour
     }
 
     /// <summary>
-    /// Getter que devuelve <see cref="_passiveColor"/>.
+    /// Getter que devuelve <see cref="_soulsColor"/>.
     /// </summary>
-    /// <returns><see cref="_passiveColor"/>.</returns>
-    public Sprite getFunctionalityColor()
+    /// <returns><see cref="_soulsColor"/>.</returns>
+    public Sprite getSoulsColor()
     {
-        return _passiveColor;
+        return _soulsColor;
     }
+
 
     /// <summary>
     /// Método que equipa una habilidad determinada.
@@ -178,6 +183,10 @@ public class skillUIController : MonoBehaviour
         else if (skill.getType() == skillTypeEnum.status)
         {
             _backgroundImages[_currentID].sprite = _statusColor;
+        }
+        else if (skill.getType() == skillTypeEnum.souls)
+        {
+            _backgroundImages[_currentID].sprite = _soulsColor;
         }
 
         IDs[_currentID] = skill.getSkillID();

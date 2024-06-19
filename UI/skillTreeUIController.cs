@@ -104,6 +104,10 @@ public class skillTreeUIController : MonoBehaviour
     /// Referencia a la imagen de fondo cuando es una habilidad pasiva.
     /// </summary>
     [SerializeField] private Sprite _passiveColor;
+    /// <summary>
+    /// Referencia a la imagen de fondo cuando es una habilidad de almas.
+    /// </summary>
+    [SerializeField] private Sprite _soulsColor;
 
     /// <summary>
     /// Método que se ejecuta cada frame para actualizar la lógica.
@@ -176,7 +180,10 @@ public class skillTreeUIController : MonoBehaviour
         if (!_formerEventSystemSelected.GetComponent<skill>().isUnlockable())
         {
             _skillPrice.color = Color.red;
-            _skillPrice.text = "Adquirida.";
+            if (_formerEventSystemSelected.GetComponent<skill>().getIsUnlocked())
+            {
+                _skillPrice.text = "Adquirida.";
+            }
         }
         else
         {
@@ -197,6 +204,11 @@ public class skillTreeUIController : MonoBehaviour
             {
                 _skillBackground.sprite = _statusColor;
             }
+            else if (_formerEventSystemSelected.GetComponent<skill>().getData().getType() == skillTypeEnum.souls)
+            {
+                _skillBackground.sprite = _soulsColor;
+            }
+
         }
     }
 
@@ -340,6 +352,7 @@ public class skillTreeUIController : MonoBehaviour
         }
         saveSystem.saveSkillsState(data.getUnlockedSkills());
         _skillPrice.color = Color.red;
+        _skillPrice.text = "Adquirida.";
     }
 
     /// <summary>

@@ -72,6 +72,12 @@ public class selectSkillUIController : MonoBehaviour
     /// </summary>
     [SerializeField] private Sprite _statusColor;
 
+
+    /// <summary>
+    /// Referencia al sprite para el color de habilidad de almas.
+    /// </summary>
+    [SerializeField] private Sprite _soulsColor;
+
     /// <summary>
     /// Método que instancia todas las habilidades que se ven en la UI.
     /// </summary>
@@ -139,6 +145,10 @@ public class selectSkillUIController : MonoBehaviour
         else if (skillData.getType() == skillTypeEnum.status)
         {
             newSkill.GetComponent<skillSlotLogic>().setBackgroundColor(_statusColor);
+        }
+        else if (skillData.getType() == skillTypeEnum.souls)
+        {
+            newSkill.GetComponent<skillSlotLogic>().setBackgroundColor(_soulsColor);
         }
 
         newSkill.transform.SetParent(_skillHolder, false);
@@ -270,6 +280,10 @@ public class selectSkillUIController : MonoBehaviour
             else if (EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getType() == skillTypeEnum.status)
             {
                 _backgroundImage.sprite = _statusColor;
+            }
+            else if (EventSystem.current.currentSelectedGameObject.GetComponent<skillSlot>().getData().getType() == skillTypeEnum.souls)
+            {
+                _backgroundImage.sprite = _soulsColor;
             }
         }
     }

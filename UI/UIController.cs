@@ -132,11 +132,6 @@ public class UIController : MonoBehaviour
     /// Referencia a la UI del menú de opciones.
     /// </summary>
     [SerializeField] private GameObject _optionsUI;
-
-    /// <summary>
-    /// Referencia al texto que aparece en <see cref="_pauseUI"/> que es el nombre del perfil.
-    /// </summary>
-    [SerializeField] private TextMeshProUGUI _name;
     
     /// <summary>
     /// Referencia al botón de continuar partida.
@@ -186,7 +181,6 @@ public class UIController : MonoBehaviour
     private void Awake()
     {
         UIConfig.setController(this);
-        _name.text = profileSystem.getProfileName();
     }
 
     /// <summary>
