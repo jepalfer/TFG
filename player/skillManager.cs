@@ -121,6 +121,10 @@ public class skillManager : MonoBehaviour
                         {
                             UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getBackgroundImages()[i].sprite = UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getStatusColor();
                         }
+                        else if (_equippedSkills[i].GetComponent<skill>().getType() == skillTypeEnum.souls)
+                        {
+                            UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getBackgroundImages()[i].sprite = UIConfig.getController().getEquipSkillsUI().GetComponent<skillUIController>().getSoulsColor();
+                        }
                     }
                 }
             }
