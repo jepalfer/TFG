@@ -24,10 +24,12 @@ public class loadingScreen : MonoBehaviour
         config.getAudioManager().GetComponent<audioManager>().getOSTPlayer().GetComponent<AudioSource>().Stop();
         //int index = Random.Range(0, config.getPlayer().GetComponent<equippedInventory>().getAllItems().Count - 1);
         int getFromWeapons = Random.Range(0, 2);
+        getFromWeapons = 1;
         int index;
         if (getFromWeapons == 1)
         {
             index = Random.Range(0, config.getInventory().GetComponent<weaponInventoryManagement>().getWeaponList().Count);
+            index = 2;
             _itemSprite.sprite = config.getInventory().GetComponent<weaponInventoryManagement>().getWeaponList()[index].getWeapon().GetComponent<weapon>().getIcon();
             _nameText.text = config.getInventory().GetComponent<weaponInventoryManagement>().getWeaponList()[index].getWeapon().GetComponent<weapon>().getName();
             _descriptionText.text = config.getInventory().GetComponent<weaponInventoryManagement>().getWeaponList()[index].getWeapon().GetComponent<weapon>().getDesc();

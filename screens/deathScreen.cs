@@ -23,11 +23,6 @@ public class deathScreen : MonoBehaviour
         GetComponent<Animator>().Play("deathScreen");
     }
 
-    public void playerDeath()
-    {
-        config.getPlayer().GetComponent<combatController>().die();
-    }
-
     /// <summary>
     /// Método que se ejecuta cada frame para actualizar la lógica.
     /// </summary>
