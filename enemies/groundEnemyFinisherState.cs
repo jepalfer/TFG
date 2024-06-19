@@ -34,14 +34,16 @@ public class groundEnemyFinisherState : enemyBaseCombatState
     /// </summary>
     public override void onUpdate()
     {
-        base.onUpdate();
+        base.onUpdate(); 
+        animatorEnum direction = _currentStateMachine.GetComponent<enemy>().getIsLookingRight() ? animatorEnum.back : animatorEnum.front;
+        bool rightHit = drawRightRay();
+        bool leftHit = drawLeftRay();
+        //Debug.Log("Rayo dcha => " + drawRightRay());
+        //Debug.Log("Rayo izq => " + drawLeftRay());
         if (_time >= _attackTime)
         {
-            //No estamos en rango de ataque
-
-            //float distance = Vector3.Distance(GetComponent<enemy>().getHurtbox().transform.position,
-            //                                  config.getPlayer().GetComponent<combatController>().getHurtbox().transform.position);
-            if (!drawLeftRay() && !drawRightRay())
+            //Si estamos fuera del rango de ataque
+            if (!rightHit && !leftHit)
             {
                 //GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
                 if (GetComponent<boss>() != null)
@@ -57,45 +59,46 @@ public class groundEnemyFinisherState : enemyBaseCombatState
             }
             else //Estamos en rango de ataque
             {
-                _currentStateMachine.setNextState(new idleEnemyState());
+                _currentStateMachine.GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_attack, _currentStateMachine.GetComponent<enemy>().getEnemyName(), 0, direction);
+                _currentStateMachine.setNextState(new groundEnemyComboState(GetComponent<enemy>().getTimes()[0], 0));
                 base.onExit();
             }
         }
 
         //if (_currentStateMachine.GetComponent<enemy>().getHurtbox().transform.position.x < config.getPlayer().GetComponent<combatController>().getHurtbox().transform.position.x)
-        if (drawRightRay())
-        {
-            if (!_currentStateMachine.GetComponent<enemy>().getIsLookingRight())
-            {
-                if (GetComponent<boss>() != null)
-                {
-                    _currentStateMachine.setNextState(new enemyChaseState());
-                    base.onExit();
-                }
-                else
-                {
-                    _currentStateMachine.setNextState(new idleEnemyState());
-                    base.onExit();
-                }
-            }
-        }
+        //if (drawRightRay())
+        //{
+        //    if (!_currentStateMachine.GetComponent<enemy>().getIsLookingRight())
+        //    {
+        //        if (GetComponent<boss>() != null)
+        //        {
+        //            _currentStateMachine.setNextState(new enemyChaseState());
+        //            base.onExit();
+        //        }
+        //        else
+        //        {
+        //            _currentStateMachine.setNextState(new idleEnemyState());
+        //            base.onExit();
+        //        }
+        //    }
+        //}
         //if (_currentStateMachine.GetComponent<enemy>().getHurtbox().transform.position.x > config.getPlayer().GetComponent<combatController>().getHurtbox().transform.position.x)
-        if (drawLeftRay())
-        {
-            if (_currentStateMachine.GetComponent<enemy>().getIsLookingRight())
-            {
-                if (GetComponent<boss>() != null)
-                {
-                    _currentStateMachine.setNextState(new enemyChaseState());
-                    base.onExit();
-                }
-                else
-                {
-                    _currentStateMachine.setNextState(new idleEnemyState());
-                    base.onExit();
-                }
-            }
-        }
+        //if (drawLeftRay())
+        //{
+        //    if (_currentStateMachine.GetComponent<enemy>().getIsLookingRight())
+        //    {
+        //        if (GetComponent<boss>() != null)
+        //        {
+        //            _currentStateMachine.setNextState(new enemyChaseState());
+        //            base.onExit();
+        //        }
+        //        else
+        //        {
+        //            _currentStateMachine.setNextState(new idleEnemyState());
+        //            base.onExit();
+        //        }
+        //    }
+        //}
 
     }
 

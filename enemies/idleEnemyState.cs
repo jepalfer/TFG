@@ -54,7 +54,21 @@ public class idleEnemyState : enemyState
 
         //Si los 2 puntos de la ruta existen
         //Debug.Log("clip => " + clipInfo[0].clip.name);
-        if (clipInfo[0].clip.name.Contains(animatorEnum.enemy_attack + "_" + _currentStateMachine.GetComponent<enemy>().getEnemyName()))
+        Debug.Log("estoy dentro" + _currentStateMachine.GetComponent<enemy>().getEnemyID());
+
+        if (drawLeftRay() && GetComponent<enemy>().getIsLookingRight() && !GetComponent<enemy>().getIsFlipping())
+        {
+            _currentStateMachine.GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_idle, _currentStateMachine.GetComponent<enemy>().getEnemyName(), direction);
+            GetComponent<Animator>().SetFloat("idleSpeed", _currentStateMachine.GetComponent<enemy>().getIdleAnim().length / _idleTime);
+            _currentStateMachine.GetComponent<enemy>().flipInTime(_idleTime);
+        }
+        else if (drawRightRay() && !GetComponent<enemy>().getIsLookingRight() && !GetComponent<enemy>().getIsFlipping())
+        {
+            _currentStateMachine.GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_idle, _currentStateMachine.GetComponent<enemy>().getEnemyName(), direction);
+            GetComponent<Animator>().SetFloat("idleSpeed", _currentStateMachine.GetComponent<enemy>().getIdleAnim().length / _idleTime);
+            _currentStateMachine.GetComponent<enemy>().flipInTime(_idleTime);
+        }
+        else if (clipInfo[0].clip.name.Contains(animatorEnum.enemy_attack + "_" + _currentStateMachine.GetComponent<enemy>().getEnemyName()))
         {
             if (stateInfo.normalizedTime >= 1.0f)
             {
@@ -134,7 +148,7 @@ public class idleEnemyState : enemyState
             //Movemos al enemigo
             _currentStateMachine.GetComponent<enemy>().transform.position = position;
         }
-        Debug.Log("left ray => " + drawLeftRay() + " righ ray => " + drawRightRay());
+        //Debug.Log("left ray => " + drawLeftRay() + " righ ray => " + drawRightRay());
         //Si estamos en rango de ataque
         if (drawLeftRay() || drawRightRay())
         {
@@ -167,7 +181,6 @@ public class idleEnemyState : enemyState
                         clipInfo[0].clip.name == _currentStateMachine.GetComponent<enemyAnimatorController>().getAnimationName(animatorEnum.enemy_move, _currentStateMachine.GetComponent<enemy>().getEnemyName(), direction))
                     {
                         //Debug.Log("DesenvainoI");
-                        Debug.Log("?");
                         _currentStateMachine.GetComponent<enemyAnimatorController>().playAnimation(animatorEnum.enemy_unseath, _currentStateMachine.GetComponent<enemy>().getEnemyName(), direction);
                     }
                     else if (clipInfo[0].clip.name == _currentStateMachine.GetComponent<enemyAnimatorController>().getAnimationName(animatorEnum.enemy_unseath, _currentStateMachine.GetComponent<enemy>().getEnemyName(), direction))
@@ -229,7 +242,6 @@ public class idleEnemyState : enemyState
         }
         else
         {
-            Debug.Log("se sale");
             if ((_currentStateMachine.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.name !=
                 _currentStateMachine.GetComponent<enemyAnimatorController>().getAnimationName
                 (animatorEnum.enemy_idle, _currentStateMachine.GetComponent<enemy>().getEnemyName(), direction)) &&

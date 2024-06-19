@@ -39,14 +39,17 @@ public class groundEnemyComboState : enemyBaseCombatState
     {
         base.onUpdate();
         animatorEnum direction = _currentStateMachine.GetComponent<enemy>().getIsLookingRight() ? animatorEnum.back : animatorEnum.front;
+        bool rightHit = drawRightRay();
+        bool leftHit = drawLeftRay();
+        //Debug.Log("Rayo dcha => " + drawRightRay());
+        //Debug.Log("Rayo izq => " + drawLeftRay());
         if (_time >= _attackTime)
         {
-            //float distance = Vector3.Distance(GetComponent<enemy>().getHurtbox().transform.position,
-            //                                  config.getPlayer().GetComponent<combatController>().getHurtbox().transform.position);
-            if (!drawLeftRay() && !drawRightRay())
+            //Si estamos fuera del rango de ataque
+            if (!rightHit && !leftHit)
             {
                 //GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false; 
-                
+
                 if (GetComponent<boss>() != null)
                 {
                     _currentStateMachine.setNextState(new enemyChaseState());

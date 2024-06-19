@@ -497,6 +497,7 @@ public class enemy : MonoBehaviour
     /// </summary>
     public void die()
     {
+        Debug.Log("muele");
         Debug.Log("activo?");
         //Si tiene loot
         if (_loot.Length > 0)
@@ -569,9 +570,10 @@ public class enemy : MonoBehaviour
     {
         animatorEnum direction = _isLookingRight ? animatorEnum.back : animatorEnum.front;
         AnimatorStateInfo stateInfo = GetComponent<Animator>().GetCurrentAnimatorStateInfo(0);
+        AnimatorClipInfo clipInfo = GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0];
         //Debug.Log(_health);
 
-        if (stateInfo.IsName(GetComponent<enemyAnimatorController>().getAnimationName(animatorEnum.enemy_death, getEnemyName(), direction)))
+        if (clipInfo.clip.name.Contains(animatorEnum.enemy_death.ToString()))
         {
             if (stateInfo.normalizedTime >= 1.0f)
             {

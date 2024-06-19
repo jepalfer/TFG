@@ -44,10 +44,15 @@ public class groundEnemyEntryState : enemyBaseCombatState
         //El tiempo de espera ha acabado
         //float distance = Vector3.Distance(GetComponent<enemy>().getHurtbox().transform.position,
         //                                  config.getPlayer().GetComponent<combatController>().getHurtbox().transform.position);
+
+        bool rightHit = drawRightRay();
+        bool leftHit = drawLeftRay();
+        //Debug.Log("Rayo dcha => " + drawRightRay());
+        //Debug.Log("Rayo izq => " + drawLeftRay());
         if (_time >= _attackTime)
         {
             //Si estamos fuera del rango de ataque
-            if (!drawLeftRay() && !drawRightRay())
+            if (!rightHit && !leftHit)
             {
                 //GetComponent<enemy>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
                 if (GetComponent<boss>() != null)
@@ -57,6 +62,7 @@ public class groundEnemyEntryState : enemyBaseCombatState
                 }
                 else
                 {
+                    Debug.Log("ha entrado");
                     _currentStateMachine.setNextState(new idleEnemyState());
                     base.onExit();
                 }

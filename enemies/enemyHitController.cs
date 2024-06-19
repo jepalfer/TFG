@@ -24,21 +24,7 @@ public class enemyHitController : MonoBehaviour
     {
         _hasHitPlayer = false;
     }
-
-    /// <summary>
-    /// Método que se ejecuta cuando un trigger entra en contacto y hace que el enemigo reciba daño.
-    /// </summary>
-    /// <param name="collision">Collider que ha entrado en contacto.</param>
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("playerHurtbox"))
-        {
-            Debug.Log("hurtbox");
-            //config.getPlayer().GetComponent<statsController>().receiveDMG(_enemy.GetComponent<enemy>().getDamage());
-            //config.getPlayer().GetComponent<characterSFXController>().playHurtSFX();
-        }
-    }
-
+    
     /// <summary>
     /// Método que se ejecuta cada frame para actualizar la lógica.
     /// </summary>
