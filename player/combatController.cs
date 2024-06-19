@@ -53,7 +53,7 @@ public class combatController : MonoBehaviour
     /// <summary>
     /// Velocidad a la que se restaura la stamina.
     /// </summary>
-    private float _staminaRestore = 0.05f;
+    private float _staminaRestore = 0.2f;
 
     /// <summary>
     /// Cantidad de estamina que gasta el dash.
@@ -63,7 +63,7 @@ public class combatController : MonoBehaviour
     /// <summary>
     /// Cantidad de stamina que gasta atacar.
     /// </summary>
-    private float _attackStaminaUse = 2f;
+    private float _attackStaminaUse = 8f;
 
     /// <summary>
     /// Referencia al prefab de la bala.
@@ -246,10 +246,16 @@ public class combatController : MonoBehaviour
     private bool _isDying;
 
     /// <summary>
+    /// Float para almacenar la restauración de stamina por defecto.
+    /// </summary>
+    private float _defaultStaminaRestore;
+
+    /// <summary>
     /// Método que se ejecuta al iniciar el script. Asigna varios valores.
     /// </summary>
     private void Start()
     {
+        _defaultStaminaRestore = _staminaRestore;
         _stateMachine = GetComponent<stateMachine>();
         config.setPlayer(gameObject);
         _baseBleedProbability = 10;
@@ -579,6 +585,14 @@ public class combatController : MonoBehaviour
     public void setStaminaRestore(float value)
     {
         _staminaRestore = value;
+    }
+
+    /// <summary>
+    /// Setter que modifica <see cref="_staminaRestore"/> a su vaor por defecto <see cref="_defaultStaminaRestore"/>.
+    /// </summary>
+    public void setStaminaRestore()
+    {
+        _staminaRestore = _defaultStaminaRestore;
     }
 
     /// <summary>
@@ -958,7 +972,6 @@ public class combatController : MonoBehaviour
             {
                 float HPUpgrade = 0, staminaUpgrade = _extraStaminaUpgrade;
                 config.getPlayer().GetComponent<combatController>().calculateRegenUpgrade(ref HPUpgrade, ref staminaUpgrade);
-
                 GetComponent<statsController>().restoreStamina(_staminaRestore + (_staminaRestore * staminaUpgrade));
             }
         }
@@ -987,6 +1000,16 @@ public class combatController : MonoBehaviour
             GetComponent<statsController>().receiveDMG(GetComponent<statsController>().getMaxHP());
         }
     }
+
+    /// <summary>
+    /// Método auxiliar para utilizar la corrutina de restaurar la restauración de stamina desde la máquina de estados.
+    /// </summary>
+    public void useStaminaCoroutine()
+    {
+        StopCoroutine(GetComponent<playerMovement>().setStaminaRestore());
+        StartCoroutine(GetComponent<playerMovement>().setStaminaRestore());
+    }
+
     /// <summary>
     /// Método auxiliar que maneja la muerte del jugador.
     /// </summary>

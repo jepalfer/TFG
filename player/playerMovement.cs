@@ -205,13 +205,21 @@ public class playerMovement : MonoBehaviour
     /// </summary>
     [SerializeField] private AnimationClip _backDashAnim;
 
+    /// <summary>
+    /// Datos de la hoguera visitada por última vez.
+    /// </summary>
     lastBonfireData _data;
 
+    /// <summary>
+    /// Tiempo en el que la stamina no se recupera tras esquivar.
+    /// </summary>
+    private float _staminaStopTime;
     /// <summary>
     /// Primer método que se ejecuta al iniciar el script.
     /// </summary>
     void Awake()
     {
+        _staminaStopTime = 1.5f;
         //Obtenemos la referencia al RigidBody y el Animator
         _rb = GetComponent<Rigidbody2D>();
 
@@ -447,7 +455,7 @@ public class playerMovement : MonoBehaviour
             
 
             //Podemos esquivar si no hemos esquivado y además no estamos tocando plataforma
-            if (!_hasRolled && !GetComponent<collisionController>().getIsOnPlatform())
+            if (!_hasRolled && !GetComponent<collisionController>().getIsOnPlatform() && GetComponent<statsController>().getCurrentStamina() > 0)
             {
                 _canRoll = true;
             }
@@ -467,7 +475,10 @@ public class playerMovement : MonoBehaviour
                 }
 
                 //Modificamos variables
-                _canRoll = true;
+                if (GetComponent<statsController>().getCurrentStamina() > 0)
+                {
+                    _canRoll = true;
+                }
                 _couldRoll = true;
                 _wasClimbing = false;
                 _hasRolled = false;
@@ -491,15 +502,32 @@ public class playerMovement : MonoBehaviour
                 }
 
                 //Configuramos que podamos atacar
-                GetComponent<combatController>().setCanAttack(true);
 
-                if (GetComponent<combatController>().getPrimaryWeapon() != null)
+                if (GetComponent<statsController>().getCurrentStamina() > 0)
                 {
-                    GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                    GetComponent<combatController>().setCanAttack(true);
+
+                    if (GetComponent<combatController>().getPrimaryWeapon() != null)
+                    {
+                        GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                    }
+                    if (GetComponent<combatController>().getSecundaryWeapon() != null)
+                    {
+                        GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                    }
                 }
-                if (GetComponent<combatController>().getSecundaryWeapon() != null)
+                else
                 {
-                    GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                    GetComponent<combatController>().setCanAttack(false);
+
+                    if (GetComponent<combatController>().getPrimaryWeapon() != null)
+                    {
+                        GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(false);
+                    }
+                    if (GetComponent<combatController>().getSecundaryWeapon() != null)
+                    {
+                        GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(false);
+                    }
                 }
             }
             else 
@@ -526,7 +554,7 @@ public class playerMovement : MonoBehaviour
                         _rb.gravityScale = _g0 * _fallSpeed;
                     }
                 }
-                if (_canClimb && _wasClimbing)
+                if (_canClimb && _wasClimbing && GetComponent<statsController>().getCurrentStamina() == 0)
                 {
                     GetComponent<combatController>().setCanAttack(false);
                     if (GetComponent<combatController>().getPrimaryWeapon() != null)
@@ -665,7 +693,11 @@ public class playerMovement : MonoBehaviour
                 }
             }
             _canMove = false;
-            _canRoll = true;
+
+            if (GetComponent<statsController>().getCurrentStamina() > 0)
+            {
+                _canRoll = true;
+            }
             _hasRolled = false;
         }
 
@@ -673,14 +705,30 @@ public class playerMovement : MonoBehaviour
         if (_isJumping)
         {
             //Volvemos a hacer que podamos atacar
-            GetComponent<combatController>().setCanAttack(true);
-            if (GetComponent<combatController>().getPrimaryWeapon() != null)
+            if (GetComponent<statsController>().getCurrentStamina() > 0)
             {
-                GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                GetComponent<combatController>().setCanAttack(true);
+                if (GetComponent<combatController>().getPrimaryWeapon() != null)
+                {
+                    GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                }
+                if (GetComponent<combatController>().getSecundaryWeapon() != null)
+                {
+                    GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                }
             }
-            if (GetComponent<combatController>().getSecundaryWeapon() != null)
+            else
             {
-                GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(true);
+                GetComponent<combatController>().setCanAttack(false);
+
+                if (GetComponent<combatController>().getPrimaryWeapon() != null)
+                {
+                    GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(false);
+                }
+                if (GetComponent<combatController>().getSecundaryWeapon() != null)
+                {
+                    GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(false);
+                }
             }
             _canMove = true;
         }
@@ -790,7 +838,11 @@ public class playerMovement : MonoBehaviour
                 _canJump = false;
                 _cameraTimer = 0;
                 _canMove = true;
-                _canRoll = true;
+
+                if (GetComponent<statsController>().getCurrentStamina() > 0)
+                {
+                    _canRoll = true;
+                }
                 _isLookingDown = false;
             }
             else
@@ -806,7 +858,10 @@ public class playerMovement : MonoBehaviour
         //Dejamos de mirar hacia arriba
         if (inputManager.GetKeyUp(inputEnum.up) )
         {
-            _canRoll = true;
+            if (GetComponent<statsController>().getCurrentStamina() > 0)
+            {
+                _canRoll = true;
+            }
             _canClimb = _couldClimb;
             _couldClimb = false;
             _cameraTimer = 0;
@@ -816,7 +871,10 @@ public class playerMovement : MonoBehaviour
         //Dejamos de mirar hacia abajo
         if (inputManager.GetKeyUp(inputEnum.down))
         {
-            _canRoll = true;
+            if (GetComponent<statsController>().getCurrentStamina() > 0)
+            {
+                _canRoll = true;
+            }
             _cameraTimer = 0;
             _camera.GetComponent<cameraController>().setOffset(0f);
             _canMove = true;
@@ -953,22 +1011,43 @@ public class playerMovement : MonoBehaviour
         newRollTime -= newRollTime * ((_dashTimeMultiplier / 100f) * 
                                        statSystem.getAgility().getLevel() / GetComponent<combatController>().getLevelThreshold());
         GetComponent<Animator>().SetFloat("rollSpeed", clipToCalculate.length / newRollTime);
+
+        StopCoroutine(setStaminaRestore());
         yield return new WaitForSeconds(newRollTime);
+        StartCoroutine(setStaminaRestore());
         GetComponent<Animator>().SetFloat("rollSpeed", 0f);
         //Activamos hurtbox para poder recibir daño
         GetComponent<combatController>().getHurtbox().GetComponent<BoxCollider2D>().enabled = true;
         
         //Permitimos atacar
-        GetComponent<combatController>().setCanAttack(true);
 
-        if (GetComponent<combatController>().getPrimaryWeapon() != null)
+        if (GetComponent<statsController>().getCurrentStamina() > 0)
         {
-            GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(true);
+            GetComponent<combatController>().setCanAttack(true);
+
+            if (GetComponent<combatController>().getPrimaryWeapon() != null)
+            {
+                GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(true);
+            }
+            if (GetComponent<combatController>().getSecundaryWeapon() != null)
+            {
+                GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(true);
+            }
         }
-        if (GetComponent<combatController>().getSecundaryWeapon() != null)
+        else
         {
-            GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(true);
+            GetComponent<combatController>().setCanAttack(false);
+
+            if (GetComponent<combatController>().getPrimaryWeapon() != null)
+            {
+                GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCanAttack(false);
+            }
+            if (GetComponent<combatController>().getSecundaryWeapon() != null)
+            {
+                GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(false);
+            }
         }
+
 
         //Para no poder saltar por si estamos en medio del aire
         setDistanceJumped(_JUMP_HEIGHT);
@@ -984,6 +1063,17 @@ public class playerMovement : MonoBehaviour
         _isJumping = false;
         _hasRolled = true;
         _canRoll = false;
+    }
+
+    /// <summary>
+    /// Método que modifica la restauración de stamina.
+    /// </summary>
+    /// <returns>Un <see cref="IEnumerator"/> que contiene el tiempo que dura sin restaurar stamina.</returns>
+    public IEnumerator setStaminaRestore()
+    {
+        GetComponent<combatController>().setStaminaRestore(0f);
+        yield return new WaitForSeconds(_staminaStopTime);
+        GetComponent<combatController>().setStaminaRestore();
     }
 
     /// <summary>
@@ -1127,7 +1217,10 @@ public class playerMovement : MonoBehaviour
     /// <returns>Flag booleano que indica si se puede o no reproducir el SFX de caminar.</returns>
     public bool getPlayWalkingSFX()
     {
-        return !_idle && config.getPlayer().GetComponent<collisionController>().getIsOnPlatform() && !_isDodging;
+        return !_idle && config.getPlayer().GetComponent<collisionController>().getIsOnPlatform() && !_isDodging && 
+            !(UIController.getIsInPauseUI() || UIController.getIsInShopUI() || UIController.getIsInInventoryUI() || UIController.getIsInEquippingSkillUI() ||
+            UIController.getIsInAdquireSkillUI() || UIController.getIsInShopUI() || UIController.getIsInLevelUpUI() || UIController.getIsInLevelUpWeaponUI() ||
+            UIController.getIsInStateUI() || bonfireBehaviour.getIsInBonfireMenu());
     }
 
     /// <summary>
