@@ -252,9 +252,10 @@ public class equippedInventory : MonoBehaviour
         if (allEquippedAreNotNull())
         {
             //Si no estamos en ningún menú
-            if (!UIController.getIsInAdquireSkillUI() && !UIController.getIsEquippingObjectUI() && !UIController.getIsInPauseUI() && !UIController.getIsInEquippingSkillUI() &&
-                !UIController.getIsInInventoryUI() && !UIController.getIsInLevelUpUI() && !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInShopUI() && 
-                !bonfireBehaviour.getIsInBonfireMenu())
+            if (!UIController.getIsInAdquireSkillUI() && !UIController.getIsEquippingObjectUI() && !UIController.getIsInPauseUI() && 
+                !UIController.getIsInEquippingSkillUI() && !UIController.getIsInInventoryUI() && !UIController.getIsInLevelUpUI() && 
+                !UIController.getIsInLevelUpWeaponUI() && !UIController.getIsInShopUI() && !bonfireBehaviour.getIsInBonfireMenu() && 
+                !UIController.getIsInStateUI() && !UIController.getIsInOptionsUI())
             {
                 //Controlamos el desplazamiento en la lista
                 if (inputManager.GetKeyDown(inputEnum.nextItem))
