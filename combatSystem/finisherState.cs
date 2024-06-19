@@ -68,6 +68,7 @@ public class finisherState : baseState
             //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
             _currentStateMachine.setNextStateToMain();
             baseState._attackIndex = 0;
+            base.onExit();
         }
     }
 }

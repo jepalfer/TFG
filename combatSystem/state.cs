@@ -39,7 +39,7 @@ public abstract class state
     public virtual void onEnter(stateMachine _stateMachine)
     {
         _currentStateMachine = _stateMachine;
-        //GetComponent<statsController>().useStamina(GetComponent<combatController>().getDashStaminaUse());
+        GetComponent<combatController>().useStaminaCoroutine();
     }
 
     /// <summary>
@@ -53,7 +53,6 @@ public abstract class state
         GetComponent<combatController>().setCanAttack(false);
         GetComponent<playerMovement>().setDistanceJumped(GetComponent<playerMovement>().getJumpHeight());
 
-
         if (GetComponent<combatController>().getPrimaryWeapon() != null)
         {
             GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().setCurrentAttack(0);
@@ -66,7 +65,7 @@ public abstract class state
             GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setIsAttacking(false);
             GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().setCanAttack(false);
         }
-        GetComponent<playerMovement>().getRigidBody().gravityScale = GetComponent<playerMovement>().getInitialGravity();
+        GetComponent<playerMovement>().getRigidBody().gravityScale = GetComponent<playerMovement>().getGravity();
     }
 
     /// <summary>

@@ -25,6 +25,7 @@ public class entryState : baseState
         _timeNextAttack = 0.75f;
         //_animator.SetTrigger("Attack" + _attackIndex);
 
+        GetComponent<statsController>().useStamina(GetComponent<combatController>().getAttackStaminaUse());
         AnimatorClipInfo[] clipInfo = config.getPlayer().GetComponent<Animator>().GetCurrentAnimatorClipInfo(0);
         //Debug.Log(stateInfo[0].clip.IsName(config.getPlayer().GetComponent<playerAnimatorController>().getAnimationName(animatorEnum.player_attack, 0, 1, animatorEnum.front)));
         GetComponent<Animator>().SetFloat("attackSpeed", clipInfo[0].clip.length / (_timeNextAttack - _timeNextAttack / 6));
@@ -84,27 +85,31 @@ public class entryState : baseState
                 config.getPlayer().GetComponent<combatController>().calculateExtraComboHits(ref primaryAttack, ref secundaryAttack);
                 if (GetComponent<combatController>().getPrimaryWeapon() != null)
                 {
-                    if (inputManager.GetKeyDown(inputEnum.primaryAttack))
+                    if (GetComponent<statsController>().getCurrentStamina() > 0 && inputManager.GetKeyDown(inputEnum.primaryAttack))
                     {
                         if (baseState.getAttackIndex() < (GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getNumberOfAttacks() + primaryAttack))
                         {
                             baseState.incrementAttackIndex();
                             //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            GetComponent<statsController>().useStamina(GetComponent<combatController>().getAttackStaminaUse());
                             GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_attack, weaponConfig.getPrimaryWeapon().GetComponent<weapon>().getID(), baseState.getAttackIndex(), attackDirection);
                             _currentStateMachine.setNextState(new comboState(true));
+                            base.onExit();
                         }
                     }
                 }
                 if (GetComponent<combatController>().getSecundaryWeapon() != null)
                 {
-                    if (inputManager.GetKeyDown(inputEnum.secundaryAttack))
+                    if (GetComponent<statsController>().getCurrentStamina() > 0 && inputManager.GetKeyDown(inputEnum.secundaryAttack))
                     {
                         if (baseState.getAttackIndex() < (GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getNumberOfAttacks() + secundaryAttack))
                         {
                             baseState.incrementAttackIndex();
                             //GetComponent<combatController>().getHitbox().GetComponent<BoxCollider2D>().enabled = false;
+                            GetComponent<statsController>().useStamina(GetComponent<combatController>().getAttackStaminaUse());
                             GetComponent<playerAnimatorController>().playAnimation(animatorEnum.player_attack, weaponConfig.getSecundaryWeapon().GetComponent<weapon>().getID(), baseState.getAttackIndex(), attackDirection);
                             _currentStateMachine.setNextState(new comboState(false));
+                            base.onExit();
                         }
                     }
                 }

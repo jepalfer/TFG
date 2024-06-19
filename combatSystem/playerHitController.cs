@@ -34,11 +34,28 @@ public class playerHitController : MonoBehaviour
             {
                 //Si es ataque primario el enemigo recibe el daño del arma primaria.
                 collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().receiveDMG(config.getPlayer().GetComponent<combatController>().getPrimaryWeapon().GetComponent<weapon>().getTotalDMG(), crit, penetration, bleed);
+                
+                if (collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().getIsArmored())
+                {
+                    weaponConfig.getPrimaryWeapon().GetComponent<weaponSFXController>().playHit1SFX();
+                }
+                else
+                {
+                    weaponConfig.getPrimaryWeapon().GetComponent<weaponSFXController>().playHit2SFX();
+                }
             }
             else if (_secundaryAttack)
             {
                 //Si es ataque secundario el enemigo recibe el daño del arma secudaria
                 collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().receiveDMG(config.getPlayer().GetComponent<combatController>().getSecundaryWeapon().GetComponent<weapon>().getTotalDMG(), crit, penetration, bleed);
+                if (collision.gameObject.transform.parent.gameObject.GetComponent<enemy>().getIsArmored())
+                {
+                    weaponConfig.getSecundaryWeapon().GetComponent<weaponSFXController>().playHit1SFX();
+                }
+                else
+                {
+                    weaponConfig.getSecundaryWeapon().GetComponent<weaponSFXController>().playHit2SFX();
+                }
             }
         }
     }
